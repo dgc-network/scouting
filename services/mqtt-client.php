@@ -170,7 +170,7 @@ if (!class_exists('mqtt_client')) {
                 <h2 style="display:inline;"><?php echo __( '座標訊息', 'your-text-domain' );?></h2>
                 <fieldset>
                     <div style="display:flex; justify-content:space-between; margin:5px;">
-                        <div><?php $profiles_class->display_select_profile(5);?></div>                        
+                        <div><?php //$profiles_class->display_select_profile(5);?></div>                        
                         <div style="text-align: right"></div>                        
                     </div>
         

@@ -33,7 +33,7 @@ function remove_admin_bar() {
       show_admin_bar(false);
     }
 }
-//add_action('after_setup_theme', 'remove_admin_bar');  
+add_action('after_setup_theme', 'remove_admin_bar');
 
 function allow_subscribers_to_view_users($allcaps, $caps, $args) {
     // Check if the user is trying to view other users
@@ -68,4 +68,5 @@ function isURL($str) {
 //require_once plugin_dir_path( __FILE__ ) . 'erp/erp-cards.php';
 //require_once plugin_dir_path( __FILE__ ) . 'erp/subforms.php';
 require_once plugin_dir_path( __FILE__ ) . 'services/services.php';
-//require_once plugin_dir_path( __FILE__ ) . 'includes/login.php';
+require_once plugin_dir_path( __FILE__ ) . 'services/mqtt-client.php';
+//require_once plugin_dir_path( __FILE__ ) . 'includes/display-login.php';

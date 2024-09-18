@@ -9,6 +9,8 @@ if (!class_exists('mqtt_client')) {
         public function __construct() {
 
             add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_mqtt_client_scripts' ) );
+            add_shortcode( 'display-map', array( $this, 'display_geolocation_message_list'  ) );
+
             add_action( 'init', array( $this, 'register_mqtt_client_post_type' ) );
             add_action( 'init', array( $this, 'register_iot_message_post_type' ) );
             add_action( 'init', array( $this, 'register_geolocation_message_post_type' ) );

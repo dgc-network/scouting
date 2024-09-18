@@ -152,7 +152,14 @@ if (!class_exists('line_login_api')) {
                         }
         
                         // Check if the LINE user is already registered
-                        $user = get_user_by('meta_value', $line_user_id);
+                        //$user = get_user_by('meta_value', $line_user_id);
+                        $user_query = new WP_User_Query(array(
+                            'meta_key'   => 'line_user_id',
+                            'meta_value' => $line_user_id,
+                        ));
+                        
+                        $users = $user_query->get_results();
+                        $user = !empty($users) ? $users[0] : null;                        
                         
                         if ($user) {
                             // User exists, log them in
@@ -201,9 +208,6 @@ if (!class_exists('line_login_api')) {
 
             ob_start();
             ?>
-<?php /*            
-            <a href="https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=<?php echo get_option('line_login_client_id');?>&redirect_uri=<?php echo get_option('line_login_redirect_uri');?>&state=<?php echo $state;?>&scope=profile%20openid%20email">
-*/?>        
             <a href="<?php echo $line_auth_url;?>">    
                 <img src="https://s3.ap-southeast-1.amazonaws.com/app-assets.easystore.co/apps/154/icon.png" alt="LINE Login">
             </a>

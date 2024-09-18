@@ -35,6 +35,7 @@ function web_service_settings_page() {
     <?php
 }
 
+// Operation section
 function operation_register_settings() {
     // Register Operation section
     add_settings_section(

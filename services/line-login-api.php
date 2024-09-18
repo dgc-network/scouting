@@ -44,31 +44,31 @@ if (!class_exists('line_login_api')) {
 
             // Register fields for Line login section
             add_settings_field(
-                'line-login-redirect-uri',
+                'line_login_redirect_uri',
                 'Line login redirect uri',
                 array( $this, 'line_login_redirect_uri_callback' ),
                 'web-service-settings',
                 'line-login-section-settings'
             );
-            register_setting('web-service-settings', 'line-login-redirect-uri');
+            register_setting('web-service-settings', 'line_login_redirect_uri');
 
             add_settings_field(
-                'line-login-client-id',
+                'line_login_client_id',
                 'Line login client id',
                 array( $this, 'line_login_client_id_callback' ),
                 'web-service-settings',
                 'line-login-section-settings'
             );
-            register_setting('web-service-settings', 'line-login-client-id');
+            register_setting('web-service-settings', 'line_login_client_id');
 
             add_settings_field(
-                'line-login-client-secret',
+                'line_login_client_secret',
                 'Line login client secret',
                 array( $this, 'line_login_client_secret_callback' ),
                 'web-service-settings',
                 'line-login-section-settings'
             );
-            register_setting('web-service-settings', 'line-login-client-secret');
+            register_setting('web-service-settings', 'line_login_client_secret');
         }
 
         function line_login_section_settings_callback() {
@@ -77,17 +77,17 @@ if (!class_exists('line_login_api')) {
 
         function line_login_redirect_uri_callback() {
             $value = get_option('line_login_redirect_uri');
-            echo '<input type="text" id="line-login-redirect-uri" name="line_login_redirect_uri" style="width:100%;" value="' . esc_attr($value) . '" />';
+            echo '<input type="text" name="line_login_redirect_uri" style="width:100%;" value="' . esc_attr($value) . '" />';
         }
 
         function line_login_client_id_callback() {
             $value = get_option('line_login_client_id');
-            echo '<input type="text" id="line-login-client-id" name="line_login_client_id" style="width:100%;" value="' . esc_attr($value) . '" />';
+            echo '<input type="text" name="line_login_client_id" style="width:100%;" value="' . esc_attr($value) . '" />';
         }
 
         function line_login_client_secret_callback() {
             $value = get_option('line_login_client_secret');
-            echo '<input type="text" id="line-login-client-secret" name="line_login_client_secret" style="width:100%;" value="' . esc_attr($value) . '" />';
+            echo '<input type="text" name="line_login_client_secret" style="width:100%;" value="' . esc_attr($value) . '" />';
         }
 
         // login callback

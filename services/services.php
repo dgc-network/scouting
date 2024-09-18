@@ -105,21 +105,21 @@ function default_video_url_callback() {
 
 function default_image_url_callback() {
     $value = get_option('default_image_url');
-    echo '<input type="text" id="default_image_url" name="default_image_url" style="width:100%;" value="' . esc_attr($value) . '" />';
+    echo '<input type="text" name="default_image_url" style="width:100%;" value="' . esc_attr($value) . '" />';
 }
 
 function operation_row_counts_callback() {
     $value = get_option('operation_row_counts');
-    echo '<input type="text" id="operation_row_counts" name="operation_row_counts" style="width:100%;" value="' . esc_attr($value) . '" />';
+    echo '<input type="number" name="operation_row_counts" style="width:100%;" value="' . esc_attr($value) . '" />';
 }
 
 function operation_fee_rate_callback() {
     $value = get_option('operation_fee_rate');
-    echo '<input type="text" id="operation_fee_rate" name="operation_fee_rate" style="width:100%;" value="' . esc_attr($value) . '" />';
+    echo '<input type="number" name="operation_fee_rate" style="width:100%;" value="' . esc_attr($value) . '" />';
 }
 
 function operation_wallet_address_callback() {
     $value = get_option('operation_wallet_address');
-    echo '<input type="text" id="operation_wallet_address" name="operation_wallet_address" style="width:100%;" value="' . esc_attr($value) . '" />';
+    echo '<input type="text" name="operation_wallet_address" style="width:100%;" value="' . esc_attr($value) . '" />';
 }
 

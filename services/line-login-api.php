@@ -187,7 +187,7 @@ if (!class_exists('line_login_api')) {
                     wp_die('Failed to get access token from LINE.');
                 }
             } else {
-                wp_die('Authorization code or state parameter is missing.');
+                //wp_die('Authorization code or state parameter is missing.');
             }
         }
 /*        

@@ -155,15 +155,11 @@ if (!class_exists('line_login_api')) {
         }
         
         function display_shortcode() {
-
-
-?>
-<a href="https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=YOUR_CHANNEL_ID&redirect_uri=YOUR_CALLBACK_URL&state=YOUR_STATE&scope=profile%20openid%20email">
-    <img src="https://d.line-scdn.net/liff/1.0/sdk/img/log-in-button.png" alt="LINE Login">
-</a>
-<?php
-
-
+            ?>
+            <a href="https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=<?php echo get_option('line_login_client_id');?>&redirect_uri=YOUR_CALLBACK_URL&state=YOUR_STATE&scope=profile%20openid%20email">
+                <img src="https://d.line-scdn.net/liff/1.0/sdk/img/log-in-button.png" alt="LINE Login">
+            </a>
+            <?php
         }
 
     }

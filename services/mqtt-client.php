@@ -219,8 +219,12 @@ if (!class_exists('mqtt_client')) {
                 </div>
                 <?php
             } else {
+                $line_login_api = new line_login_api();
                 ?>
-                <p><?php echo __( 'You do not have permission to access this page.', 'your-text-domain' );?></p>
+                <p>
+                    <?php echo __( 'You do not have permission to access this page.', 'your-text-domain' );?>
+                    <?php echo $line_login_api->display_login_button();?>
+                </p>
                 <?php
             }
             return ob_get_clean();

@@ -35,7 +35,7 @@ function web_service_settings_page() {
     <?php
 }
 
-function web_service_register_settings() {
+function operation_register_settings() {
     // Register Operation section
     add_settings_section(
         'operation-section-settings',
@@ -91,7 +91,7 @@ function web_service_register_settings() {
     register_setting('web-service-settings', 'operation-wallet-address');
     
 }
-add_action('admin_init', 'web_service_register_settings');
+add_action('admin_init', 'operation_register_settings');
 
 function operation_section_settings_callback() {
     echo '<p>Settings for operation.</p>';

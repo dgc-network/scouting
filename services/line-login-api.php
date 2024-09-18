@@ -45,7 +45,7 @@ if (!class_exists('line_login_api')) {
             // Register fields for Line login section
             add_settings_field(
                 'line-login-redirect-uri',
-                'Line login redirect_uri',
+                'Line login redirect uri',
                 array( $this, 'line_login_redirect_uri_callback' ),
                 'web-service-settings',
                 'line-login-section-settings'
@@ -54,7 +54,7 @@ if (!class_exists('line_login_api')) {
 
             add_settings_field(
                 'line-login-client-id',
-                'Line login client_id',
+                'Line login client id',
                 array( $this, 'line_login_client_id_callback' ),
                 'web-service-settings',
                 'line-login-section-settings'
@@ -63,7 +63,7 @@ if (!class_exists('line_login_api')) {
 
             add_settings_field(
                 'line-login-client-secret',
-                'Line login client_secret',
+                'Line login client secret',
                 array( $this, 'line_login_client_secret_callback' ),
                 'web-service-settings',
                 'line-login-section-settings'

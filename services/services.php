@@ -47,49 +47,49 @@ function operation_register_settings() {
 
     // Register fields for Operation section
     add_settings_field(
-        'default-video-url',
+        'default_video_url',
         'Default video URL',
         'default_video_url_callback',
         'web-service-settings',
-        'operation-section-settings',
+        'operation-section-settings'
     );
-    register_setting('web-service-settings', 'default-video-url');
+    register_setting('web-service-settings', 'default_video_url');
     
     add_settings_field(
-        'default-image-url',
+        'default_image_url',
         'Default image URL',
         'default_image_url_callback',
         'web-service-settings',
-        'operation-section-settings',
+        'operation-section-settings'
     );
-    register_setting('web-service-settings', 'default-image-url');
+    register_setting('web-service-settings', 'default_image_url');
     
     add_settings_field(
-        'operation-row-counts',
+        'operation_row_counts',
         'Row counts',
         'operation_row_counts_callback',
         'web-service-settings',
-        'operation-section-settings',
+        'operation-section-settings'
     );
-    register_setting('web-service-settings', 'operation-row-counts');
+    register_setting('web-service-settings', 'operation_row_counts');
     
     add_settings_field(
-        'operation-fee-rate',
+        'operation_fee_rate',
         'Operation fee rate',
         'operation_fee_rate_callback',
         'web-service-settings',
-        'operation-section-settings',
+        'operation-section-settings'
     );
-    register_setting('web-service-settings', 'operation-fee-rate');
+    register_setting('web-service-settings', 'operation_fee_rate');
     
     add_settings_field(
-        'operation-wallet-address',
+        'operation_wallet_address',
         'Wallet address',
         'operation_wallet_address_callback',
         'web-service-settings',
-        'operation-section-settings',
+        'operation-section-settings'
     );
-    register_setting('web-service-settings', 'operation-wallet-address');
+    register_setting('web-service-settings', 'operation_wallet_address');
     
 }
 add_action('admin_init', 'operation_register_settings');
@@ -100,7 +100,7 @@ function operation_section_settings_callback() {
 
 function default_video_url_callback() {
     $value = get_option('default_video_url');
-    echo '<input type="text" id="default_video_url" name="default_video_url" style="width:100%;" value="' . esc_attr($value) . '" />';
+    echo '<input type="text" name="default_video_url" style="width:100%;" value="' . esc_attr($value) . '" />';
 }
 
 function default_image_url_callback() {

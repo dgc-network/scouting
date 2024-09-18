@@ -123,6 +123,56 @@ if (!class_exists('line_login_api')) {
                     $profile = json_decode(wp_remote_retrieve_body($profile_response), true);
         
                     if (isset($profile['userId'])) {
+                        // You now have the user's LINE ID
+                        $line_user_id = $profile['userId'];
+        
+                        // Check if the user is already logged in (using is_user_logged_in())
+                        if (is_user_logged_in()) {
+                            // User is already logged in, handle accordingly
+                            // (e.g. display a message or redirect to a specific page)
+                            echo 'You are already logged in.';
+                            exit;
+                        } else {
+                            // User is not logged in, proceed with LINE user registration/login
+                            // ... (rest of your existing code for user registration and login)
+                        }
+                    }
+                }
+            }
+        }
+/*        
+        function handle_line_callback() {
+            if (isset($_GET['code'])) {
+                $code = sanitize_text_field($_GET['code']);
+                $state = sanitize_text_field($_GET['state']);
+        
+                // Exchange authorization code for access token
+                $response = wp_remote_post('https://api.line.me/oauth2/v2.1/token', array(
+                    'body' => array(
+                        'grant_type'    => 'authorization_code',
+                        'code'          => $code,
+                        'redirect_uri'  => get_option('line_login_redirect_uri'),
+                        'client_id'     => get_option('line_login_client_id'),
+                        'client_secret' => get_option('line_login_client_secret'),
+                    ),
+                ));
+        
+                $body = wp_remote_retrieve_body($response);
+                $json = json_decode($body, true);
+        
+                if (isset($json['access_token'])) {
+                    $access_token = $json['access_token'];
+        
+                    // Use the access token to get the user's profile
+                    $profile_response = wp_remote_get('https://api.line.me/v2/profile', array(
+                        'headers' => array(
+                            'Authorization' => 'Bearer ' . $access_token,
+                        ),
+                    ));
+        
+                    $profile = json_decode(wp_remote_retrieve_body($profile_response), true);
+        
+                    if (isset($profile['userId'])) {
                         // You now have the user's LINE ID and can use it to log them in
                         $line_user_id = $profile['userId'];
         
@@ -153,7 +203,7 @@ if (!class_exists('line_login_api')) {
                 }
             }
         }
-        
+*/
         function display_login_button() {
             ob_start();
             ?>

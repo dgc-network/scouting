@@ -167,7 +167,7 @@ if (!class_exists('mqtt_client')) {
 
                 ?>
                 <?php //echo display_iso_helper_logo();?>
-                <h2 style="display:inline;"><?php echo __( '座標訊息', 'your-text-domain' );?></h2>
+                <h2 style="display:inline;"><?php echo __( '座標訊息', 'your-text-domain' );?><?php echo $current_user->display_name;?></h2>
                 <fieldset>
                     <div style="display:flex; justify-content:space-between; margin:5px;">
                         <div><?php //$profiles_class->display_select_profile(5);?></div>                        
@@ -222,7 +222,7 @@ if (!class_exists('mqtt_client')) {
                 $line_login_api = new line_login_api();
                 ?>
                 <p>
-                    <?php echo __( 'You do not have permission to access this page.', 'your-text-domain' );?>
+                    <?php echo __( 'You do not have permission to access this page.', 'your-text-domain' );?><br>
                     <?php echo $line_login_api->display_login_button();?>
                 </p>
                 <?php

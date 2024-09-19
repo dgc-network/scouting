@@ -38,7 +38,7 @@ function remove_admin_bar() {
       show_admin_bar(false);
     }
 }
-add_action('after_setup_theme', 'remove_admin_bar');
+//add_action('after_setup_theme', 'remove_admin_bar');
 
 function allow_subscribers_to_view_users($allcaps, $caps, $args) {
     // Check if the user is trying to view other users

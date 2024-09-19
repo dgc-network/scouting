@@ -162,8 +162,8 @@ if (!class_exists('line_login_api')) {
                         
                         // Check if user exists, log them in
                         if ($user && $user instanceof WP_User) {
-                            //$stored_pass = get_user_meta($user->ID, 'stored_pass', true);
-                            $stored_pass = get_user_meta($line_user_id, 'stored_pass', true);
+                            $stored_pass = get_user_meta($user->ID, 'stored_pass', true);
+                            //$stored_pass = get_user_meta($line_user_id, 'stored_pass', true);
                             $creds = array(
                                 //'user_login'    => $user->user_login,
                                 'user_login'    => $line_user_id,

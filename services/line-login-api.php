@@ -163,54 +163,10 @@ if (!class_exists('line_login_api')) {
                         
                         // Check if user exists, log them in
                         if ($user && $user instanceof WP_User) {
-                            // Set the current user and authentication cookie
-                            wp_set_current_user($user->ID);
-                            wp_set_auth_cookie($user->ID, true);
-                        
-                            // Redirect to the desired page
-                            wp_redirect(home_url());
-                            exit;
-/*                            
-                        } else {
-                            wp_die('User object is invalid or not found.');
-/*                            
-                        }
-                        
-                        if ($user) {
+                            $stored_pass = get_user_meta($user->ID, 'stored_pass', true);
                             $creds = array(
                                 'user_login'    => $user->user_login,
-                                'user_password' => $user->user_pass,
-                                'remember'      => true
-                            );
-                            
-                            $user = wp_signon($creds, false);
-                            
-                            if (is_wp_error($user)) {
-                                // Handle error
-                                wp_die('Login failed: ' . $user->get_error_message());
-                            } else {
-                                wp_redirect(home_url());
-                                exit;
-                            }
-/*                            
-                            // Set the current user and authentication cookie
-                            wp_set_current_user($user->ID);
-                            wp_set_auth_cookie($user->ID, true);
-                            
-                            // Redirect to desired page
-                            wp_redirect(home_url());
-                            exit;
-/*                            
-                        }
-                        
-                        if ($user) {
-                            // Generate a temporary password if the user doesn't have one
-                            $temporary_password = wp_generate_password();
-                            wp_set_password($temporary_password, $user->ID);
-                        
-                            $creds = array(
-                                'user_login'    => $user->user_login,
-                                'user_password' => $temporary_password,
+                                'user_password' => $stored_pass,
                                 'remember'      => true,
                             );
                             $user_signon = wp_signon($creds, false);
@@ -221,23 +177,7 @@ if (!class_exists('line_login_api')) {
                                 wp_redirect(home_url());
                                 exit;
                             }
-/*                            
-                        }
-                        if ($user) {
-                            $creds = array(
-                                'user_login'    => $user->user_login,
-                                'user_password' => 'your_temporary_password', // use actual stored password or set one
-                                'remember'      => true,
-                            );
-                            $user_signon = wp_signon($creds, false);
-                        
-                            if (is_wp_error($user_signon)) {
-                                wp_die('Login failed: ' . $user_signon->get_error_message());
-                            } else {
-                                wp_redirect(home_url());
-                                exit;
-                            }
-*/                            
+
                         } else {
                             // Register a new user
                             $random_password = wp_generate_password();
@@ -250,6 +190,7 @@ if (!class_exists('line_login_api')) {
                         
                             if (!is_wp_error($user_id)) {
                                 update_user_meta($user_id, 'line_user_id', $line_user_id);
+                                update_user_meta($user_id, 'stored_pass', $random_password);
                         
                                 // Log in the newly registered user
                                 $creds = array(
@@ -269,49 +210,6 @@ if (!class_exists('line_login_api')) {
                                 wp_die('User registration failed: ' . $user_id->get_error_message());
                             }
                         }
-/*                        
-                        if ($user) {
-                            $creds = array(
-                                'user_login'    => $user->user_login,
-                                'user_password' => null, // Since password is unknown, set it to null
-                                'remember'      => true,
-                            );
-                            $user_signon = wp_signon($creds, false);
-                            
-                            if (is_wp_error($user_signon)) {
-                                wp_die('Login failed: ' . $user_signon->get_error_message());
-                            } else {
-                                wp_redirect(home_url());
-                                exit;
-                            }
-/*                            
-                            // User exists, log them in
-                            wp_set_auth_cookie($user->ID);
-                            wp_redirect(home_url().'/display-map/');
-                            exit;
-
-                        } else {
-                            // Register a new user with the LINE ID
-                            $user_data = array(
-                                'user_login' => $line_display_name,
-                                'user_pass'  => wp_generate_password(),
-                                'nickname'   => $line_display_name,
-                            );
-                            $user_id = wp_insert_user($user_data);
-        
-                            if (!is_wp_error($user_id)) {
-                                // Save LINE user ID to user meta
-                                update_user_meta($user_id, 'line_user_id', $line_user_id);
-        
-                                // Log the user in
-                                wp_set_auth_cookie($user_id);
-                                wp_redirect(home_url());
-                                exit;
-                            } else {
-                                wp_die('User registration failed: ' . $user_id->get_error_message());
-                            }
-                        }
-*/                        
                     } else {
                         wp_die('Failed to retrieve LINE user profile.');
                     }

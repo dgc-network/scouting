@@ -164,7 +164,7 @@ if (!class_exists('line_login_api')) {
                         if ($user) {
                             // User exists, log them in
                             wp_set_auth_cookie($user->ID);
-                            wp_redirect(home_url());
+                            wp_redirect(home_url().'display-map/');
                             exit;
                         } else {
                             // Register a new user with the LINE ID

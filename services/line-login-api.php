@@ -161,7 +161,7 @@ if (!class_exists('line_login_api')) {
                         $users = $user_query->get_results();
                         $user = !empty($users) ? $users[0] : null;                        
                                                 
-                        wp_die('Display user profile: '.$user->display_name);
+                        //wp_die('Display user profile: '.$user->display_name);
 
                         // Check if user exists, log them in
                         if ($user && $user instanceof WP_User) {
@@ -178,6 +178,7 @@ if (!class_exists('line_login_api')) {
                             if (is_wp_error($user_signon)) {
                                 wp_die('Login failed: ' . $user_signon->get_error_message());
                             } else {
+                                wp_die('Display user_signon profile: '.$user_signon->display_name);
                                 wp_redirect(home_url());
                                 exit;
                             }

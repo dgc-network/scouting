@@ -13,12 +13,12 @@
  * Domain Path: /languages/
  */
 
-if (!defined('ABSPATH')) {
-    exit;
+ if (!session_id()) {
+    session_start();
 }
 
-if (!session_id()) {
-    session_start();
+if (!defined('ABSPATH')) {
+    exit;
 }
 
 

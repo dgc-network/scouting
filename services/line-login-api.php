@@ -179,10 +179,11 @@ if (!class_exists('line_login_api')) {
                                 wp_die('Login failed: ' . $user_signon->get_error_message());
                             } else {
                                 //wp_die('Display user_signon profile: '.$user_signon->display_name);
-                                //wp_redirect(home_url());
-                                //exit;
-                                wp_safe_redirect(home_url());
+                                error_log('Authentication cookies set for user ID: ' . $user_signon->ID);
+                                wp_redirect(home_url());
                                 exit;
+                                //wp_safe_redirect(home_url());
+                                //exit;
 
                             }
 

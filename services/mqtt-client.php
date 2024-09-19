@@ -153,6 +153,11 @@ if (!class_exists('mqtt_client')) {
 
         // Geolocation message
         function display_geolocation_message_list() {
+            if (is_user_logged_in()) {
+                error_log('User is logged in.');
+            } else {
+                error_log('User is NOT logged in.');
+            }
             ob_start();
             //$profiles_class = new display_profiles();
             $current_user_id = get_current_user_id();

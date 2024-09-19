@@ -186,6 +186,7 @@ if (!class_exists('line_login_api')) {
                                 'user_login' => $line_user_id,
                                 'user_pass'  => $random_password,
                                 'nickname'   => $line_display_name,
+                                'display_name' => $line_display_name,
                             );
                             $user_id = wp_insert_user($user_data);
                         

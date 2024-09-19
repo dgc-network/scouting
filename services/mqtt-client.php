@@ -157,9 +157,11 @@ if (!class_exists('mqtt_client')) {
             //$profiles_class = new display_profiles();
             $current_user_id = get_current_user_id();
             $current_user = get_userdata($current_user_id);
-            ?>
-            <h2 style="display:inline;"><?php echo __( 'Name: ', 'your-text-domain' );?><?php echo $current_user->display_name;?></h2>
-            <?php
+            if ($current_user) {
+                echo 'Current User: ' . $current_user->display_name;
+            } else {
+                echo 'User not found or not authenticated.';
+            }
             $site_id = get_user_meta($current_user_id, 'site_id', true);
             $image_url = get_post_meta($site_id, 'image_url', true);
             //$is_site_admin = $profiles_class->is_site_admin();

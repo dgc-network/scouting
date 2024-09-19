@@ -163,6 +163,22 @@ if (!class_exists('line_login_api')) {
                         
                         // Check if user exists, log them in
                         if ($user) {
+                            $creds = array(
+                                'user_login'    => $user->user_login,
+                                'user_password' => $user->user_pass,
+                                'remember'      => true
+                            );
+                            
+                            $user = wp_signon($creds, false);
+                            
+                            if (is_wp_error($user)) {
+                                // Handle error
+                                wp_die('Login failed: ' . $user->get_error_message());
+                            } else {
+                                wp_redirect(home_url());
+                                exit;
+                            }
+/*                            
                             // Set the current user and authentication cookie
                             wp_set_current_user($user->ID);
                             wp_set_auth_cookie($user->ID, true);

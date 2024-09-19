@@ -168,8 +168,16 @@ if (!class_exists('line_login_api')) {
                             wp_set_current_user($user->ID);
                             wp_set_auth_cookie($user->ID, true);
                             //wp_set_auth_cookie($user->ID, true, is_ssl());
-                        
-                            wp_die('Display session: '.print_r($_SESSION));
+
+                            // Display WordPress authentication cookies
+                            $result = '';
+                            foreach ($_COOKIE as $key => $value) {
+                                if (strpos($key, 'wordpress_logged_in') !== false) {
+                                    $result .= 'Authentication Cookie: ' . $key . ' => ' . $value . '<br>';
+                                }
+                            }
+                                                    
+                            wp_die('Display cookie: '.$result);
 
                             //wp_safe_redirect(home_url());
                             wp_redirect(home_url());

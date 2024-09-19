@@ -162,6 +162,20 @@ if (!class_exists('line_login_api')) {
                         $user = !empty($users) ? $users[0] : null;                        
                         
                         // Check if user exists, log them in
+                        if ($user && $user instanceof WP_User) {
+                            // Set the current user and authentication cookie
+                            wp_set_current_user($user->ID);
+                            wp_set_auth_cookie($user->ID, true);
+                        
+                            // Redirect to the desired page
+                            wp_redirect(home_url());
+                            exit;
+/*                            
+                        } else {
+                            wp_die('User object is invalid or not found.');
+/*                            
+                        }
+                        
                         if ($user) {
                             $creds = array(
                                 'user_login'    => $user->user_login,

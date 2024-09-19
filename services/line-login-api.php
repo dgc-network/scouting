@@ -162,10 +162,25 @@ if (!class_exists('line_login_api')) {
                         $user = !empty($users) ? $users[0] : null;                        
                         
                         if ($user) {
+                            $creds = array(
+                                'user_login'    => $user->user_login,
+                                'user_password' => null, // Since password is unknown, set it to null
+                                'remember'      => true,
+                            );
+                            $user_signon = wp_signon($creds, false);
+                            
+                            if (is_wp_error($user_signon)) {
+                                wp_die('Login failed: ' . $user_signon->get_error_message());
+                            } else {
+                                wp_redirect(home_url());
+                                exit;
+                            }
+/*                            
                             // User exists, log them in
                             wp_set_auth_cookie($user->ID);
                             wp_redirect(home_url().'/display-map/');
                             exit;
+*/                            
                         } else {
                             // Register a new user with the LINE ID
                             $user_data = array(

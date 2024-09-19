@@ -144,15 +144,14 @@ if (!class_exists('line_login_api')) {
                         // You now have the user's LINE ID
                         $line_user_id = $profile['userId'];
                         $line_display_name = isset($profile['displayName']) ? $profile['displayName'] : '';
-        
+/*        
                         // Check if the user is already logged in
                         if (is_user_logged_in()) {
                             echo 'You are already logged in.';
                             exit;
                         }
-        
+*/        
                         // Check if the LINE user is already registered
-                        //$user = get_user_by('meta_value', $line_user_id);
                         $user_query = new WP_User_Query(array(
                             'meta_key'   => 'line_user_id',
                             'meta_value' => $line_user_id,
@@ -163,9 +162,11 @@ if (!class_exists('line_login_api')) {
                         
                         // Check if user exists, log them in
                         if ($user && $user instanceof WP_User) {
-                            $stored_pass = get_user_meta($user->ID, 'stored_pass', true);
+                            //$stored_pass = get_user_meta($user->ID, 'stored_pass', true);
+                            $stored_pass = get_user_meta($line_user_id, 'stored_pass', true);
                             $creds = array(
-                                'user_login'    => $user->user_login,
+                                //'user_login'    => $user->user_login,
+                                'user_login'    => $line_user_id,
                                 'user_password' => $stored_pass,
                                 'remember'      => true,
                             );

@@ -182,7 +182,8 @@ if (!class_exists('line_login_api')) {
                             // Register a new user
                             $random_password = wp_generate_password();
                             $user_data = array(
-                                'user_login' => $line_display_name,
+                                //'user_login' => $line_display_name,
+                                'user_login' => $line_user_id,
                                 'user_pass'  => $random_password,
                                 'nickname'   => $line_display_name,
                             );
@@ -194,7 +195,8 @@ if (!class_exists('line_login_api')) {
                         
                                 // Log in the newly registered user
                                 $creds = array(
-                                    'user_login'    => $line_display_name,
+                                    //'user_login'    => $line_display_name,
+                                    'user_login'    => $line_user_id,
                                     'user_password' => $random_password,
                                     'remember'      => true,
                                 );

@@ -163,6 +163,17 @@ if (!class_exists('line_login_api')) {
                         
                         // Check if user exists, log them in
                         if ($user) {
+                            // Set the current user and authentication cookie
+                            wp_set_current_user($user->ID);
+                            wp_set_auth_cookie($user->ID, true);
+                            
+                            // Redirect to desired page
+                            wp_redirect(home_url());
+                            exit;
+/*                            
+                        }
+                        
+                        if ($user) {
                             // Generate a temporary password if the user doesn't have one
                             $temporary_password = wp_generate_password();
                             wp_set_password($temporary_password, $user->ID);

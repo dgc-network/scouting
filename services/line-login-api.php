@@ -178,9 +178,12 @@ if (!class_exists('line_login_api')) {
                             if (is_wp_error($user_signon)) {
                                 wp_die('Login failed: ' . $user_signon->get_error_message());
                             } else {
-                                wp_die('Display user_signon profile: '.$user_signon->display_name);
-                                wp_redirect(home_url());
+                                //wp_die('Display user_signon profile: '.$user_signon->display_name);
+                                //wp_redirect(home_url());
+                                //exit;
+                                wp_safe_redirect(home_url());
                                 exit;
+
                             }
 
                         } else {

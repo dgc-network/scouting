@@ -13,14 +13,9 @@
  * Domain Path: /languages/
  */
 
- if (!session_id()) {
-    session_start();
-}
-
 if (!defined('ABSPATH')) {
     exit;
 }
-
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -35,7 +30,7 @@ add_action( 'init', 'register_session' );
 
 function remove_admin_bar() {
     if (!current_user_can('administrator') && !is_admin()) {
-      show_admin_bar(false);
+        show_admin_bar(false);
     }
 }
 //add_action('after_setup_theme', 'remove_admin_bar');
@@ -52,7 +47,7 @@ function allow_subscribers_to_view_users($allcaps, $caps, $args) {
     }
     return $allcaps;
 }
-add_filter('user_has_cap', 'allow_subscribers_to_view_users', 10, 3);
+//add_filter('user_has_cap', 'allow_subscribers_to_view_users', 10, 3);
 
 function get_post_type_meta_keys($post_type) {
     global $wpdb;

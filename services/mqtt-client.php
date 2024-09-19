@@ -157,6 +157,9 @@ if (!class_exists('mqtt_client')) {
             //$profiles_class = new display_profiles();
             $current_user_id = get_current_user_id();
             $current_user = get_userdata($current_user_id);
+            ?>
+            <h2 style="display:inline;"><?php echo __( 'Name: ', 'your-text-domain' );?><?php echo $current_user->display_name;?></h2>
+            <?php
             $site_id = get_user_meta($current_user_id, 'site_id', true);
             $image_url = get_post_meta($site_id, 'image_url', true);
             //$is_site_admin = $profiles_class->is_site_admin();
@@ -167,7 +170,7 @@ if (!class_exists('mqtt_client')) {
 
                 ?>
                 <?php //echo display_iso_helper_logo();?>
-                <h2 style="display:inline;"><?php echo __( '座標訊息', 'your-text-domain' );?><?php echo $current_user->display_name;?></h2>
+                <h2 style="display:inline;"><?php echo __( '座標訊息', 'your-text-domain' );?></h2>
                 <fieldset>
                     <div style="display:flex; justify-content:space-between; margin:5px;">
                         <div><?php //$profiles_class->display_select_profile(5);?></div>                        

@@ -170,8 +170,8 @@ if (!class_exists('line_login_api')) {
                             //wp_set_auth_cookie($user->ID, true, is_ssl());
 
                             //wp_safe_redirect(home_url());
-                            wp_redirect(home_url());
-                            exit;
+                            //wp_redirect(home_url());
+                            //exit;
 /*                            
                         }
                         

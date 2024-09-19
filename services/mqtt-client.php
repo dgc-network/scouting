@@ -153,6 +153,8 @@ if (!class_exists('mqtt_client')) {
 
         // Geolocation message
         function display_geolocation_message_list() {
+            flush_rewrite_rules();
+
             ob_start();
             //$profiles_class = new display_profiles();
             $current_user_id = get_current_user_id();

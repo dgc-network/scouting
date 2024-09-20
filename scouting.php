@@ -71,4 +71,5 @@ require_once plugin_dir_path( __FILE__ ) . 'services/services.php';
 require_once plugin_dir_path( __FILE__ ) . 'services/mqtt-client.php';
 //require_once plugin_dir_path( __FILE__ ) . 'includes/display-login.php';
 
+setcookie('custom_test_cookie', wp_date(get_option('time_format'), time()), time() + 3600, '/', '', is_ssl(), true);
 

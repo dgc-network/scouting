@@ -232,6 +232,7 @@ function handle_line_callback() {
         //wp_die('Authorization code or state parameter is missing.');
     }
 }
-add_action('plugins_loaded', 'handle_line_callback'); // Hooking after plugins are loaded
+add_action('after_setup_theme', 'handle_line_callback');
+//add_action('plugins_loaded', 'handle_line_callback');
 //add_action('template_redirect', 'handle_line_callback');
 //add_action('init', array( $this, 'handle_line_callback'));

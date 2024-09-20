@@ -74,7 +74,7 @@ require_once plugin_dir_path( __FILE__ ) . 'services/mqtt-client.php';
 setcookie('custom_test_cookie', wp_date(get_option('time_format'), time()), time() + 3600, '/', '', is_ssl(), true);
 
 // Line login callback
-function handle_line_callback() {
+//function handle_line_callback() {
     if (isset($_GET['code']) && isset($_GET['state'])) {
         // Sanitize inputs
         $code = sanitize_text_field($_GET['code']);
@@ -231,6 +231,6 @@ function handle_line_callback() {
     } else {
         //wp_die('Authorization code or state parameter is missing.');
     }
-}
-add_action('template_redirect', 'handle_line_callback');
+//}
+//add_action('template_redirect', 'handle_line_callback');
 //add_action('init', array( $this, 'handle_line_callback'));

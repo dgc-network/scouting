@@ -169,7 +169,13 @@ if (!class_exists('mqtt_client')) {
             }
             echo '<br>';
 
-            setcookie('custom_test_cookie', wp_date(get_option('time_format'), time()), time() + 3600, '/', '', is_ssl(), true);
+            if (headers_sent()) {
+                wp_die('Headers already sent. Cannot set cookie.');
+            } else {
+                setcookie('custom_test_cookie', 'new_custom_value', time() + 3600, '/', '', is_ssl(), true);
+            }
+            
+            //setcookie('custom_test_cookie', wp_date(get_option('time_format'), time()), time() + 3600, '/', '', is_ssl(), true);
             if (isset($_COOKIE['custom_test_cookie'])) {
                 echo 'Custom Test Cookie: ' . $_COOKIE['custom_test_cookie'] . '<br>';
             } else {

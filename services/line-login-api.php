@@ -161,7 +161,7 @@ if (!class_exists('line_login_api')) {
                         $users = $user_query->get_results();
                         $user = !empty($users) ? $users[0] : null;                        
                                                 
-                        wp_die('Display user profile: '.$user->display_name);
+                        //wp_die('Display user profile: '.$user->display_name);
 
                         // Check if user exists, log them in
                         if ($user && $user instanceof WP_User) {
@@ -176,11 +176,13 @@ if (!class_exists('line_login_api')) {
                                     $result .= 'Authentication Cookie: ' . $key . ' => ' . $value . '<br>';
                                 }
                             }                                                    
-                            wp_die('Display cookie: '.$result);
+                            //wp_die('Display cookie: '.$result);
 
                             //wp_safe_redirect(home_url());
-                            wp_redirect(home_url());
-                            exit;
+                            //wp_redirect(home_url());
+                            //exit;
+                            ?><script>window.location.replace("/display-map/");</script><?php
+
 /*                            
                         }
                         

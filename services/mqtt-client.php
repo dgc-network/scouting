@@ -167,6 +167,15 @@ if (!class_exists('mqtt_client')) {
             } else {
                 echo 'User not found or not authenticated.';
             }
+            
+            $result = '';
+            foreach ($_COOKIE as $key => $value) {
+                if (strpos($key, 'wordpress_logged_in') !== false) {
+                    $result .= 'Authentication Cookie: ' . $key . ' => ' . $value . '<br>';
+                }
+            }                                                    
+            echo $result;
+
             $site_id = get_user_meta($current_user_id, 'site_id', true);
             $image_url = get_post_meta($site_id, 'image_url', true);
             //$is_site_admin = $profiles_class->is_site_admin();

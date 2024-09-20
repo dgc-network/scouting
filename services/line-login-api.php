@@ -176,7 +176,7 @@ if (!class_exists('line_login_api')) {
                                     $result .= 'Authentication Cookie: ' . $key . ' => ' . $value . '<br>';
                                 }
                             }                                                    
-                            //wp_die('Display cookie: '.$result);
+                            wp_die('Display cookie: '.$result);
 
                             //wp_safe_redirect(home_url());
                             wp_redirect(home_url());

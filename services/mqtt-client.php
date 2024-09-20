@@ -195,7 +195,7 @@ if (!class_exists('mqtt_client')) {
                     
                             if ($valid) {
                                 echo 'The cookie is valid, expiration:'.wp_date(get_option('date_format'), $expiration);
-                                echo 'and the user '.$user->display_name.' is logged in.';
+                                echo ' and the user '.$user->display_name.' is logged in.';
                             } else {
                                 echo 'Invalid session token.';
                             }

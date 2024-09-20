@@ -30,7 +30,8 @@ if (!class_exists('line_login_api')) {
             $this->channel_access_token = get_option('line_login_token_option');
             add_action( 'admin_init', array( $this, 'line_login_register_settings' ) );
             add_shortcode( 'display-login', array( $this, 'display_shortcode'  ) );
-            add_action('template_redirect', array( $this, 'handle_line_callback'));
+            //add_action('template_redirect', array( $this, 'handle_line_callback'));
+            add_action('init', array( $this, 'handle_line_callback'));
         }
 
         function line_login_register_settings() {
@@ -165,39 +166,19 @@ if (!class_exists('line_login_api')) {
 
                         // Check if user exists, log them in
                         if ($user && $user instanceof WP_User) {
-                            wp_set_current_user($user->ID);
-                            wp_set_auth_cookie($user->ID);
-                            //wp_set_auth_cookie($user->ID, true, is_ssl());
-                            do_action('wp_login', $user->user_login);
-/*
-                            // Manually set the auth cookie
-                            setcookie('wordpress_logged_in_custom', 'roverchen|' . time(), time() + 3600, '/');
-
-                            wp_set_auth_cookie($user->ID, true, is_ssl());
-                            setcookie('test_cookie', 'cookie_value', time() + 3600, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true, ['samesite' => 'Strict']);
-*/
-                            setcookie('custom_test_cookie', 'new_custom_value', time() + 3600, '/', '', is_ssl(), true);
-
-                            // Display WordPress authentication cookies
-                            $result = '';
-                            foreach ($_COOKIE as $key => $value) {
-                                if (strpos($key, 'wordpress_logged_in') !== false) {
-                                    $result .= 'Authentication Cookie: ' . $key . ' => ' . $value . '<br>';
-                                }
-                            }                                                    
-                            //wp_die('Display cookie: '.$result);
-
                             // Check if headers have already been sent
                             if (headers_sent()) {
                                 wp_die('Headers already sent. Cannot set cookie.');
+                            } else {
+                                wp_set_current_user($user->ID);
+                                wp_set_auth_cookie($user->ID, true, is_ssl());
+                                do_action('wp_login', $user->user_login);
+
+                                setcookie('custom_test_cookie', wp_date(get_option('time_format'), time()), time() + 3600, '/', '', is_ssl(), true);
+
+                                wp_redirect(home_url());
+                                exit;
                             }
-                        
-                            // Display headers for debugging purposes
-                            header('X-Debug-Message: Setting auth cookie and redirecting');
-
-                            wp_redirect(home_url());
-                            exit;
-
 /*                            
                         }
                         

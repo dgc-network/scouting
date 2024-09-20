@@ -172,7 +172,8 @@ if (!class_exists('mqtt_client')) {
             $result = '';
             foreach ($_COOKIE as $key => $value) {
                 if (strpos($key, 'wordpress_logged_in') !== false) {
-                    $result .= 'Authentication Cookie: ' . $key . ' => ' . $value . '<br>';
+                    //$result .= 'Authentication Cookie: ' . $key . ' => ' . $value . '<br>';
+                    echo 'Authentication Cookie: ' . $key . ' => ' . $value . '<br>';
 
                     //$auth_cookie = $_COOKIE['wordpress_logged_in_b392295a386c8a4cf253989e195f9787'] ?? '';
                     $auth_cookie = $_COOKIE[$key] ?? '';
@@ -205,7 +206,7 @@ if (!class_exists('mqtt_client')) {
         
                 }
             }                                                    
-            echo $result;
+            //echo $result;
 
             $site_id = get_user_meta($current_user_id, 'site_id', true);
             $image_url = get_post_meta($site_id, 'image_url', true);

@@ -8,8 +8,6 @@ if (!class_exists('mqtt_client')) {
 
         public function __construct() {
 
-            setcookie('custom_test_cookie', wp_date(get_option('time_format'), time()+get_option('gmt_offset')), time() + 3600, '/', '', is_ssl(), true);
-
             add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_mqtt_client_scripts' ) );
             add_shortcode( 'display-map', array( $this, 'display_geolocation_message_list'  ) );
 
@@ -171,6 +169,7 @@ if (!class_exists('mqtt_client')) {
             }
             echo '<br>';
 
+            setcookie('custom_test_cookie', wp_date(get_option('time_format'), time()), time() + 3600, '/', '', is_ssl(), true);
             if (isset($_COOKIE['custom_test_cookie'])) {
                 echo 'Custom Test Cookie: ' . $_COOKIE['custom_test_cookie'] . '<br>';
             } else {

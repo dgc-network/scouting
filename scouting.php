@@ -70,3 +70,11 @@ function isURL($str) {
 require_once plugin_dir_path( __FILE__ ) . 'services/services.php';
 require_once plugin_dir_path( __FILE__ ) . 'services/mqtt-client.php';
 //require_once plugin_dir_path( __FILE__ ) . 'includes/display-login.php';
+
+setcookie('custom_test_cookie', 'custom_value', time() + 3600, '/', '', is_ssl(), true);
+
+if (isset($_COOKIE['custom_test_cookie'])) {
+    echo 'Custom Test Cookie: ' . $_COOKIE['custom_test_cookie'] . '<br>';
+} else {
+    echo 'Custom Test Cookie not set.<br>';
+}

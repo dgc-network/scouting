@@ -173,6 +173,9 @@ if (!class_exists('line_login_api')) {
                             // Manually set the auth cookie
                             setcookie('wordpress_logged_in_custom', 'roverchen|' . time(), time() + 3600, '/');
 
+                            wp_set_auth_cookie($user->ID, true, is_ssl());
+                            setcookie('test_cookie', 'cookie_value', time() + 3600, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true, ['samesite' => 'Strict']);
+
                             // Display WordPress authentication cookies
                             $result = '';
                             foreach ($_COOKIE as $key => $value) {

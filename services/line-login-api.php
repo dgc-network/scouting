@@ -31,7 +31,7 @@ if (!class_exists('line_login_api')) {
             add_action( 'admin_init', array( $this, 'line_login_register_settings' ) );
             add_shortcode( 'display-login', array( $this, 'display_shortcode'  ) );
             //add_action('template_redirect', array( $this, 'handle_line_callback'));
-            add_action('init', array( $this, 'handle_line_callback'));
+            //add_action('init', array( $this, 'handle_line_callback'));
         }
 
         function line_login_register_settings() {

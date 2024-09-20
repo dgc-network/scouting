@@ -176,12 +176,18 @@ if (!class_exists('line_login_api')) {
                                     $result .= 'Authentication Cookie: ' . $key . ' => ' . $value . '<br>';
                                 }
                             }                                                    
-                            wp_die('Display cookie: '.$result);
+                            //wp_die('Display cookie: '.$result);
 
-                            //wp_safe_redirect(home_url());
+                            // Check if headers have already been sent
+                            if (headers_sent()) {
+                                wp_die('Headers already sent. Cannot set cookie.');
+                            }
+                        
+                            // Display headers for debugging purposes
+                            header('X-Debug-Message: Setting auth cookie and redirecting');
+
                             wp_redirect(home_url());
                             exit;
-                            ?><script>window.location.replace("/display-map/");</script><?php
 
 /*                            
                         }

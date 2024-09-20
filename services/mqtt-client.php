@@ -173,37 +173,40 @@ if (!class_exists('mqtt_client')) {
             foreach ($_COOKIE as $key => $value) {
                 if (strpos($key, 'wordpress_logged_in') !== false) {
                     $result .= 'Authentication Cookie: ' . $key . ' => ' . $value . '<br>';
+
+                    //$auth_cookie = $_COOKIE['wordpress_logged_in_b392295a386c8a4cf253989e195f9787'] ?? '';
+                    $auth_cookie = $_COOKIE[$key] ?? '';
+                    if ($auth_cookie) {
+                        list($username, $expiration, $token, $hmac) = explode('|', $auth_cookie);
+                    
+                        // Verify the expiration time
+                        if ($expiration < time()) {
+                            echo 'The cookie has expired.';
+                        }
+                    
+                        // Fetch the user by username
+                        $user = get_user_by('login', $username);
+                    
+                        if ($user) {
+                            // Fetch the session token from WordPress
+                            $session_manager = WP_Session_Tokens::get_instance($user->ID);
+                            $valid = $session_manager->verify($token);
+                    
+                            if ($valid) {
+                                echo 'The cookie is valid, and the user is logged in.';
+                            } else {
+                                echo 'Invalid session token.';
+                            }
+                        } else {
+                            echo 'User not found.';
+                        }
+                    }
+                    
+        
                 }
             }                                                    
             echo $result;
 
-            $auth_cookie = $_COOKIE['wordpress_logged_in_b392295a386c8a4cf253989e195f9787'] ?? '';
-            if ($auth_cookie) {
-                list($username, $expiration, $token, $hmac) = explode('|', $auth_cookie);
-            
-                // Verify the expiration time
-                if ($expiration < time()) {
-                    echo 'The cookie has expired.';
-                }
-            
-                // Fetch the user by username
-                $user = get_user_by('login', $username);
-            
-                if ($user) {
-                    // Fetch the session token from WordPress
-                    $session_manager = WP_Session_Tokens::get_instance($user->ID);
-                    $valid = $session_manager->verify($token);
-            
-                    if ($valid) {
-                        echo 'The cookie is valid, and the user is logged in.';
-                    } else {
-                        echo 'Invalid session token.';
-                    }
-                } else {
-                    echo 'User not found.';
-                }
-            }
-            
             $site_id = get_user_meta($current_user_id, 'site_id', true);
             $image_url = get_post_meta($site_id, 'image_url', true);
             //$is_site_admin = $profiles_class->is_site_admin();

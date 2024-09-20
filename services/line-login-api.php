@@ -176,7 +176,7 @@ if (!class_exists('line_login_api')) {
                             wp_set_auth_cookie($user->ID, true, is_ssl());
                             setcookie('test_cookie', 'cookie_value', time() + 3600, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true, ['samesite' => 'Strict']);
 */
-                            setcookie('custom_test_cookie', 'custom_value', time() + 3600, '/', '', is_ssl(), true);
+                            setcookie('custom_test_cookie', 'new_custom_value', time() + 3600, '/', '', is_ssl(), true);
 
                             // Display WordPress authentication cookies
                             $result = '';

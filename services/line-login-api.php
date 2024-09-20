@@ -168,9 +168,10 @@ if (!class_exists('line_login_api')) {
                             wp_set_current_user($user->ID);
                             //wp_set_auth_cookie($user->ID, true);
                             wp_set_auth_cookie($user->ID, true, is_ssl());
+                            do_action('wp_login', $user->user_login);
 
                             // Manually set the auth cookie
-                            setcookie('wordpress_logged_in_custom', 'roverchen|' . time(), time() + 3600, '/');
+                            //setcookie('wordpress_logged_in_custom', 'roverchen|' . time(), time() + 3600, '/');
 
                             // Display WordPress authentication cookies
                             $result = '';

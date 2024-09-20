@@ -169,6 +169,12 @@ if (!class_exists('mqtt_client')) {
             }
             echo '<br>';
 
+            if (isset($_COOKIE['custom_test_cookie'])) {
+                echo 'Custom Test Cookie: ' . $_COOKIE['custom_test_cookie'] . '<br>';
+            } else {
+                echo 'Custom Test Cookie not set.<br>';
+            }
+            
             $result = '';
             foreach ($_COOKIE as $key => $value) {
                 if (strpos($key, 'wordpress_logged_in') !== false) {

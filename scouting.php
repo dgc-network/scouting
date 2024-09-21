@@ -73,29 +73,6 @@ require_once plugin_dir_path( __FILE__ ) . 'services/mqtt-client.php';
 
 setcookie('custom_test_cookie', wp_date(get_option('time_format'), time()), time() + 3600, '/', '', is_ssl(), true);
 
-add_action('init', 'set_custom_cookie');
-function set_custom_cookie() {
-    if (isset($_GET['code']) && isset($_GET['state'])) {
-        if (headers_sent()) {
-            error_log('Headers already sent before setting cookie.');
-        } else {
-            setcookie('custom_cookie_name', 'cookie_value', time() + 3600, '/');
-            error_log('Cookie was set.');
-        }        
-    }
-}
-
-if (isset($_GET['code']) && isset($_GET['state'])) {
-/*    
-    setcookie('custom_test_cookie', wp_date(get_option('time_format'), time()), time() + 3600, '/', '', is_ssl(), true);
-    //wp_set_current_user(8);
-    //wp_set_auth_cookie(8, true);
-    wp_redirect(home_url());
-    exit;
-*/    
-}
-
-// Line login callback
 function handle_line_callback() {
     if (isset($_GET['code']) && isset($_GET['state'])) {
         // Sanitize inputs
@@ -107,9 +84,6 @@ function handle_line_callback() {
         if ($state !== $stored_state) {
             wp_die('Invalid state parameter. Possible CSRF attack.');
         }
-        
-        // Remove the transient as it's no longer needed
-        delete_transient('line_login_state');
 
         // Exchange authorization code for access token
         $response = wp_remote_post('https://api.line.me/oauth2/v2.1/token', array(
@@ -146,100 +120,56 @@ function handle_line_callback() {
             $profile = json_decode(wp_remote_retrieve_body($profile_response), true);
 
             if (isset($profile['userId'])) {
-                // You now have the user's LINE ID
+                // Now you have the LINE user's ID and other info
                 $line_user_id = $profile['userId'];
                 $line_display_name = isset($profile['displayName']) ? $profile['displayName'] : '';
-                //wp_die('Display LINE profile: '.$line_display_name);
-/*        
-                // Check if the user is already logged in
-                if (is_user_logged_in()) {
-                    echo 'You are already logged in.';
-                    exit;
-                }
-*/        
-                // Check if the LINE user is already registered
+
+                // Now, perform user authentication (or registration if user doesn't exist)
                 $user_query = new WP_User_Query(array(
                     'meta_key'   => 'line_user_id',
                     'meta_value' => $line_user_id,
                 ));
-                
+
                 $users = $user_query->get_results();
-                $user = !empty($users) ? $users[0] : null;                        
-                                        
-                //wp_die('Display user profile: '.$user->display_name);
+                $user = !empty($users) ? $users[0] : null;
 
-                // Check if user exists, log them in
                 if ($user && $user instanceof WP_User) {
-                    // Check if headers have already been sent
-                    if (headers_sent()) {
-                        wp_die('Headers already sent. Cannot set cookie.');
-                    } else {
-                        wp_set_current_user($user->ID);
-                        wp_set_auth_cookie($user->ID, true, is_ssl());
-                        do_action('wp_login', $user->user_login);
+                    // Set the user in the session manually via custom cookie
+                    $user_id = $user->ID;
+                    $expiration = time() + (3600 * 24);  // 1 day expiration
 
-                        setcookie('custom_test_cookie', wp_date(get_option('time_format'), time()), time() + 3600, '/', '', is_ssl(), true);
+                    // Set a custom authentication cookie manually
+                    $auth_cookie_value = base64_encode($user->user_login . '|' . $expiration . '|' . wp_hash_password($user->user_pass));
+                    
+                    // Manually setting the custom cookie
+                    header('Set-Cookie: custom_auth_cookie=' . $auth_cookie_value . '; Path=/; HttpOnly; Secure=' . (is_ssl() ? 'true' : 'false') . '; SameSite=Strict; Expires=' . gmdate('D, d-M-Y H:i:s T', $expiration));
 
-                        wp_redirect(home_url());
-                        exit;
-                    }
-/*                            
-                }
-                
-                if ($user && $user instanceof WP_User) {
-                    $stored_pass = get_user_meta($user->ID, 'stored_pass', true);
-                    //$stored_pass = get_user_meta($line_user_id, 'stored_pass', true);
-                    $creds = array(
-                        //'user_login'    => $user->user_login,
-                        'user_login'    => $line_user_id,
-                        'user_password' => $stored_pass,
-                        'remember'      => true,
-                    );
-                    $user_signon = wp_signon($creds, false);
-                
-                    if (is_wp_error($user_signon)) {
-                        wp_die('Login failed: ' . $user_signon->get_error_message());
-                    } else {
-                        //wp_die('Display user_signon profile: '.$user_signon->display_name);
-                        error_log('Authentication cookies set for user ID: ' . $user_signon->ID);
-                        wp_redirect(home_url());
-                        exit;
-                        //wp_safe_redirect(home_url());
-                        //exit;
-
-                    }
-*/
+                    // Redirect the user after setting the cookie
+                    wp_redirect(home_url());
+                    exit;
                 } else {
-                    // Register a new user
+                    // User does not exist, handle registration
                     $random_password = wp_generate_password();
                     $user_data = array(
-                        //'user_login' => $line_display_name,
                         'user_login' => $line_user_id,
                         'user_pass'  => $random_password,
                         'nickname'   => $line_display_name,
                         'display_name' => $line_display_name,
                     );
                     $user_id = wp_insert_user($user_data);
-                
+
                     if (!is_wp_error($user_id)) {
                         update_user_meta($user_id, 'line_user_id', $line_user_id);
                         update_user_meta($user_id, 'stored_pass', $random_password);
-                
-                        // Log in the newly registered user
-                        $creds = array(
-                            //'user_login'    => $line_display_name,
-                            'user_login'    => $line_user_id,
-                            'user_password' => $random_password,
-                            'remember'      => true,
-                        );
-                        $user_signon = wp_signon($creds, false);
-                
-                        if (is_wp_error($user_signon)) {
-                            wp_die('Login failed: ' . $user_signon->get_error_message());
-                        } else {
-                            wp_redirect(home_url());
-                            exit;
-                        }
+
+                        // After user registration, set the cookie for the new user
+                        $auth_cookie_value = base64_encode($line_user_id . '|' . $expiration . '|' . wp_hash_password($random_password));
+
+                        header('Set-Cookie: custom_auth_cookie=' . $auth_cookie_value . '; Path=/; HttpOnly; Secure=' . (is_ssl() ? 'true' : 'false') . '; SameSite=Strict; Expires=' . gmdate('D, d-M-Y H:i:s T', $expiration));
+
+                        // Redirect the user after setting the cookie
+                        wp_redirect(home_url());
+                        exit;
                     } else {
                         wp_die('User registration failed: ' . $user_id->get_error_message());
                     }
@@ -250,92 +180,24 @@ function handle_line_callback() {
         } else {
             wp_die('Failed to get access token from LINE.');
         }
-    } else {
-        //wp_die('Authorization code or state parameter is missing.');
     }
 }
-//add_action('after_setup_theme', 'handle_line_callback');
-//add_action('plugins_loaded', 'handle_line_callback');
-//add_action('template_redirect', 'handle_line_callback');
-//add_action('init', array( $this, 'handle_line_callback'));
+add_action('init', 'handle_line_callback');
 
-function wpse_356655_custom_auth_callback() {
-    if (isset($_GET['code']) && isset($_GET['state'])) {
-        $users = get_users(); // Fetch all users
+add_action('init', function () {
+    if (isset($_COOKIE['custom_auth_cookie'])) {
+        $cookie_value = $_COOKIE['custom_auth_cookie'];
+        list($user_login, $expiration, $hash) = explode('|', base64_decode($cookie_value));
 
-        if (!empty($users)) {
-            // Ensure there is at least one user before accessing the array
-            $user_to_login = $users[1];
-        
-            // You can now safely work with $user_to_login
-            //wp_set_current_user($user_to_login->ID);
-            //wp_set_auth_cookie($user_to_login->ID, true);
-            //do_action('wp_login', $user_to_login->user_login);
-        
-            wp_set_current_user(8);
-            wp_set_auth_cookie(8, true);
-            wp_redirect(home_url());
-            exit;
-        } else {
-            // Handle the case where no users are found
-            wp_die('No users found.');
+        // Validate expiration
+        if (time() < $expiration) {
+            // Fetch the user by their login name
+            $user = get_user_by('login', $user_login);
+            
+            if ($user && wp_check_password($user->user_pass, $hash)) {
+                // If user exists and the password is valid, set current user
+                wp_set_current_user($user->ID);
+            }
         }
     }
-}
-//add_action( 'plugins_loaded', 'wpse_356655_custom_auth_callback' );
-//add_action( 'init', 'wpse_356655_custom_auth_callback' );
-
-//add_action('init', 'wpse_custom_auth_callback');
-function wpse_custom_auth_callback() {
-    if (isset($_GET['code']) && isset($_GET['state'])) {
-        $user_to_login = get_user_by('ID', 1); // Use User ID 1 directly
-
-        if ($user_to_login) {
-            // Set the current user and handle authentication
-            //wp_set_current_user($user_to_login->ID);
-            //wp_set_auth_cookie($user_to_login->ID, true);
-/*        
-            // Manually set cookies to bypass header issues
-            add_action('set_auth_cookie', function ($cookie) {
-                $cookie_name = is_ssl() ? SECURE_AUTH_COOKIE : AUTH_COOKIE;
-                $_COOKIE[$cookie_name] = $cookie;
-            });
-        
-            add_action('set_logged_in_cookie', function ($cookie) {
-                $_COOKIE[LOGGED_IN_COOKIE] = $cookie;
-            });
-*/        
-            custom_auth_function($user_to_login->ID);
-            wp_redirect(home_url());
-            exit;
-        } else {
-            wp_die('User not found.');
-        }
-    }
-}
-
-function custom_auth_function($user_id) {
-    $expiration = time() + apply_filters('auth_cookie_expiration', 1209600, $user_id, true);
-    $expire = $expiration + (12 * 3600);
-    $secure = is_ssl();
-    
-    // Generate the authentication cookie for the user
-    $auth_cookie = wp_generate_auth_cookie($user_id, $expiration, 'auth');
-    
-    // Manually set the cookie
-    setcookie(AUTH_COOKIE, $auth_cookie, $expire, COOKIEPATH, COOKIE_DOMAIN, $secure, true);
-    
-    // Set the logged-in cookie as well
-    $logged_in_cookie = wp_generate_auth_cookie($user_id, $expiration, 'logged_in');
-    setcookie(LOGGED_IN_COOKIE, $logged_in_cookie, $expire, COOKIEPATH, COOKIE_DOMAIN, $secure, true);
-    
-    // Optionally set the secure authentication cookie
-    if ($secure) {
-        $secure_auth_cookie = wp_generate_auth_cookie($user_id, $expiration, 'secure_auth');
-        setcookie(SECURE_AUTH_COOKIE, $secure_auth_cookie, $expire, COOKIEPATH, COOKIE_DOMAIN, true, true);
-    }
-    
-    // Set the current user and ensure everything is ready
-    wp_set_current_user($user_id);
-    do_action('wp_login', $user_id);  // Trigger the wp_login action
-}
+});

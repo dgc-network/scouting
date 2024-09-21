@@ -184,7 +184,7 @@ if (!class_exists('mqtt_client')) {
 */            
             $result = '';
             foreach ($_COOKIE as $key => $value) {
-                //if (strpos($key, 'wordpress_logged_in') !== false) {
+                if (strpos($key, 'wordpress_logged_in') !== false) {
                     //$result .= 'Authentication Cookie: ' . $key . ' => ' . $value . '<br>';
                     echo 'Cookie: ' . $key . ' => ' . $value . '<br>';
 
@@ -217,9 +217,7 @@ if (!class_exists('mqtt_client')) {
                         }
                     }
                     echo '<br>';
-
-        
-                //}
+                }
             }                                                    
             //echo $result;
 

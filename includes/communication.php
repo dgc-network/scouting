@@ -14,7 +14,7 @@ function oa_social_login_callback()
         if ($user_data !== false)
         {            
             // Hooks to be used by third parties.
-            //do_action('oa_social_login_action_before_user_login', $user_data, $identity, $new_registration);
+            do_action('oa_social_login_action_before_user_login', $user_data, $identity, $new_registration);
 
             // Update user thumbnail.
             if (!empty($user_thumbnail))

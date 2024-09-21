@@ -140,7 +140,8 @@ function handle_line_callback() {
 
                     // Set a custom authentication cookie manually
                     $auth_cookie_value = base64_encode($user->user_login . '|' . $expiration . '|' . wp_hash_password($user->user_pass));
-                    
+                    wp_die('Set a custom authentication cookie: ' . $auth_cookie_value);
+
                     // Manually setting the custom cookie
                     header('Set-Cookie: custom_auth_cookie=' . $auth_cookie_value . '; Path=/; HttpOnly; Secure=' . (is_ssl() ? 'true' : 'false') . '; SameSite=Strict; Expires=' . gmdate('D, d-M-Y H:i:s T', $expiration));
 
@@ -183,7 +184,7 @@ function handle_line_callback() {
     }
 }
 add_action('init', 'handle_line_callback');
-
+/*
 add_action('init', function () {
     if (isset($_COOKIE['custom_auth_cookie'])) {
         $cookie_value = $_COOKIE['custom_auth_cookie'];
@@ -201,3 +202,4 @@ add_action('init', function () {
         }
     }
 });
+*/

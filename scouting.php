@@ -73,13 +73,19 @@ require_once plugin_dir_path( __FILE__ ) . 'services/mqtt-client.php';
 
 setcookie('custom_test_cookie', wp_date(get_option('time_format'), time()), time() + 3600, '/', '', is_ssl(), true);
 
-if (isset($_GET['code']) && isset($_GET['state'])) {
+add_action('init', 'set_custom_cookie');
+function set_custom_cookie() {
+    if (isset($_GET['code']) && isset($_GET['state'])) {
+        if (headers_sent()) {
+            error_log('Headers already sent before setting cookie.');
+        } else {
+            setcookie('custom_cookie_name', 'cookie_value', time() + 3600, '/');
+            error_log('Cookie was set.');
+        }        
+    }
+}
 
-    add_action('template_redirect', function () {
-        $user_id = 1; // Example user ID
-        wp_set_current_user($user_id);
-        wp_set_auth_cookie($user_id, true, is_ssl());
-    });
+if (isset($_GET['code']) && isset($_GET['state'])) {
 /*    
     setcookie('custom_test_cookie', wp_date(get_option('time_format'), time()), time() + 3600, '/', '', is_ssl(), true);
     //wp_set_current_user(8);

@@ -260,4 +260,5 @@ function wpse_356655_custom_auth_callback() {
         }
     }
 }
-add_action( 'plugins_loaded', 'wpse_356655_custom_auth_callback' );
+//add_action( 'plugins_loaded', 'wpse_356655_custom_auth_callback' );
+add_action( 'init', 'wpse_356655_custom_auth_callback' );

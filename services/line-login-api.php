@@ -30,7 +30,7 @@ if (!class_exists('line_login_api')) {
             $this->channel_access_token = get_option('line_login_token_option');
             add_action( 'admin_init', array( $this, 'line_login_register_settings' ) );
             add_shortcode( 'display-login', array( $this, 'display_shortcode'  ) );
-            //add_action('template_redirect', array( $this, 'handle_line_callback'));
+            add_action('template_redirect', array( $this, 'handle_line_callback'));
             //add_action('init', array( $this, 'handle_line_callback'));
         }
 
@@ -170,7 +170,12 @@ if (!class_exists('line_login_api')) {
                             if (headers_sent()) {
                                 wp_die('Headers already sent. Cannot set cookie.');
                             } else {
-                                wp_set_current_user($user->ID);
+                                // Set the cookie and login.
+                                wp_clear_auth_cookie();
+                                //wp_set_auth_cookie($user_data->ID, true);
+                                //do_action('wp_login', $user_data->user_login, $user_data);
+        
+                                //wp_set_current_user($user->ID);
                                 wp_set_auth_cookie($user->ID, true, is_ssl());
                                 do_action('wp_login', $user->user_login);
 

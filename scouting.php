@@ -277,11 +277,10 @@ function wpse_custom_auth_callback() {
         $user_to_login = get_user_by('ID', 1); // Use User ID 1 directly
 
         if ($user_to_login) {
-            custom_auth_function($user_to_login->ID);
             // Set the current user and handle authentication
-            wp_set_current_user($user_to_login->ID);
+            //wp_set_current_user($user_to_login->ID);
             //wp_set_auth_cookie($user_to_login->ID, true);
-        
+/*        
             // Manually set cookies to bypass header issues
             add_action('set_auth_cookie', function ($cookie) {
                 $cookie_name = is_ssl() ? SECURE_AUTH_COOKIE : AUTH_COOKIE;
@@ -291,7 +290,8 @@ function wpse_custom_auth_callback() {
             add_action('set_logged_in_cookie', function ($cookie) {
                 $_COOKIE[LOGGED_IN_COOKIE] = $cookie;
             });
-        
+*/        
+            custom_auth_function($user_to_login->ID);
             wp_redirect(home_url());
             exit;
         } else {

@@ -188,6 +188,7 @@ add_action('init', 'handle_line_callback', 1);
 add_action('init', function () {
     if (isset($_COOKIE['custom_auth_cookie'])) {
         $cookie_value = $_COOKIE['custom_auth_cookie'];
+        wp_die('Cookie value: '.$cookie_value);
         list($user_login, $expiration, $hash) = explode('|', base64_decode($cookie_value));
 
         // Validate expiration
@@ -196,7 +197,6 @@ add_action('init', function () {
             $user = get_user_by('login', $user_login);
             
             if ($user && wp_check_password($user->user_pass, $hash)) {
-                wp_die('Cookie value: '.$cookie_value);
                 // If user exists and the password is valid, set current user
                 wp_set_current_user($user->ID);
             }

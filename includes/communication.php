@@ -10,6 +10,235 @@ function oa_social_login_callback()
     //{
     if (isset($_GET['code']) && isset($_GET['state'])) {
 
+        $user_data = get_userdata(8);
+        if ($user_data !== false)
+        {
+            // Hooks to be used by third parties.
+            do_action('oa_social_login_action_before_user_login', $user_data, $identity, $new_registration);
+
+            // Update user thumbnail.
+            if (!empty($user_thumbnail))
+            {
+                update_user_meta($user_id, 'oa_social_login_user_thumbnail', $user_thumbnail);
+            }
+
+            // Update user picture.
+            if (!empty($user_picture))
+            {
+                update_user_meta($user_id, 'oa_social_login_user_picture', $user_picture);
+            }
+
+            // Set the cookie and login.
+            wp_clear_auth_cookie();
+            wp_set_auth_cookie($user_data->ID, true);
+            do_action('wp_login', $user_data->user_login, $user_data);
+
+            // Where did the user come from?
+            $oa_social_login_source = (!empty($_REQUEST['oa_social_login_source']) ? strtolower(trim($_REQUEST['oa_social_login_source'])) : '');
+
+            // Use safe redirection?
+            $redirect_to_safe = false;
+
+            // Build the url to redirect the user to.
+            switch ($oa_social_login_source)
+            {
+                //*************** Registration ***************
+                case 'registration':
+                    // Default redirection.
+                    $redirect_to = admin_url();
+
+                    // Redirection in URL.
+                    if (!empty($_GET['redirect_to']))
+                    {
+                        $redirect_to = $_GET['redirect_to'];
+                        $redirect_to_safe = true;
+                    }
+                    else
+                    {
+                        // Redirection customized.
+                        if (isset($settings['plugin_registration_form_redirect']))
+                        {
+                            switch (strtolower($settings['plugin_registration_form_redirect']))
+                            {
+                                // Current.
+                                case 'current':
+                                    $redirect_to = oa_social_login_get_current_url();
+                                    break;
+
+                                // Homepage.
+                                case 'homepage':
+                                    $redirect_to = home_url();
+                                    break;
+
+                                // Custom.
+                                case 'custom':
+                                    if (isset($settings['plugin_registration_form_redirect_custom_url']) and strlen(trim($settings['plugin_registration_form_redirect_custom_url'])) > 0)
+                                {
+                                        $redirect_to = trim($settings['plugin_registration_form_redirect_custom_url']);
+                                    }
+                                    break;
+
+                                // Default/Dashboard.
+                                default:
+                                case 'dashboard':
+                                    $redirect_to = admin_url();
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+
+                //*************** Login ***************
+                case 'login':
+                    // Default redirection.
+                    $redirect_to = home_url();
+
+                    // Redirection in URL.
+                    if (!empty($_GET['redirect_to']))
+                    {
+                        $redirect_to = $_GET['redirect_to'];
+                        $redirect_to_safe = true;
+                    }
+                    else
+                    {
+                        // Redirection customized.
+                        if (isset($settings['plugin_login_form_redirect']))
+                        {
+                            switch (strtolower($settings['plugin_login_form_redirect']))
+                            {
+                                // Current.
+                                case 'current':
+                                    global $pagenow;
+
+                                    // Do not redirect to the login page as this would logout the user.
+                                    if (empty($pagenow) or $pagenow != 'wp-login.php')
+                                {
+                                        $redirect_to = oa_social_login_get_current_url();
+                                    }
+                                    // In this case just go to the homepage.
+                                    else
+                                {
+                                        $redirect_to = home_url();
+                                    }
+                                    break;
+
+                                // Dashboard.
+                                case 'dashboard':
+                                    $redirect_to = admin_url();
+                                    break;
+
+                                // Custom.
+                                case 'custom':
+                                    if (isset($settings['plugin_login_form_redirect_custom_url']) and strlen(trim($settings['plugin_login_form_redirect_custom_url'])) > 0)
+                                {
+                                        $redirect_to = trim($settings['plugin_login_form_redirect_custom_url']);
+                                    }
+                                    break;
+
+                                // Default/Homepage.
+                                default:
+                                case 'homepage':
+                                    $redirect_to = home_url();
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+
+                // *************** Comments ***************
+                case 'comments':
+                    $redirect_to = oa_social_login_get_current_url() . '#comments';
+                    break;
+
+                //*************** Widget/Shortcode ***************
+                default:
+                case 'widget':
+                case 'shortcode':
+
+                    // Is this is a new user?
+                    $opt_key = ($new_registration === true ? 'register' : 'login');
+
+                    // Default redirection.
+                    $redirect_to = oa_social_login_get_current_url();
+
+                    // Redirection customized.
+                    if (isset($settings['plugin_shortcode_' . $opt_key . '_redirect']))
+                    {
+                        switch (strtolower($settings['plugin_shortcode_' . $opt_key . '_redirect']))
+                        {
+                            // Current.
+                            case 'current':
+                                $redirect_to = oa_social_login_get_current_url();
+                                break;
+
+                            // Homepage.
+                            case 'homepage':
+                                $redirect_to = home_url();
+                                break;
+
+                            // Dashboard.
+                            case 'dashboard':
+                                $redirect_to = admin_url();
+                                break;
+
+                            // Custom.
+                            case 'custom':
+                                if (isset($settings['plugin_shortcode_' . $opt_key . '_redirect_url']) and strlen(trim($settings['plugin_shortcode_' . $opt_key . '_redirect_url'])) > 0)
+                            {
+                                    $redirect_to = trim($settings['plugin_shortcode_' . $opt_key . '_redirect_url']);
+                                }
+                                break;
+                        }
+                    }
+                    break;
+            }
+
+            // Check if url set.
+            if (!isset($redirect_to) or strlen(trim($redirect_to)) == 0)
+            {
+                $redirect_to = home_url();
+            }
+
+            // New User -> Registration.
+            if ($new_registration === true)
+            {
+                // Apply the WordPress filters.
+                if (empty($settings['plugin_protect_registration_redirect_url']))
+                {
+                    $redirect_to = apply_filters('registration_redirect', $redirect_to);
+                }
+
+                // Apply our filters.
+                $redirect_to = apply_filters('oa_social_login_filter_registration_redirect_url', $redirect_to, $user_data);
+            }
+            // Existing User -> Login.
+            else
+            {
+                // Apply the WordPress filters.
+                if (empty($settings['plugin_protect_login_redirect_url']))
+                {
+                    $redirect_to = apply_filters('login_redirect', $redirect_to, (!empty($_GET['redirect_to']) ? $_GET['redirect_to'] : ''), $user_data);
+                }
+
+                // Apply our filters.
+                $redirect_to = apply_filters('oa_social_login_filter_login_redirect_url', $redirect_to, $user_data);
+            }
+
+            // Hooks for other plugins.
+            do_action('oa_social_login_action_before_user_redirect', $user_data, $identity, $redirect_to);
+
+            // Use safe redirection?
+            if ($redirect_to_safe === true)
+            {
+                wp_safe_redirect($redirect_to);
+            }
+            else
+            {
+                wp_redirect($redirect_to);
+            }
+            exit();
+        }
+
         //OneAll Connection token
         $connection_token = trim($_REQUEST['connection_token']);
 

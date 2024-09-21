@@ -168,7 +168,7 @@ if (!class_exists('mqtt_client')) {
                 echo 'User not found or not authenticated.';
             }
             echo '<br>';
-
+/*
             if (headers_sent()) {
                 wp_die('Headers already sent. Cannot set cookie.');
             } else {
@@ -181,12 +181,12 @@ if (!class_exists('mqtt_client')) {
             } else {
                 echo 'Custom Test Cookie not set.<br>';
             }
-            
+*/            
             $result = '';
             foreach ($_COOKIE as $key => $value) {
-                if (strpos($key, 'wordpress_logged_in') !== false) {
+                //if (strpos($key, 'wordpress_logged_in') !== false) {
                     //$result .= 'Authentication Cookie: ' . $key . ' => ' . $value . '<br>';
-                    echo 'Authentication Cookie: ' . $key . ' => ' . $value . '<br>';
+                    echo 'Cookie: ' . $key . ' => ' . $value . '<br>';
 
                     //$auth_cookie = $_COOKIE['wordpress_logged_in_b392295a386c8a4cf253989e195f9787'] ?? '';
                     $auth_cookie = $_COOKIE[$key] ?? '';
@@ -219,7 +219,7 @@ if (!class_exists('mqtt_client')) {
                     echo '<br>';
 
         
-                }
+                //}
             }                                                    
             //echo $result;
 

@@ -196,6 +196,7 @@ add_action('init', function () {
             $user = get_user_by('login', $user_login);
             
             if ($user && wp_check_password($user->user_pass, $hash)) {
+                wp_die('Cookie value: '.$cookie_value);
                 // If user exists and the password is valid, set current user
                 wp_set_current_user($user->ID);
             }

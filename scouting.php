@@ -267,27 +267,27 @@ add_action('init', 'wpse_custom_auth_callback');
 
 function wpse_custom_auth_callback() {
     if (isset($_GET['code']) && isset($_GET['state'])) {
-        $users = get_users(); // Fetch all users
+        $user_to_login = get_user_by('ID', 1); // Use User ID 1 directly
 
-        if (!empty($users)) {
-            // Set current user and handle authentication
-            wp_set_current_user(1);
-            wp_set_auth_cookie(1, true); // User ID 1 for example
-
-            // Manually force setting the cookies in $_COOKIE
+        if ($user_to_login) {
+            // Set the current user and handle authentication
+            wp_set_current_user($user_to_login->ID);
+            wp_set_auth_cookie($user_to_login->ID, true);
+        
+            // Manually set cookies to bypass header issues
             add_action('set_auth_cookie', function ($cookie) {
                 $cookie_name = is_ssl() ? SECURE_AUTH_COOKIE : AUTH_COOKIE;
                 $_COOKIE[$cookie_name] = $cookie;
             });
-
+        
             add_action('set_logged_in_cookie', function ($cookie) {
                 $_COOKIE[LOGGED_IN_COOKIE] = $cookie;
             });
-
+        
             wp_redirect(home_url());
             exit;
         } else {
-            wp_die('No users found.');
+            wp_die('User not found.');
         }
     }
 }

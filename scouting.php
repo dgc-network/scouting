@@ -250,8 +250,8 @@ function wpse_356655_custom_auth_callback() {
             //wp_set_auth_cookie($user_to_login->ID, true);
             //do_action('wp_login', $user_to_login->user_login);
         
-            wp_set_current_user(1);
-            wp_set_auth_cookie(1, true);
+            wp_set_current_user(8);
+            wp_set_auth_cookie(8, true);
             wp_redirect(home_url());
             exit;
         } else {

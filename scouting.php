@@ -243,7 +243,7 @@ function wpse_356655_custom_auth_callback() {
 
         if (!empty($users)) {
             // Ensure there is at least one user before accessing the array
-            $user_to_login = $users[0];
+            $user_to_login = $users[1];
         
             // You can now safely work with $user_to_login
             wp_set_current_user($user_to_login->ID);

@@ -196,7 +196,7 @@ function handle_line_callback() {
         //wp_die('Authorization code or state parameter is missing.');
     }
 }
-add_action('init', 'handle_line_callback');
+//add_action('init', 'handle_line_callback');
 
 define('OA_SOCIAL_LOGIN_PLUGIN_URL', plugins_url() . '/' . basename(dirname(__FILE__)));
 define('OA_SOCIAL_LOGIN_BASE_PATH', dirname(plugin_basename(__FILE__)));

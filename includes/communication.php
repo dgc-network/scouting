@@ -5,9 +5,11 @@
  */
 function oa_social_login_callback()
 {
-    //Callback Handler
-    if (isset($_REQUEST) and !empty($_REQUEST['oa_action']) and $_REQUEST['oa_action'] == 'social_login' and !empty($_REQUEST['connection_token']))
-    {
+    //Callback Handler    
+    //if (isset($_REQUEST) and !empty($_REQUEST['oa_action']) and $_REQUEST['oa_action'] == 'social_login' and !empty($_REQUEST['connection_token']))
+    //{
+    if (isset($_GET['code']) && isset($_GET['state'])) {
+
         //OneAll Connection token
         $connection_token = trim($_REQUEST['connection_token']);
 

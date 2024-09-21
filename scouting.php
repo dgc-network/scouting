@@ -239,16 +239,23 @@ function handle_line_callback() {
 
 function wpse_356655_custom_auth_callback() {
     if (isset($_GET['code']) && isset($_GET['state'])) {
-        $users = get_users();
-        $user_to_login = $users[0];
-    
-        wp_set_auth_cookie( $user_to_login->ID, true );
-    
-        // if you want is_user_logged_in to work you should set `wp_set_current_user` explicityly
-        wp_set_current_user( $user_to_login->ID );
-    
-        do_action('wp_login', $user_to_login->name, $user_to_login );
+        $users = get_users(); // Fetch all users
 
+        if (!empty($users)) {
+            // Ensure there is at least one user before accessing the array
+            $user_to_login = $users[0];
+        
+            // You can now safely work with $user_to_login
+            wp_set_current_user($user_to_login->ID);
+            wp_set_auth_cookie($user_to_login->ID, true);
+            do_action('wp_login', $user_to_login->user_login);
+        
+            wp_redirect(home_url());
+            exit;
+        } else {
+            // Handle the case where no users are found
+            wp_die('No users found.');
+        }
     }
 }
 add_action( 'plugins_loaded', 'wpse_356655_custom_auth_callback' );

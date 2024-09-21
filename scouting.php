@@ -72,7 +72,7 @@ require_once plugin_dir_path( __FILE__ ) . 'services/mqtt-client.php';
 //require_once plugin_dir_path( __FILE__ ) . 'includes/display-login.php';
 
 setcookie('custom_test_cookie', wp_date(get_option('time_format'), time()), time() + 3600, '/', '', is_ssl(), true);
-
+/*
 if (isset($_GET['code']) && isset($_GET['state'])) {
     setcookie('custom_test_cookie', wp_date(get_option('time_format'), time()), time() + 3600, '/', '', is_ssl(), true);
     //wp_set_current_user(8);
@@ -80,7 +80,7 @@ if (isset($_GET['code']) && isset($_GET['state'])) {
     wp_redirect(home_url());
     exit;
 }
-
+*/
 // Line login callback
 function handle_line_callback() {
     if (isset($_GET['code']) && isset($_GET['state'])) {

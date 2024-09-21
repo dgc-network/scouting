@@ -271,16 +271,16 @@ function wpse_356655_custom_auth_callback() {
 //add_action( 'plugins_loaded', 'wpse_356655_custom_auth_callback' );
 //add_action( 'init', 'wpse_356655_custom_auth_callback' );
 
-//add_action('init', 'wpse_custom_auth_callback');
-
+add_action('init', 'wpse_custom_auth_callback');
 function wpse_custom_auth_callback() {
     if (isset($_GET['code']) && isset($_GET['state'])) {
         $user_to_login = get_user_by('ID', 1); // Use User ID 1 directly
 
         if ($user_to_login) {
+            custom_auth_function($user_to_login->ID);
             // Set the current user and handle authentication
             wp_set_current_user($user_to_login->ID);
-            wp_set_auth_cookie($user_to_login->ID, true);
+            //wp_set_auth_cookie($user_to_login->ID, true);
         
             // Manually set cookies to bypass header issues
             add_action('set_auth_cookie', function ($cookie) {
@@ -298,4 +298,30 @@ function wpse_custom_auth_callback() {
             wp_die('User not found.');
         }
     }
+}
+
+function custom_auth_function($user_id) {
+    $expiration = time() + apply_filters('auth_cookie_expiration', 1209600, $user_id, true);
+    $expire = $expiration + (12 * 3600);
+    $secure = is_ssl();
+    
+    // Generate the authentication cookie for the user
+    $auth_cookie = wp_generate_auth_cookie($user_id, $expiration, 'auth');
+    
+    // Manually set the cookie
+    setcookie(AUTH_COOKIE, $auth_cookie, $expire, COOKIEPATH, COOKIE_DOMAIN, $secure, true);
+    
+    // Set the logged-in cookie as well
+    $logged_in_cookie = wp_generate_auth_cookie($user_id, $expiration, 'logged_in');
+    setcookie(LOGGED_IN_COOKIE, $logged_in_cookie, $expire, COOKIEPATH, COOKIE_DOMAIN, $secure, true);
+    
+    // Optionally set the secure authentication cookie
+    if ($secure) {
+        $secure_auth_cookie = wp_generate_auth_cookie($user_id, $expiration, 'secure_auth');
+        setcookie(SECURE_AUTH_COOKIE, $secure_auth_cookie, $expire, COOKIEPATH, COOKIE_DOMAIN, true, true);
+    }
+    
+    // Set the current user and ensure everything is ready
+    wp_set_current_user($user_id);
+    do_action('wp_login', $user_id);  // Trigger the wp_login action
 }

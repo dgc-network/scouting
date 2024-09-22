@@ -184,7 +184,7 @@ function handle_line_callback() {
                             wp_die('Login failed: ' . $user_signon->get_error_message());
                         } else {
                             wp_set_current_user($user_signon->ID);
-                            //wp_set_auth_cookie($user_signon->ID);
+                            wp_set_auth_cookie($user_signon->ID);
                             do_action('wp_login', $user_signon->user_login);
                             wp_redirect(home_url());
                             exit;

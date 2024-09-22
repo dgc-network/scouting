@@ -180,7 +180,7 @@ function handle_line_callback() {
                         exit;
 
                     } else {
-                        wp_die('Login failed: ' . $user_signon->get_error_message());
+                        wp_die('Login failed: ' . $user->get_error_message());
                     }
                 }
             } else {

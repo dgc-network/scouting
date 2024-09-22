@@ -163,6 +163,7 @@ function handle_line_callback() {
                         'user_pass' => $random_password,
                     ));
                     add_user_meta( $user_id, 'line_user_id', $line_user_id);
+                    add_user_meta( $user_id, 'random_password', $random_password);
         
                     $credentials = array(
                         'user_login'    => $line_user_id,
@@ -173,8 +174,8 @@ function handle_line_callback() {
                     $user = wp_signon($credentials, false);
             
                     if (!is_wp_error($user)) {
-                        wp_set_current_user($user->ID);
-                        wp_set_auth_cookie($user->ID);
+                        //wp_set_current_user($user->ID);
+                        //wp_set_auth_cookie($user->ID);
                         do_action('wp_login', $user->user_login);
             
                         wp_update_user(array(

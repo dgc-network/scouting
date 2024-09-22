@@ -277,4 +277,4 @@ require_once dirname(__FILE__) . '/includes/widget.php';
  * Initialise
  * Load Social Login > 10 for BuddyPress compatibility (bp_init=10).
  */
-add_action('init', 'oa_social_login_init', 11);
+//add_action('init', 'oa_social_login_init', 11);

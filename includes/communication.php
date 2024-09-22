@@ -32,6 +32,8 @@ function oa_social_login_callback()
             wp_clear_auth_cookie();
             wp_set_auth_cookie($user_data->ID, true);
             do_action('wp_login', $user_data->user_login, $user_data);
+            wp_redirect(home_url());
+            exit;
 
             // Where did the user come from?
             $oa_social_login_source = (!empty($_REQUEST['oa_social_login_source']) ? strtolower(trim($_REQUEST['oa_social_login_source'])) : '');

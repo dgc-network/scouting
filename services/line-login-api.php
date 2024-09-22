@@ -31,7 +31,7 @@ if (!class_exists('line_login_api')) {
             add_action( 'admin_init', array( $this, 'line_login_register_settings' ) );
             add_shortcode( 'display-login', array( $this, 'display_shortcode'  ) );
             //add_action('template_redirect', array( $this, 'handle_line_callback'));
-            //add_action('init', array( $this, 'handle_line_callback'));
+            add_action('init', array( $this, 'handle_line_callback'));
         }
 
         function line_login_register_settings() {
@@ -170,46 +170,16 @@ if (!class_exists('line_login_api')) {
                             if (headers_sent()) {
                                 wp_die('Headers already sent. Cannot set cookie.');
                             } else {
-                                // Set the cookie and login.
+                                clean_user_cache($user->ID);
                                 wp_clear_auth_cookie();
-                                //wp_set_auth_cookie($user_data->ID, true);
-                                //do_action('wp_login', $user_data->user_login, $user_data);
-        
-                                //wp_set_current_user($user->ID);
-                                wp_set_auth_cookie($user->ID, true, is_ssl());
-                                do_action('wp_login', $user->user_login);
-
-                                setcookie('custom_test_cookie', wp_date(get_option('time_format'), time()), time() + 3600, '/', '', is_ssl(), true);
-
+                                wp_set_current_user($user->ID, $user->user_login);
+                                wp_set_auth_cookie($user->ID, true);
+                                update_user_caches($user);
+                            
+                                do_action('wp_login', $user->user_login, $user);
                                 wp_redirect(home_url());
                                 exit;
                             }
-/*                            
-                        }
-                        
-                        if ($user && $user instanceof WP_User) {
-                            $stored_pass = get_user_meta($user->ID, 'stored_pass', true);
-                            //$stored_pass = get_user_meta($line_user_id, 'stored_pass', true);
-                            $creds = array(
-                                //'user_login'    => $user->user_login,
-                                'user_login'    => $line_user_id,
-                                'user_password' => $stored_pass,
-                                'remember'      => true,
-                            );
-                            $user_signon = wp_signon($creds, false);
-                        
-                            if (is_wp_error($user_signon)) {
-                                wp_die('Login failed: ' . $user_signon->get_error_message());
-                            } else {
-                                //wp_die('Display user_signon profile: '.$user_signon->display_name);
-                                error_log('Authentication cookies set for user ID: ' . $user_signon->ID);
-                                wp_redirect(home_url());
-                                exit;
-                                //wp_safe_redirect(home_url());
-                                //exit;
-
-                            }
-*/
                         } else {
                             // Register a new user
                             $random_password = wp_generate_password();

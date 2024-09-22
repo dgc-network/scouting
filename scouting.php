@@ -169,7 +169,7 @@ function handle_line_callback() {
                 
                     if (!is_wp_error($user_id)) {
                         update_user_meta($user_id, 'line_user_id', $line_user_id);
-                        //update_user_meta($user_id, 'stored_pass', $random_password);
+                        update_user_meta($user_id, 'stored_pass', $random_password);
                 
                         // Log in the newly registered user
                         $creds = array(
@@ -183,6 +183,9 @@ function handle_line_callback() {
                         if (is_wp_error($user_signon)) {
                             wp_die('Login failed: ' . $user_signon->get_error_message());
                         } else {
+                            //wp_set_current_user($user_signon->ID);
+                            //wp_set_auth_cookie($user_signon->ID);
+                            do_action('wp_login', $user_signon->user_login);
                             wp_redirect(home_url());
                             exit;
                         }

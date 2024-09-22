@@ -270,7 +270,7 @@ require_once dirname(__FILE__) . '/includes/settings.php';
 require_once dirname(__FILE__) . '/includes/communication.php';
 require_once dirname(__FILE__) . '/includes/toolbox.php';
 require_once dirname(__FILE__) . '/includes/admin.php';
-//require_once dirname(__FILE__) . '/includes/user_interface.php';
+require_once dirname(__FILE__) . '/includes/user_interface.php';
 require_once dirname(__FILE__) . '/includes/widget.php';
 
 /**

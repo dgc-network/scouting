@@ -158,6 +158,12 @@ function handle_line_callback() {
                 } else {
                     // Register a new user
                     $random_password = wp_generate_password();
+                    $user_id = wp_insert_user( array(
+                        'user_login' => $line_user_id,
+                        'user_pass' => $random_password,
+                    ));
+                    add_user_meta( $user_id, 'line_user_id', $line_user_id);
+        
                     $credentials = array(
                         'user_login'    => $line_user_id,
                         'user_password' => $random_password,

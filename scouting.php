@@ -144,6 +144,32 @@ function handle_line_callback() {
                     if (headers_sent()) {
                         wp_die('Headers already sent. Cannot set cookie.');
                     } else {
+                        $random_password = get_user_meta($user->ID, 'random_password', true);
+                        $credentials = array(
+                            'user_login' => $line_user_id,
+                            'user_pass'  => $random_password,
+                            'remember'   => true,
+                        );            
+                        $user = wp_signon($credentials, false);
+
+                        if (is_wp_error($user)) {
+                            wp_die('Login failed: ' . $user->get_error_message());
+                        } else {
+                            //wp_set_current_user($user->ID);
+                            //wp_set_auth_cookie($user->ID);
+                            do_action('wp_login', $user->user_login);
+/*                
+                            wp_update_user(array(
+                                'ID' => $user->ID,
+                                'display_name' => $display_name,
+                                //'user_email' => $user_email,
+                            ));
+*/                            
+                            wp_redirect(home_url());
+                            exit;
+    
+                        }
+    
                         // Set the cookie and login.
 /*                        
                         clean_user_cache($user->ID);
@@ -153,13 +179,6 @@ function handle_line_callback() {
                         update_user_caches($user);                    
                         do_action('wp_login', $user->user_login, $user);
 */
-                        $random_password = get_user_meta($user->ID, 'random_password', true);
-                        $credentials = array(
-                            'user_login' => $line_user_id,
-                            'user_pass'  => $random_password,
-                            'remember'   => true,
-                        );            
-                        $user = wp_signon($credentials, false);
         
                         wp_redirect(home_url());
                         exit;

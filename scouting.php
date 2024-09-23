@@ -157,7 +157,7 @@ function handle_line_callback() {
                         } else {
                             //wp_set_current_user($user->ID);
                             //wp_set_auth_cookie($user->ID);
-                            do_action('wp_login', $user->user_login);
+                            //do_action('wp_login', $user->user_login);
 /*                
                             wp_update_user(array(
                                 'ID' => $user->ID,

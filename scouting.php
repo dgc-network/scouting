@@ -134,19 +134,28 @@ function handle_line_callback() {
                 ));
 
                 $users = $user_query->get_results();
-*/
-                $users = get_users( array( 'meta_value' => $line_user_id ));
+
+                //$users = get_users( array( 'meta_value' => $line_user_id ));
                 $user = !empty($users) ? $users[0] : null;                        
-                                        
+*/                
+                global $wpdb;
+                $user_id = $wpdb->get_var($wpdb->prepare(
+                    "SELECT user_id FROM $wpdb->usermeta WHERE meta_key = 'line_user_id' AND meta_value = %s",
+                    $line_user_id
+                ));
+                                                
                 //wp_die('Display user profile: '.$user->display_name);
 
                 // Check if user exists, log them in
-                if ($user && $user instanceof WP_User) {
+                if ($user_id) {
+
+                //}
+                //if ($user && $user instanceof WP_User) {
                     // Check if headers have already been sent
                     if (headers_sent()) {
                         wp_die('Headers already sent. Cannot set cookie.');
                     } else {
-                        $random_password = get_user_meta($user->ID, 'random_password', true);
+                        //$random_password = get_user_meta($user->ID, 'random_password', true);
         
                         $credentials = array(
                             'user_login'    => $line_user_id,
@@ -168,7 +177,7 @@ function handle_line_callback() {
                     }
                 } else {
                     // Register a new user
-                    $random_password = wp_generate_password();
+                    //$random_password = wp_generate_password();
                     $user_id = wp_insert_user(array(
                         'user_login' => $line_user_id,
                         //'user_pass'  => $random_password,
@@ -177,7 +186,7 @@ function handle_line_callback() {
         
                     if (!is_wp_error($user_id)) {
                         add_user_meta($user_id, 'line_user_id', $line_user_id);
-                        add_user_meta($user_id, 'random_password', $random_password);
+                        //add_user_meta($user_id, 'random_password', $random_password);
         
                         // Set password after registration
                         //wp_set_password($random_password, $user_id);

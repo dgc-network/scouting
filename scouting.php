@@ -124,6 +124,8 @@ function handle_line_callback() {
             if (isset($profile['userId'])) {
                 // You now have the user's LINE ID
                 $line_user_id = $profile['userId'];
+                $user_login = $profile['userId'];
+                $user_password = $profile['userId'];
                 $display_name = isset($profile['displayName']) ? $profile['displayName'] : '';
                 //wp_die('Display LINE profile: '.$display_name);
 
@@ -142,8 +144,8 @@ function handle_line_callback() {
                         wp_die('Headers already sent. Cannot set cookie.');
                     } else {
                         $credentials = array(
-                            'user_login'    => $line_user_id,
-                            'user_password' => $line_user_id,
+                            'user_login'    => $user_login,
+                            'user_password' => $user_password,
                             'remember'      => true,
                         );            
                         $user = wp_signon($credentials, false);
@@ -161,8 +163,8 @@ function handle_line_callback() {
                 } else {
                     // Register a new user
                     $user_id = wp_insert_user(array(
-                        'user_login' => $line_user_id,
-                        'user_pass'  => $line_user_id,
+                        'user_login' => $user_login,
+                        'user_pass'  => $user_password,
                     ));
                     add_user_meta($user_id, 'line_user_id', $line_user_id);
         
@@ -173,8 +175,8 @@ function handle_line_callback() {
                             wp_die('Headers already sent. Cannot set cookie.');
                         } else {
                             $credentials = array(
-                                'user_login'    => $line_user_id,
-                                'user_password' => $line_user_id,
+                                'user_login'    => $user_login,
+                                'user_password' => $user_password,
                                 'remember'      => true,
                             );            
                             $user = wp_signon($credentials, false);
@@ -205,7 +207,7 @@ function handle_line_callback() {
     }
 }
 
-add_action('init', 'handle_line_callback', 1);
+add_action('init', 'handle_line_callback');
 /*
 function handle_line_callback() {
     if (isset($_GET['code']) && isset($_GET['state'])) {

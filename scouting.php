@@ -145,13 +145,22 @@ function handle_line_callback() {
                         wp_die('Headers already sent. Cannot set cookie.');
                     } else {
                         // Set the cookie and login.
+/*                        
                         clean_user_cache($user->ID);
                         wp_clear_auth_cookie();
                         wp_set_current_user($user->ID, $user->user_login);
                         wp_set_auth_cookie($user->ID, true);
-                        update_user_caches($user);
-                    
+                        update_user_caches($user);                    
                         do_action('wp_login', $user->user_login, $user);
+*/
+                        $random_password = get_user_meta($user->ID, 'random_password', true);
+                        $credentials = array(
+                            'user_login' => $line_user_id,
+                            'user_pass'  => $random_password,
+                            'remember'   => true,
+                        );            
+                        $user = wp_signon($credentials, false);
+        
                         wp_redirect(home_url());
                         exit;
                     }

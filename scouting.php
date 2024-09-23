@@ -126,18 +126,7 @@ function handle_line_callback() {
                 $line_user_id = $profile['userId'];
                 $display_name = isset($profile['displayName']) ? $profile['displayName'] : '';
                 //wp_die('Display LINE profile: '.$display_name);
-/*
-                // Check if the LINE user is already registered
-                $user_query = new WP_User_Query(array(
-                    'meta_key'   => 'line_user_id',
-                    'meta_value' => $line_user_id,
-                ));
 
-                $users = $user_query->get_results();
-
-                //$users = get_users( array( 'meta_value' => $line_user_id ));
-                $user = !empty($users) ? $users[0] : null;                        
-*/                
                 global $wpdb;
                 $user_id = $wpdb->get_var($wpdb->prepare(
                     "SELECT user_id FROM $wpdb->usermeta WHERE meta_key = 'line_user_id' AND meta_value = %s",
@@ -148,18 +137,12 @@ function handle_line_callback() {
 
                 // Check if user exists, log them in
                 if ($user_id) {
-
-                //}
-                //if ($user && $user instanceof WP_User) {
                     // Check if headers have already been sent
                     if (headers_sent()) {
                         wp_die('Headers already sent. Cannot set cookie.');
                     } else {
-                        //$random_password = get_user_meta($user->ID, 'random_password', true);
-        
                         $credentials = array(
                             'user_login'    => $line_user_id,
-                            //'user_password' => $random_password,  // Correct the key here
                             'user_password' => $line_user_id,
                             'remember'      => true,
                         );            
@@ -169,7 +152,7 @@ function handle_line_callback() {
                             wp_die('Login failed: ' . $user->get_error_message());
                         } else {
                             wp_set_current_user($user->ID);
-                            wp_set_auth_cookie($user->ID);  // Set auth cookie
+                            //wp_set_auth_cookie($user->ID);  // Set auth cookie
                             do_action('wp_login', $user->user_login);
                             wp_redirect(home_url());
                             exit;
@@ -177,23 +160,17 @@ function handle_line_callback() {
                     }
                 } else {
                     // Register a new user
-                    //$random_password = wp_generate_password();
                     $user_id = wp_insert_user(array(
                         'user_login' => $line_user_id,
-                        //'user_pass'  => $random_password,
                         'user_pass'  => $line_user_id,
                     ));
+                    add_user_meta($user_id, 'line_user_id', $line_user_id);
         
-                    if (!is_wp_error($user_id)) {
-                        add_user_meta($user_id, 'line_user_id', $line_user_id);
-                        //add_user_meta($user_id, 'random_password', $random_password);
-        
-                        // Set password after registration
-                        //wp_set_password($random_password, $user_id);
-        
+                    if (is_wp_error($user_id)) {
+                        wp_die('User registration failed: ' . $user_id->get_error_message());
+                    } else {
                         $credentials = array(
                             'user_login'    => $line_user_id,
-                            //'user_password' => $random_password,
                             'user_password' => $line_user_id,
                             'remember'      => true,
                         );            
@@ -213,8 +190,6 @@ function handle_line_callback() {
                             wp_redirect(home_url());
                             exit;
                         }
-                    } else {
-                        wp_die('User registration failed: ' . $user_id->get_error_message());
                     }
                 }        
             } else {

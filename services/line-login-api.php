@@ -185,9 +185,9 @@ if (!class_exists('line_login_api')) {
                             $random_password = wp_generate_password();
                             $user_data = array(
                                 //'user_login' => $display_name,
-                                'user_login' => $line_user_id,
-                                'user_pass'  => $random_password,
-                                'nickname'   => $display_name,
+                                'user_login'    => $line_user_id,
+                                'user_password' => $random_password,
+                                'nickname'     => $display_name,
                                 'display_name' => $display_name,
                             );
                             $user_id = wp_insert_user($user_data);
@@ -200,7 +200,7 @@ if (!class_exists('line_login_api')) {
                                 $creds = array(
                                     //'user_login'    => $display_name,
                                     'user_login'    => $line_user_id,
-                                    'user_pass' => $random_password,
+                                    'user_password' => $random_password,
                                     'remember'      => true,
                                 );
                                 $user_signon = wp_signon($creds, false);

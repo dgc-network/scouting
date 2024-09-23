@@ -146,9 +146,9 @@ function handle_line_callback() {
                     } else {
                         $random_password = get_user_meta($user->ID, 'random_password', true);
                         $credentials = array(
-                            'user_login' => $line_user_id,
-                            'user_pass'  => $random_password,
-                            'remember'   => true,
+                            'user_login'    => $line_user_id,
+                            'user_password' => $random_password,
+                            'remember'      => true,
                         );            
                         $user = wp_signon($credentials, false);
 
@@ -194,9 +194,9 @@ function handle_line_callback() {
                     add_user_meta( $user_id, 'random_password', $random_password);
         
                     $credentials = array(
-                        'user_login' => $line_user_id,
-                        'user_pass'  => $random_password,
-                        'remember'   => true,
+                        'user_login'    => $line_user_id,
+                        'user_password' => $random_password,
+                        'remember'      => true,
                     );            
                     $user = wp_signon($credentials, false);
 

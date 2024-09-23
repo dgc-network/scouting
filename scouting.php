@@ -169,26 +169,30 @@ function handle_line_callback() {
                     if (is_wp_error($user_id)) {
                         wp_die('User registration failed: ' . $user_id->get_error_message());
                     } else {
-                        $credentials = array(
-                            'user_login'    => $line_user_id,
-                            'user_password' => $line_user_id,
-                            'remember'      => true,
-                        );            
-                        $user = wp_signon($credentials, false);
-        
-                        if (is_wp_error($user)) {
-                            wp_die('Login failed: ' . $user->get_error_message());
+                        if (headers_sent()) {
+                            wp_die('Headers already sent. Cannot set cookie.');
                         } else {
-                            wp_set_current_user($user->ID);
-                            wp_set_auth_cookie($user->ID);  // Set auth cookie
-                            do_action('wp_login', $user->user_login);
-        
-                            wp_update_user(array(
-                                'ID' => $user->ID,
-                                'display_name' => $display_name,
-                            ));
-                            wp_redirect(home_url());
-                            exit;
+                            $credentials = array(
+                                'user_login'    => $line_user_id,
+                                'user_password' => $line_user_id,
+                                'remember'      => true,
+                            );            
+                            $user = wp_signon($credentials, false);
+            
+                            if (is_wp_error($user)) {
+                                wp_die('Login failed: ' . $user->get_error_message());
+                            } else {
+                                wp_set_current_user($user->ID);
+                                //wp_set_auth_cookie($user->ID);  // Set auth cookie
+                                do_action('wp_login', $user->user_login);
+                                wp_update_user(array(
+                                    'ID' => $user->ID,
+                                    'display_name' => $display_name,
+                                ));
+    
+                                wp_redirect(home_url());
+                                exit;
+                            }
                         }
                     }
                 }        

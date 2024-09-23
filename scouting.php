@@ -148,7 +148,7 @@ function handle_line_callback() {
         
                         $credentials = array(
                             'user_login'    => $line_user_id,
-                            'user_pass'     => $random_password,  // Correct the key here
+                            'user_password' => $random_password,  // Correct the key here
                             'remember'      => true,
                         );            
                         $user = wp_signon($credentials, false);
@@ -180,7 +180,7 @@ function handle_line_callback() {
         
                         $credentials = array(
                             'user_login'    => $line_user_id,
-                            'user_pass'     => $random_password,
+                            'user_password' => $random_password,
                             'remember'      => true,
                         );            
                         $user = wp_signon($credentials, false);

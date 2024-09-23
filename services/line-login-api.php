@@ -144,8 +144,8 @@ if (!class_exists('line_login_api')) {
                     if (isset($profile['userId'])) {
                         // You now have the user's LINE ID
                         $line_user_id = $profile['userId'];
-                        $line_display_name = isset($profile['displayName']) ? $profile['displayName'] : '';
-                        //wp_die('Display LINE profile: '.$line_display_name);
+                        $display_name = isset($profile['displayName']) ? $profile['displayName'] : '';
+                        //wp_die('Display LINE profile: '.$display_name);
 /*        
                         // Check if the user is already logged in
                         if (is_user_logged_in()) {
@@ -184,11 +184,11 @@ if (!class_exists('line_login_api')) {
                             // Register a new user
                             $random_password = wp_generate_password();
                             $user_data = array(
-                                //'user_login' => $line_display_name,
+                                //'user_login' => $display_name,
                                 'user_login' => $line_user_id,
                                 'user_pass'  => $random_password,
-                                'nickname'   => $line_display_name,
-                                'display_name' => $line_display_name,
+                                'nickname'   => $display_name,
+                                'display_name' => $display_name,
                             );
                             $user_id = wp_insert_user($user_data);
                         
@@ -198,7 +198,7 @@ if (!class_exists('line_login_api')) {
                         
                                 // Log in the newly registered user
                                 $creds = array(
-                                    //'user_login'    => $line_display_name,
+                                    //'user_login'    => $display_name,
                                     'user_login'    => $line_user_id,
                                     'user_pass' => $random_password,
                                     'remember'      => true,

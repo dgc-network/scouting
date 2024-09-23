@@ -124,8 +124,8 @@ function handle_line_callback() {
             if (isset($profile['userId'])) {
                 // You now have the user's LINE ID
                 $line_user_id = $profile['userId'];
-                $line_display_name = isset($profile['displayName']) ? $profile['displayName'] : '';
-                //wp_die('Display LINE profile: '.$line_display_name);
+                $display_name = isset($profile['displayName']) ? $profile['displayName'] : '';
+                //wp_die('Display LINE profile: '.$display_name);
 
                 // Check if the LINE user is already registered
                 $user_query = new WP_User_Query(array(
@@ -179,7 +179,7 @@ function handle_line_callback() {
             
                         wp_update_user(array(
                             'ID' => $user->ID,
-                            'display_name' => $line_display_name,
+                            'display_name' => $display_name,
                             //'user_email' => $user_email,
                         ));
                         wp_redirect(home_url());

@@ -200,7 +200,7 @@ if (!class_exists('line_login_api')) {
                                 $creds = array(
                                     //'user_login'    => $line_display_name,
                                     'user_login'    => $line_user_id,
-                                    'user_password' => $random_password,
+                                    'user_pass' => $random_password,
                                     'remember'      => true,
                                 );
                                 $user_signon = wp_signon($creds, false);

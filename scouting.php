@@ -166,12 +166,12 @@ function handle_line_callback() {
                     add_user_meta( $user_id, 'random_password', $random_password);
         
                     $credentials = array(
-                        'user_login'    => $line_user_id,
-                        'user_password' => $random_password,
-                        'remember'      => true,
+                        'user_login' => $line_user_id,
+                        'user_pass'  => $random_password,
+                        'remember'   => true,
                     );            
                     $user = wp_signon($credentials, false);
-            
+
                     if (!is_wp_error($user)) {
                         //wp_set_current_user($user->ID);
                         //wp_set_auth_cookie($user->ID);

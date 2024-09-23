@@ -155,8 +155,8 @@ function handle_line_callback() {
                         if (is_wp_error($user)) {
                             wp_die('Login failed: ' . $user->get_error_message());
                         } else {
-                            //wp_set_current_user($user->ID);
-                            //wp_set_auth_cookie($user->ID);
+                            wp_set_current_user($user->ID);
+                            wp_set_auth_cookie($user->ID);
                             //do_action('wp_login', $user->user_login);
 /*                
                             wp_update_user(array(

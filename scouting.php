@@ -156,8 +156,8 @@ function handle_line_callback() {
                             wp_die('Login failed: ' . $user->get_error_message());
                         } else {
                             wp_set_current_user($user->ID);
-                            wp_set_auth_cookie($user->ID);
-                            //do_action('wp_login', $user->user_login);
+                            //wp_set_auth_cookie($user->ID);
+                            do_action('wp_login', $user->user_login);
 /*                
                             wp_update_user(array(
                                 'ID' => $user->ID,
@@ -201,9 +201,9 @@ function handle_line_callback() {
                     $user = wp_signon($credentials, false);
 
                     if (!is_wp_error($user)) {
-                        //wp_set_current_user($user->ID);
+                        wp_set_current_user($user->ID);
                         //wp_set_auth_cookie($user->ID);
-                        //do_action('wp_login', $user->user_login);
+                        do_action('wp_login', $user->user_login);
             
                         wp_update_user(array(
                             'ID' => $user->ID,

@@ -74,6 +74,85 @@ require_once plugin_dir_path( __FILE__ ) . 'services/mqtt-client.php';
 // login callback
 function handle_line_callback() {
     if (isset($_GET['code']) && isset($_GET['state'])) {
+        // Check if user exists
+        $user_query = new WP_User_Query(array(
+            'meta_key' => 'line_user_id',
+            'meta_value' => $line_user_id,
+        ));
+        $users = $user_query->get_results();
+        $user = !empty($users) ? $users[0] : null;
+
+        if ($user && $user instanceof WP_User) {
+            // Check if headers have already been sent
+            if (headers_sent()) {
+                wp_die('Headers already sent. Cannot set cookie.');
+            } else {
+                $random_password = get_user_meta($user->ID, 'random_password', true);
+
+                $credentials = array(
+                    'user_login'    => $line_user_id,
+                    'user_pass'     => $random_password,  // Correct the key here
+                    'remember'      => true,
+                );            
+                $user = wp_signon($credentials, false);
+
+                if (is_wp_error($user)) {
+                    wp_die('Login failed: ' . $user->get_error_message());
+                } else {
+                    wp_set_current_user($user->ID);
+                    wp_set_auth_cookie($user->ID);  // Set auth cookie
+                    do_action('wp_login', $user->user_login);
+                    wp_redirect(home_url());
+                    exit;
+                }
+            }
+        } else {
+            // Register a new user
+            $random_password = wp_generate_password();
+            $user_id = wp_insert_user(array(
+                'user_login' => $line_user_id,
+                'user_pass'  => $random_password,
+            ));
+
+            if (!is_wp_error($user_id)) {
+                add_user_meta($user_id, 'line_user_id', $line_user_id);
+                add_user_meta($user_id, 'random_password', $random_password);
+
+                // Set password after registration
+                wp_set_password($random_password, $user_id);
+
+                $credentials = array(
+                    'user_login'    => $line_user_id,
+                    'user_pass'     => $random_password,
+                    'remember'      => true,
+                );            
+                $user = wp_signon($credentials, false);
+
+                if (!is_wp_error($user)) {
+                    wp_set_current_user($user->ID);
+                    wp_set_auth_cookie($user->ID);  // Set auth cookie
+                    do_action('wp_login', $user->user_login);
+
+                    wp_update_user(array(
+                        'ID' => $user->ID,
+                        'display_name' => $display_name,
+                    ));
+                    wp_redirect(home_url());
+                    exit;
+                } else {
+                    wp_die('Login failed: ' . $user->get_error_message());
+                }
+            } else {
+                wp_die('User registration failed: ' . $user_id->get_error_message());
+            }
+        }
+    }
+}
+
+add_action('init', 'handle_line_callback', 1);
+/*
+function handle_line_callback() {
+    if (isset($_GET['code']) && isset($_GET['state'])) {
         // Sanitize inputs
         $code = sanitize_text_field($_GET['code']);
         $state = sanitize_text_field($_GET['state']);
@@ -158,30 +237,9 @@ function handle_line_callback() {
                             wp_set_current_user($user->ID);
                             //wp_set_auth_cookie($user->ID);
                             do_action('wp_login', $user->user_login);
-/*                
-                            wp_update_user(array(
-                                'ID' => $user->ID,
-                                'display_name' => $display_name,
-                                //'user_email' => $user_email,
-                            ));
-*/                            
                             wp_redirect(home_url());
-                            exit;
-    
+                            exit;    
                         }
-    
-                        // Set the cookie and login.
-/*                        
-                        clean_user_cache($user->ID);
-                        wp_clear_auth_cookie();
-                        wp_set_current_user($user->ID, $user->user_login);
-                        wp_set_auth_cookie($user->ID, true);
-                        update_user_caches($user);                    
-                        do_action('wp_login', $user->user_login, $user);
-*/
-        
-                        wp_redirect(home_url());
-                        exit;
                     }
                 } else {
                     // Register a new user
@@ -228,3 +286,4 @@ function handle_line_callback() {
     }
 }
 add_action('init', 'handle_line_callback');
+*/

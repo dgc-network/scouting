@@ -148,7 +148,8 @@ function handle_line_callback() {
         
                         $credentials = array(
                             'user_login'    => $line_user_id,
-                            'user_password' => $random_password,  // Correct the key here
+                            //'user_password' => $random_password,  // Correct the key here
+                            'user_password' => $line_user_id,
                             'remember'      => true,
                         );            
                         $user = wp_signon($credentials, false);
@@ -168,7 +169,8 @@ function handle_line_callback() {
                     $random_password = wp_generate_password();
                     $user_id = wp_insert_user(array(
                         'user_login' => $line_user_id,
-                        'user_pass'  => $random_password,
+                        //'user_pass'  => $random_password,
+                        'user_pass'  => $line_user_id,
                     ));
         
                     if (!is_wp_error($user_id)) {
@@ -176,11 +178,12 @@ function handle_line_callback() {
                         add_user_meta($user_id, 'random_password', $random_password);
         
                         // Set password after registration
-                        wp_set_password($random_password, $user_id);
+                        //wp_set_password($random_password, $user_id);
         
                         $credentials = array(
                             'user_login'    => $line_user_id,
-                            'user_password' => $random_password,
+                            //'user_password' => $random_password,
+                            'user_password' => $line_user_id,
                             'remember'      => true,
                         );            
                         $user = wp_signon($credentials, false);

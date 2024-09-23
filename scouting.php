@@ -126,14 +126,16 @@ function handle_line_callback() {
                 $line_user_id = $profile['userId'];
                 $display_name = isset($profile['displayName']) ? $profile['displayName'] : '';
                 //wp_die('Display LINE profile: '.$display_name);
-
+/*
                 // Check if the LINE user is already registered
                 $user_query = new WP_User_Query(array(
                     'meta_key'   => 'line_user_id',
                     'meta_value' => $line_user_id,
                 ));
-                
+
                 $users = $user_query->get_results();
+*/
+                $users = get_users( array( 'meta_value' => $line_user_id ));
                 $user = !empty($users) ? $users[0] : null;                        
                                         
                 //wp_die('Display user profile: '.$user->display_name);
@@ -188,7 +190,9 @@ function handle_line_callback() {
                         );            
                         $user = wp_signon($credentials, false);
         
-                        if (!is_wp_error($user)) {
+                        if (is_wp_error($user)) {
+                            wp_die('Login failed: ' . $user->get_error_message());
+                        } else {
                             wp_set_current_user($user->ID);
                             wp_set_auth_cookie($user->ID);  // Set auth cookie
                             do_action('wp_login', $user->user_login);
@@ -199,8 +203,6 @@ function handle_line_callback() {
                             ));
                             wp_redirect(home_url());
                             exit;
-                        } else {
-                            wp_die('Login failed: ' . $user->get_error_message());
                         }
                     } else {
                         wp_die('User registration failed: ' . $user_id->get_error_message());

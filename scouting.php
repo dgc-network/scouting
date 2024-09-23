@@ -143,6 +143,18 @@ function handle_line_callback() {
                     if (headers_sent()) {
                         wp_die('Headers already sent. Cannot set cookie.');
                     } else {
+                        $user = wp_authenticate($user_login, $user_password);
+                        if(!is_wp_error($user)) {
+                            wp_set_current_user($user->ID);
+                            wp_set_auth_cookie($user->ID);  // Set auth cookie
+                            do_action('wp_login', $user->user_login);
+                            error_log('Login: ' . $user->display_name);
+                            wp_redirect(home_url());
+                            exit;
+                        } else {
+                            wp_die('Login failed: ' . $user->get_error_message());
+                        }
+/*
                         $credentials = array(
                             'user_login'    => $user_login,
                             'user_password' => $user_password,
@@ -160,6 +172,7 @@ function handle_line_callback() {
                             wp_redirect(home_url());
                             exit;
                         }
+*/                            
                     }
                 } else {
                     // Register a new user
@@ -192,7 +205,7 @@ function handle_line_callback() {
                                     'ID' => $user->ID,
                                     'display_name' => $display_name,
                                 ));
-    
+                                error_log('Register: ' . $user->display_name);
                                 wp_redirect(home_url());
                                 exit;
                             }

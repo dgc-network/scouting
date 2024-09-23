@@ -156,7 +156,7 @@ function handle_line_callback() {
                             wp_set_current_user($user->ID);
                             //wp_set_auth_cookie($user->ID);  // Set auth cookie
                             do_action('wp_login', $user->user_login);
-                            error_log('Login failed: ' . $user->get_error_message());
+                            error_log('Login: ' . $user->display_name);
                             wp_redirect(home_url());
                             exit;
                         }

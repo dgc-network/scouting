@@ -158,7 +158,7 @@ function handle_line_callback() {
                             wp_die('Login failed: ' . $user->get_error_message());
                         } else {
                             wp_set_current_user($user->ID);
-                            //wp_set_auth_cookie($user->ID);  // Set auth cookie
+                            wp_set_auth_cookie($user->ID);  // Set auth cookie
                             do_action('wp_login', $user->user_login);
 
                             error_log('User object: ' . print_r($user, true));

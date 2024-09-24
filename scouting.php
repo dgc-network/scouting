@@ -143,36 +143,29 @@ function handle_line_callback() {
                     if (headers_sent()) {
                         wp_die('Headers already sent. Cannot set cookie.');
                     } else {
-                        $user = wp_authenticate($user_login, $user_password);
-                        if(!is_wp_error($user)) {
-                            wp_set_current_user($user->ID);
-                            wp_set_auth_cookie($user->ID);  // Set auth cookie
-                            do_action('wp_login', $user->user_login);
-                            error_log('Login: ' . $user->display_name);
-                            wp_redirect(home_url());
-                            exit;
-                        } else {
-                            wp_die('Login failed: ' . $user->get_error_message());
-                        }
-/*
+                        error_log('User login: ' . $user_login);
+                        error_log('User password: ' . $user_password);
+
                         $credentials = array(
                             'user_login'    => $user_login,
                             'user_password' => $user_password,
                             'remember'      => true,
                         );            
                         $user = wp_signon($credentials, false);
-        
+                        error_log('Auth Cookie: ' . print_r($_COOKIE, true));
+
                         if (is_wp_error($user)) {
                             wp_die('Login failed: ' . $user->get_error_message());
                         } else {
                             wp_set_current_user($user->ID);
                             //wp_set_auth_cookie($user->ID);  // Set auth cookie
                             do_action('wp_login', $user->user_login);
-                            error_log('Login: ' . $user->display_name);
+
+                            error_log('User object: ' . print_r($user, true));
+                            error_log('User successfully logged in: ' . $user->display_name);
                             wp_redirect(home_url());
                             exit;
                         }
-*/                            
                     }
                 } else {
                     // Register a new user

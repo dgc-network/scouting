@@ -26,7 +26,7 @@ function register_session() {
         session_start();
     }
 }
-add_action( 'init', 'register_session' );
+add_action( 'init', 'register_session', 1 );
 
 function remove_admin_bar() {
     if (!current_user_can('administrator') && !is_admin()) {

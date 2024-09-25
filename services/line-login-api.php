@@ -145,14 +145,8 @@ if (!class_exists('line_login_api')) {
                         // You now have the user's LINE ID
                         $line_user_id = $profile['userId'];
                         $display_name = isset($profile['displayName']) ? $profile['displayName'] : '';
-                        //wp_die('Display LINE profile: '.$display_name);
-/*        
-                        // Check if the user is already logged in
-                        if (is_user_logged_in()) {
-                            echo 'You are already logged in.';
-                            exit;
-                        }
-*/        
+                        error_log('Display LINE profile: ' . $display_name);
+
                         // Check if the LINE user is already registered
                         $user_query = new WP_User_Query(array(
                             'meta_key'   => 'line_user_id',
@@ -162,7 +156,7 @@ if (!class_exists('line_login_api')) {
                         $users = $user_query->get_results();
                         $user = !empty($users) ? $users[0] : null;                        
                                                 
-                        //wp_die('Display user profile: '.$user->display_name);
+                        error_log('Display user profile: ' . $user->display_name);
 
                         // Check if user exists, log them in
                         if ($user && $user instanceof WP_User) {
@@ -175,7 +169,6 @@ if (!class_exists('line_login_api')) {
                                 wp_set_current_user($user->ID, $user->user_login);
                                 wp_set_auth_cookie($user->ID, true);
                                 update_user_caches($user);
-                            
                                 do_action('wp_login', $user->user_login, $user);
                                 wp_redirect(home_url());
                                 exit;
@@ -184,7 +177,6 @@ if (!class_exists('line_login_api')) {
                             // Register a new user
                             $random_password = wp_generate_password();
                             $user_data = array(
-                                //'user_login' => $display_name,
                                 'user_login'    => $line_user_id,
                                 'user_password' => $random_password,
                                 'nickname'     => $display_name,
@@ -194,11 +186,9 @@ if (!class_exists('line_login_api')) {
                         
                             if (!is_wp_error($user_id)) {
                                 update_user_meta($user_id, 'line_user_id', $line_user_id);
-                                update_user_meta($user_id, 'stored_pass', $random_password);
                         
                                 // Log in the newly registered user
                                 $creds = array(
-                                    //'user_login'    => $display_name,
                                     'user_login'    => $line_user_id,
                                     'user_password' => $random_password,
                                     'remember'      => true,
@@ -208,6 +198,12 @@ if (!class_exists('line_login_api')) {
                                 if (is_wp_error($user_signon)) {
                                     wp_die('Login failed: ' . $user_signon->get_error_message());
                                 } else {
+                                    clean_user_cache($user->ID);
+                                    wp_clear_auth_cookie();
+                                    wp_set_current_user($user->ID, $user->user_login);
+                                    wp_set_auth_cookie($user->ID, true);
+                                    update_user_caches($user);
+                                    do_action('wp_login', $user->user_login, $user);
                                     wp_redirect(home_url());
                                     exit;
                                 }

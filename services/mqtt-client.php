@@ -272,12 +272,15 @@ if (!class_exists('mqtt_client')) {
                 <?php
             } else {
                 $line_login_api = new line_login_api();
+                $line_login_api->display_login_button();
+/*                
                 ?>
                 <p style="text-align:center;">
                     <?php echo $line_login_api->display_login_button();?>
                     <?php echo __( 'You are not logged in. Please click the button to log in.', 'your-text-domain' );?><br>
                 </p>
                 <?php
+*/                
             }
             return ob_get_clean();
         }

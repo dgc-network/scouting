@@ -153,6 +153,7 @@ if (!class_exists('mqtt_client')) {
 
         // Geolocation message
         function display_geolocation_message_list() {
+/*            
             if (is_user_logged_in()) {
                 error_log('User is logged in.');
             } else {
@@ -168,20 +169,7 @@ if (!class_exists('mqtt_client')) {
                 echo 'User not found or not authenticated.';
             }
             echo '<br>';
-/*
-            if (headers_sent()) {
-                wp_die('Headers already sent. Cannot set cookie.');
-            } else {
-                setcookie('custom_test_cookie', 'new_custom_value', time() + 3600, '/', '', is_ssl(), true);
-            }
-            
-            //setcookie('custom_test_cookie', wp_date(get_option('time_format'), time()), time() + 3600, '/', '', is_ssl(), true);
-            if (isset($_COOKIE['custom_test_cookie'])) {
-                echo 'Custom Test Cookie: ' . $_COOKIE['custom_test_cookie'] . '<br>';
-            } else {
-                echo 'Custom Test Cookie not set.<br>';
-            }
-*/            
+
             $result = '';
             foreach ($_COOKIE as $key => $value) {
                 if (strpos($key, 'wordpress_logged_in') !== false) {
@@ -224,7 +212,7 @@ if (!class_exists('mqtt_client')) {
             $site_id = get_user_meta($current_user_id, 'site_id', true);
             $image_url = get_post_meta($site_id, 'image_url', true);
             //$is_site_admin = $profiles_class->is_site_admin();
-    
+*/    
             // Check if the user is administrator
             //if ($is_site_admin || current_user_can('administrator')) {
             if (is_user_logged_in()) {
@@ -285,8 +273,8 @@ if (!class_exists('mqtt_client')) {
             } else {
                 $line_login_api = new line_login_api();
                 ?>
-                <p>
-                    <?php echo __( 'You do not have permission to access this page.', 'your-text-domain' );?><br>
+                <p style="text-align:center;">
+                    <?php echo __( 'You did not login. Please press the below button to login', 'your-text-domain' );?><br>
                     <?php echo $line_login_api->display_login_button();?>
                 </p>
                 <?php

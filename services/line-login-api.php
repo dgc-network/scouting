@@ -23,15 +23,12 @@ if (!class_exists('line_login_api')) {
     class line_login_api {
         private $channel_id;
         private $channel_access_token;
-        //public $channel_access_token;
 
         public function __construct() {
             $this->channel_id = get_option('line_login_channel_id');
             $this->channel_access_token = get_option('line_login_token_option');
             add_action( 'admin_init', array( $this, 'line_login_register_settings' ) );
-            add_shortcode( 'display-login', array( $this, 'display_shortcode'  ) );
-            //add_action('template_redirect', array( $this, 'handle_line_callback'));
-            //add_action('init', array( $this, 'handle_line_callback'));
+            add_action('init', array( $this, 'handle_line_callback'));
         }
 
         function line_login_register_settings() {
@@ -103,7 +100,6 @@ if (!class_exists('line_login_api')) {
                 if ($state !== $stored_state) {
                     wp_die('Invalid state parameter. Possible CSRF attack.');
                 }
-                
                 // Remove the transient as it's no longer needed
                 delete_transient('line_login_state');
         
@@ -117,99 +113,72 @@ if (!class_exists('line_login_api')) {
                         'client_secret' => get_option('line_login_client_secret'),
                     ),
                 ));
-        
                 if (is_wp_error($response)) {
                     wp_die('Failed to contact LINE API: ' . $response->get_error_message());
                 }
-        
                 $body = wp_remote_retrieve_body($response);
                 $json = json_decode($body, true);
         
                 if (isset($json['access_token'])) {
                     $access_token = $json['access_token'];
-        
                     // Use the access token to get the user's profile
                     $profile_response = wp_remote_get('https://api.line.me/v2/profile', array(
                         'headers' => array(
                             'Authorization' => 'Bearer ' . $access_token,
                         ),
                     ));
-        
                     if (is_wp_error($profile_response)) {
                         wp_die('Failed to retrieve LINE profile: ' . $profile_response->get_error_message());
                     }
-        
                     $profile = json_decode(wp_remote_retrieve_body($profile_response), true);
         
                     if (isset($profile['userId'])) {
                         // You now have the user's LINE ID
                         $line_user_id = $profile['userId'];
+                        $user_login = $profile['userId'];
                         $display_name = isset($profile['displayName']) ? $profile['displayName'] : '';
-                        error_log('Display LINE profile: ' . $display_name);
-
-                        // Check if the LINE user is already registered
-                        $user_query = new WP_User_Query(array(
-                            'meta_key'   => 'line_user_id',
-                            'meta_value' => $line_user_id,
+                        error_log('Found the LINE profile and display the name: ' . $display_name);
+        
+                        // Check if user exists
+                        global $wpdb;
+                        $user_id = $wpdb->get_var($wpdb->prepare(
+                            "SELECT user_id FROM $wpdb->usermeta WHERE meta_key = 'line_user_id' AND meta_value = %s",
+                            $line_user_id
                         ));
-                        
-                        $users = $user_query->get_results();
-                        $user = !empty($users) ? $users[0] : null;                        
-                                                
-                        error_log('Display user profile: ' . $user->display_name);
-
-                        // Check if user exists, log them in
-                        if ($user && $user instanceof WP_User) {
-                            // Check if headers have already been sent
-                            if (headers_sent()) {
-                                wp_die('Headers already sent. Cannot set cookie.');
-                            } else {
-                                clean_user_cache($user->ID);
-                                wp_clear_auth_cookie();
-                                wp_set_current_user($user->ID, $user->user_login);
-                                wp_set_auth_cookie($user->ID, true);
-                                update_user_caches($user);
-                                do_action('wp_login', $user->user_login, $user);
-                                wp_redirect(home_url());
-                                exit;
-                            }
+                        if ($user_id) {
+                            error_log('Found the user in WordPress and the user ID is ' . $user_id);
                         } else {
                             // Register a new user
                             $random_password = wp_generate_password();
-                            $user_data = array(
-                                'user_login'    => $line_user_id,
-                                'user_password' => $random_password,
-                                'nickname'     => $display_name,
-                                'display_name' => $display_name,
-                            );
-                            $user_id = wp_insert_user($user_data);
-                        
-                            if (!is_wp_error($user_id)) {
-                                update_user_meta($user_id, 'line_user_id', $line_user_id);
-                        
-                                // Log in the newly registered user
-                                $creds = array(
-                                    'user_login'    => $line_user_id,
-                                    'user_password' => $random_password,
-                                    'remember'      => true,
-                                );
-                                $user_signon = wp_signon($creds, false);
-                        
-                                if (is_wp_error($user_signon)) {
-                                    wp_die('Login failed: ' . $user_signon->get_error_message());
-                                } else {
-                                    clean_user_cache($user->ID);
-                                    wp_clear_auth_cookie();
-                                    wp_set_current_user($user->ID, $user->user_login);
-                                    wp_set_auth_cookie($user->ID, true);
-                                    update_user_caches($user);
-                                    do_action('wp_login', $user->user_login, $user);
-                                    wp_redirect(home_url());
-                                    exit;
-                                }
-                            } else {
+                            $user_id = wp_insert_user(array(
+                                'user_login' => $user_login,
+                                'user_pass'  => $random_password,
+                                'display_name' => $display_name // Adding display name to the registration process
+                            ));
+                            // Check if user registration failed
+                            if (is_wp_error($user_id)) {
+                                error_log('User registration failed: ' . $user_id->get_error_message());
                                 wp_die('User registration failed: ' . $user_id->get_error_message());
+                            } else {
+                                add_user_meta($user_id, 'line_user_id', $line_user_id);
+                                error_log('Registered a new user in WordPress and the user ID is ' . $user_id);
                             }
+                        }
+        
+                        // Check if headers have already been sent
+                        if (headers_sent()) {
+                            wp_die('Headers already sent. Cannot set cookie.');
+                        } else {
+                            clean_user_cache($user_id);
+                            wp_clear_auth_cookie();
+                            wp_set_current_user($user_id);
+                            wp_set_auth_cookie($user_id, true);
+                            // Log the user login action for consistency with WP behavior
+                            do_action('wp_login', $user_login, get_user_by('id', $user_id));
+                            error_log('Completed setting the auth cookie for the user ID: ' . $user_id);
+                            // Redirect the user after setting the cookie
+                            wp_redirect(home_url());
+                            exit;
                         }
                     } else {
                         wp_die('Failed to retrieve LINE user profile.');
@@ -217,11 +186,9 @@ if (!class_exists('line_login_api')) {
                 } else {
                     wp_die('Failed to get access token from LINE.');
                 }
-            } else {
-                //wp_die('Authorization code or state parameter is missing.');
             }
         }
-
+        
         function display_login_button() {
             $state = bin2hex(random_bytes(16)); // Generate a random string
             set_transient('line_login_state', $state, 3600); // Save it for 1 hour

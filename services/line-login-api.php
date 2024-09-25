@@ -197,7 +197,7 @@ if (!class_exists('line_login_api')) {
                  "&state=" . urlencode($state) .
                  "&scope=profile";
 
-            ob_start();
+            //ob_start();
             ?>
             <p style="text-align:center;">
                 <a href="<?php echo $line_auth_url;?>">    
@@ -206,7 +206,7 @@ if (!class_exists('line_login_api')) {
                 <?php echo __( 'You are not logged in. Please click the button to log in.', 'your-text-domain' );?><br>
             </p>
             <?php            
-            return ob_get_clean();
+            //return ob_get_clean();
         }
 
     }

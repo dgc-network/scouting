@@ -153,70 +153,10 @@ if (!class_exists('mqtt_client')) {
 
         // Geolocation message
         function display_geolocation_message_list() {
-/*            
+            echo 'Auth Cookie: ' . print_r($_COOKIE, true);
+            $user = wp_get_current_user();
+            echo 'User object: ' . print_r($user, true);
             if (is_user_logged_in()) {
-                error_log('User is logged in.');
-            } else {
-                error_log('User is NOT logged in.');
-            }
-            ob_start();
-            //$profiles_class = new display_profiles();
-            $current_user_id = get_current_user_id();
-            $current_user = get_userdata($current_user_id);
-            if ($current_user) {
-                echo 'Current User: ' . $current_user->display_name;
-            } else {
-                echo 'User not found or not authenticated.';
-            }
-            echo '<br>';
-
-            $result = '';
-            foreach ($_COOKIE as $key => $value) {
-                if (strpos($key, 'wordpress_logged_in') !== false) {
-                    //$result .= 'Authentication Cookie: ' . $key . ' => ' . $value . '<br>';
-                    echo 'Cookie: ' . $key . ' => ' . $value . '<br>';
-
-                    //$auth_cookie = $_COOKIE['wordpress_logged_in_b392295a386c8a4cf253989e195f9787'] ?? '';
-                    $auth_cookie = $_COOKIE[$key] ?? '';
-                    if ($auth_cookie) {
-                        list($username, $expiration, $token, $hmac) = explode('|', $auth_cookie);
-                    
-                        // Verify the expiration time
-                        if ($expiration < time()) {
-                            echo 'The cookie has expired.';
-                        } else {
-                            // Fetch the user by username
-                            $user = get_user_by('login', $username);
-
-                            if ($user) {
-                                // Fetch the session token from WordPress
-                                $session_manager = WP_Session_Tokens::get_instance($user->ID);
-                                $valid = $session_manager->verify($token);
-                        
-                                if ($valid) {
-                                    echo 'The cookie is valid, expiration:'.wp_date(get_option('date_format'), $expiration);
-                                    echo ' and the user '.$user->display_name.' is logged in.';
-                                } else {
-                                    echo 'Invalid session token.';
-                                }
-                            } else {
-                                echo 'User not found.';
-                            }
-                        }
-                    }
-                    echo '<br>';
-                }
-            }                                                    
-            //echo $result;
-
-            $site_id = get_user_meta($current_user_id, 'site_id', true);
-            $image_url = get_post_meta($site_id, 'image_url', true);
-            //$is_site_admin = $profiles_class->is_site_admin();
-*/    
-            // Check if the user is administrator
-            //if ($is_site_admin || current_user_can('administrator')) {
-            if (is_user_logged_in()) {
-
                 ?>
                 <?php //echo display_iso_helper_logo();?>
                 <h2><?php echo __( '座標訊息', 'your-text-domain' );?></h2>
@@ -273,14 +213,6 @@ if (!class_exists('mqtt_client')) {
             } else {
                 $line_login_api = new line_login_api();
                 $line_login_api->display_login_button();
-/*                
-                ?>
-                <p style="text-align:center;">
-                    <?php echo $line_login_api->display_login_button();?>
-                    <?php echo __( 'You are not logged in. Please click the button to log in.', 'your-text-domain' );?><br>
-                </p>
-                <?php
-*/                
             }
             return ob_get_clean();
         }

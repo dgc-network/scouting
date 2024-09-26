@@ -173,8 +173,12 @@ if (!class_exists('line_login_api')) {
                             wp_clear_auth_cookie();
                             wp_set_current_user($user_id);
                             wp_set_auth_cookie($user_id, true);
+                            error_log('Auth Cookie: ' . print_r($_COOKIE, true));
                             // Log the user login action for consistency with WP behavior
-                            do_action('wp_login', $user_login, get_user_by('id', $user_id));
+                            $user = get_user_by('id', $user_id);
+                            do_action('wp_login', $$user->user_login, $user);
+                            error_log('User object: ' . print_r($user, true));
+
                             error_log('Completed setting the auth cookie for the user ID: ' . $user_id);
                             // Redirect the user after setting the cookie
                             wp_redirect(home_url());

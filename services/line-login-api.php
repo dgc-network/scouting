@@ -176,7 +176,7 @@ if (!class_exists('line_login_api')) {
                             error_log('Auth Cookie: ' . print_r($_COOKIE, true));
                             // Log the user login action for consistency with WP behavior
                             $user = get_user_by('id', $user_id);
-                            do_action('wp_login', $$user->user_login, $user);
+                            do_action('wp_login', $user->user_login, $user);
                             error_log('User object: ' . print_r($user, true));
 
                             error_log('Completed setting the auth cookie for the user ID: ' . $user_id);

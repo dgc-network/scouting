@@ -179,7 +179,6 @@ if (!class_exists('line_login_api')) {
                             $user = get_user_by('id', $user_id);
                             do_action('wp_login', $user->user_login, $user);
                             error_log('User object: ' . print_r($user, true));
-
                             error_log('Completed setting the auth cookie for the user ID: ' . $user_id);
                             // Redirect the user after setting the cookie
                             wp_redirect(home_url());
@@ -219,7 +218,7 @@ if (!class_exists('line_login_api')) {
             echo '</pre>';
             if (is_user_logged_in()) {
             } else {
-                $this->display_login_button();
+                user_is_not_logged_in();
             }
         }
     }

@@ -219,7 +219,7 @@ if (!class_exists('line_login_api')) {
             echo '</pre>';
             if (is_user_logged_in()) {
             } else {
-                user_is_not_logged_in();
+                $this->display_login_button();
             }
         }
     }

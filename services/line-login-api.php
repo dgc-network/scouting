@@ -29,6 +29,7 @@ if (!class_exists('line_login_api')) {
             $this->channel_access_token = get_option('line_login_token_option');
             add_action( 'admin_init', array( $this, 'line_login_register_settings' ) );
             add_action('init', array( $this, 'handle_line_callback'));
+            add_shortcode( 'line-login', array( $this, 'display_message' ));
         }
 
         function line_login_register_settings() {
@@ -210,6 +211,17 @@ if (!class_exists('line_login_api')) {
             <?php            
         }
 
+        function display_message() {
+            echo '<pre>';
+            echo 'Auth Cookie: ' . print_r($_COOKIE, true) . "\n\n";
+            $user = wp_get_current_user();
+            echo 'User object: ' . print_r($user, true);
+            echo '</pre>';
+            if (is_user_logged_in()) {
+            } else {
+                user_is_not_logged_in();
+            }
+        }
     }
     $line_login_api = new line_login_api();
 }

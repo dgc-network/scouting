@@ -153,9 +153,12 @@ if (!class_exists('mqtt_client')) {
 
         // Geolocation message
         function display_geolocation_message_list() {
-            echo 'Auth Cookie: ' . print_r($_COOKIE, true);
+            echo '<pre>';
+            echo 'Auth Cookie: ' . print_r($_COOKIE, true) . "\n\n";
             $user = wp_get_current_user();
             echo 'User object: ' . print_r($user, true);
+            echo '</pre>';
+
             if (is_user_logged_in()) {
                 ?>
                 <?php //echo display_iso_helper_logo();?>

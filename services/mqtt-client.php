@@ -215,7 +215,7 @@ if (!class_exists('mqtt_client')) {
                 <?php
             } else {
                 $line_login_api = new line_login_api();
-                $line_login_api->display_login_button();
+                $line_login_api->display_line_login_button();
             }
             return ob_get_clean();
         }

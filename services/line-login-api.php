@@ -196,10 +196,11 @@ if (!class_exists('line_login_api')) {
         function display_line_login_button() {
             $state = bin2hex(random_bytes(16)); // Generate a random string
             set_transient('line_login_state', $state, 3600); // Save it for 1 hour
-            $line_auth_url = "https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=" . urlencode(get_option('line_login_client_id')) .
-                 "&redirect_uri=" . urlencode(get_option('line_login_redirect_uri')) .
-                 "&state=" . urlencode($state) .
-                 "&scope=profile";
+            $line_auth_url = "https://access.line.me/oauth2/v2.1/authorize?response_type=code" .
+                "&client_id=" . urlencode(get_option('line_login_client_id')) .
+                "&redirect_uri=" . urlencode(get_option('line_login_redirect_uri')) .
+                "&state=" . urlencode($state) .
+                "&scope=profile";
             ?>
             <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column;">
                 <a href="<?php echo $line_auth_url;?>">    

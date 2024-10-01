@@ -22,49 +22,49 @@ if (!class_exists('business_central')) {
         
             // Register fields for Business Central section
             add_settings_field(
-                'tenant-id',
+                'tenant_id',
                 'Tenant ID',
                 array( $this, 'tenant_id_callback' ),
                 'web-service-settings',
                 'business-central-section-settings',
             );
-            register_setting('web-service-settings', 'tenant-id');
+            register_setting('web-service-settings', 'tenant_id');
         
             add_settings_field(
-                'client-id',
+                'client_id',
                 'Client ID',
                 array( $this, 'client_id_callback' ),
                 'web-service-settings',
                 'business-central-section-settings',
             );
-            register_setting('web-service-settings', 'client-id');
+            register_setting('web-service-settings', 'client_id');
         
             add_settings_field(
-                'client-secret',
+                'client_secret',
                 'Client Secret',
                 array( $this, 'client_secret_callback' ),
                 'web-service-settings',
                 'business-central-section-settings',
             );
-            register_setting('web-service-settings', 'client-secret');
+            register_setting('web-service-settings', 'client_secret');
         
             add_settings_field(
-                'redirect-uri',
+                'redirect_uri',
                 'Redirect URI',
                 array( $this, 'redirect_uri_callback' ),
                 'web-service-settings',
                 'business-central-section-settings',
             );
-            register_setting('web-service-settings', 'redirect-uri');
+            register_setting('web-service-settings', 'redirect_uri');
         
             add_settings_field(
-                'bc-scope',
+                'bc_scope',
                 'Scope',
                 array( $this, 'bc_scope_callback' ),
                 'web-service-settings',
                 'business-central-section-settings',
             );
-            register_setting('web-service-settings', 'bc-scope');        
+            register_setting('web-service-settings', 'bc_scope');        
         }
 
         function business_central_section_settings_callback() {

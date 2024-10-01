@@ -33,7 +33,7 @@ function remove_admin_bar() {
         show_admin_bar(false);
     }
 }
-//add_action('after_setup_theme', 'remove_admin_bar');
+add_action('after_setup_theme', 'remove_admin_bar');
 
 function allow_subscribers_to_view_users($allcaps, $caps, $args) {
     // Check if the user is trying to view other users
@@ -47,7 +47,7 @@ function allow_subscribers_to_view_users($allcaps, $caps, $args) {
     }
     return $allcaps;
 }
-//add_filter('user_has_cap', 'allow_subscribers_to_view_users', 10, 3);
+add_filter('user_has_cap', 'allow_subscribers_to_view_users', 10, 3);
 
 function get_post_type_meta_keys($post_type) {
     global $wpdb;

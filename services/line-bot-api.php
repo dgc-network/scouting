@@ -46,31 +46,31 @@ if (!class_exists('line_bot_api')) {
 
             // Register fields for Line bot section
             add_settings_field(
-                'line-bot-token-option',
+                'line_bot_token_option',
                 'Line bot Token',
                 array( $this, 'line_bot_token_option_callback' ),
                 'web-service-settings',
                 'line-bot-section-settings'
             );
-            register_setting('web-service-settings', 'line-bot-token-option');
+            register_setting('web-service-settings', 'line_bot_token_option');
 
             add_settings_field(
-                'line-official-account',
+                'line_official_account',
                 'Line official account',
                 array( $this, 'line_official_account_callback' ),
                 'web-service-settings',
                 'line-bot-section-settings'
             );
-            register_setting('web-service-settings', 'line-official-account');
+            register_setting('web-service-settings', 'line_official_account');
 
             add_settings_field(
-                'line-official-qr-code',
+                'line_official_qr_code',
                 'Line official qr-code',
                 array( $this, 'line_official_qr_code_callback' ),
                 'web-service-settings',
                 'line-bot-section-settings'
             );
-            register_setting('web-service-settings', 'line-official-qr-code');
+            register_setting('web-service-settings', 'line_official_qr_code');
         }
 
         function line_bot_section_settings_callback() {
@@ -79,197 +79,113 @@ if (!class_exists('line_bot_api')) {
 
         function line_bot_token_option_callback() {
             $value = get_option('line_bot_token_option');
-            echo '<input type="text" id="line-bot-token-option" name="line_bot_token_option" style="width:100%;" value="' . esc_attr($value) . '" />';
+            echo '<input type="text" name="line_bot_token_option" style="width:100%;" value="' . esc_attr($value) . '" />';
         }
 
         function line_official_account_callback() {
             $value = get_option('line_official_account');
-            echo '<input type="text" id="line-official-account" name="line_official_account" style="width:100%;" value="' . esc_attr($value) . '" />';
+            echo '<input type="text" name="line_official_account" style="width:100%;" value="' . esc_attr($value) . '" />';
         }
 
         function line_official_qr_code_callback() {
             $value = get_option('line_official_qr_code');
-            echo '<input type="text" id="line-official-qr-code" name="line_official_qr_code" style="width:100%;" value="' . esc_attr($value) . '" />';
+            echo '<input type="text" name="line_official_qr_code" style="width:100%;" value="' . esc_attr($value) . '" />';
         }
 
-        // login callback
-        function line_user_login() {
-            ini_set('display_errors', 1);
-            ini_set('display_startup_errors', 1);
-            error_reporting(E_ALL);
-            
-            session_start();
+        // Flex message
+        function set_bubble_message($params) {
+            $display_name = $params['display_name'];
+            $link_uri = $params['link_uri'];
+            $text_message = $params['text_message'];
         
-            // Set a cooldown period (e.g., 10 seconds)
-            $cooldown_period = 10;
-        
-            // Get the last execution time from the session
-            $last_execution = isset($_SESSION['last_line_user_login']) ? $_SESSION['last_line_user_login'] : 0;
-            $current_time = time();
-        
-            // Check if the cooldown period has passed
-            if (($current_time - $last_execution) < $cooldown_period) {
-                error_log('Throttled: too many requests');
-                return; // Exit if within cooldown period
-            }
-        
-            // Update the last execution time
-            $_SESSION['last_line_user_login'] = $current_time;
-        
-            // Start output buffering to avoid premature output
-            ob_start();
-        
-            // Example Line user ID (replace with actual logic to get the Line user ID)
-            $line_user_id = 'U1b08294900a36077765643d8ae14a402';
-        
-            // Check if the user is already logged in
-            if (is_user_logged_in()) {
-                error_log('User is already logged in');
-                ob_end_flush();
-                return;
-            }
-        
-            // Attempt to find the user by their login
-            $user = get_user_by('login', $line_user_id);
-        
-            if (!$user) {
-                // User does not exist, create a new user
-                $user_id = wp_create_user($line_user_id, wp_generate_password(), $line_user_id);
-                if (is_wp_error($user_id)) {
-                    // Handle user creation error
-                    error_log('Failed to create user: ' . $user_id->get_error_message());
-                    ob_end_flush();
-                    return;
-                }
-                $user = get_user_by('id', $user_id);
-                error_log('Created new user with ID: ' . $user_id);
-            } else {
-                error_log('User exists with ID: ' . $user->ID);
-            }
-        
-            if ($user) {
-                // Log the user in
-                wp_set_current_user($user->ID);
-                wp_set_auth_cookie($user->ID);
-                do_action('wp_login', $user->user_login);
-                error_log('User logged in with ID: ' . $user->ID);
-        
-                // Flush the output buffer and set cookies
-                ob_end_flush();
-        
-                // Redirect to avoid direct output and refresh session
-                wp_redirect(home_url());
-                exit;
-            } else {
-                error_log('User authentication failed');
-                ob_end_flush();
-                return;
-            }
-        }
-
-        function check_login_status() {
-            if (is_user_logged_in()) {
-                echo '<h1>Hi, ' . wp_get_current_user()->display_name . '</h1>';
-            } else {
-                echo '<h1>Login failed or user not logged in</h1>';
-            }
-        }
-        
-        function handle_line_callback() {
-            if (isset($_GET['code']) && isset($_GET['state'])) {
-/*            
-                $code = $_GET['code'];
-                // Exchange code for access token
-                $token_response = wp_remote_post('https://api.line.me/oauth2/v2.1/token', array(
-                    'body' => array(
-                        'grant_type' => 'authorization_code',
-                        'code' => $code,
-                        'redirect_uri' => 'YOUR_CALLBACK_URL',
-                        'client_id' => 'YOUR_CHANNEL_ID',
-                        'client_secret' => 'YOUR_CHANNEL_SECRET'
-                    )
-                ));
-                $token_data = json_decode(wp_remote_retrieve_body($token_response), true);
-                $access_token = $token_data['access_token'];
-*/        
-                // Get user profile
-                $profile_response = wp_remote_get('https://api.line.me/v2/profile', array(
-                    'headers' => array(
-                        //'Authorization' => 'Bearer ' . $access_token
-                        'Authorization' => 'Bearer ' . $this->channel_access_token,
-                    )
-                ));
-                $profile_data = json_decode(wp_remote_retrieve_body($profile_response), true);
-                $line_user_id = $profile_data['userId'];
-
-                // Check if user exists, if not, create a new user
-                $user = get_user_by('login', $line_user_id);
-                if (!$user) {
-                    //$user_id = wp_create_user($line_user_id, wp_generate_password(), $line_user_id . '@example.com');
-                    $user_id = wp_create_user($line_user_id, wp_generate_password(), $line_user_id);
-                    $user = get_user_by('id', $user_id);
-                }
-        
-                // Log the user in
-                wp_set_current_user($user->ID);
-                wp_set_auth_cookie($user->ID);
-                wp_redirect(home_url());
-                exit;
-            }
-        }
-        
-        function generate_otp() {
-            return rand(100000, 999999); // Simple 6-digit OTP
-        }
-
-        function send_otp_to_line($line_user_id, $otp) {
-            //$access_token = 'YOUR_LINE_CHANNEL_ACCESS_TOKEN';
-            $message = array(
-                'to' => $line_user_id,
-                'messages' => array(
+            $header_contents = $params['header_contents'];
+            $body_contents = $params['body_contents'];
+            $footer_contents = $params['footer_contents'];
+        /*
+            // Header contents can be modified as needed or left empty if not used
+            if (empty($header_contents)) {
+                $header_contents = array(
                     array(
                         'type' => 'text',
-                        'text' => 'Your OTP is: ' . $otp
-                    )
-                )
+                        'text' => 'Hello, ' . $display_name,
+                        'size' => 'lg',
+                        'weight' => 'bold',
+                    ),
+                );
+            }
+        
+            // Body contents with text and message details
+            if (empty($body_contents)) {
+                $body_contents = array(
+                    array(
+                        'type' => 'text',
+                        'text' => $text_message,
+                        'wrap' => true,
+                    ),
+                );
+            }
+        
+            // Footer contents with a button
+            if (empty($footer_contents)) {
+                $footer_contents = array(
+                    array(
+                        'type' => 'button',
+                        'action' => array(
+                            'type' => 'uri',
+                            'label' => 'Click me!',
+                            'uri' => $link_uri, // Use the desired URI
+                        ),
+                        'style' => 'primary',
+                        'margin' => 'sm',
+                    ),
+                );
+            }
+        */
+            // Initial bubble message structure
+            $bubble_message = array(
+                'type' => 'flex',
+                'altText' => $text_message,
+                'contents' => array(
+                    'type' => 'bubble',
+                ),
             );
         
-            wp_remote_post('https://api.line.me/v2/bot/message/push', array(
-                'headers' => array(
-                    'Content-Type' => 'application/json',
-                    //'Authorization' => 'Bearer ' . $access_token
-                    'Authorization' => 'Bearer ' . $this->channel_access_token,
-                ),
-                'body' => json_encode($message)
-            ));
-        }
-        
-        function check_otp_form() {
-            if (isset($_POST['otp'])) {
-                $entered_otp = sanitize_text_field($_POST['otp']);
-                $stored_otp = get_user_meta(get_current_user_id(), 'otp', true);
-        
-                if ($entered_otp === $stored_otp) {
-                    // OTP verified
-                    delete_user_meta(get_current_user_id(), 'otp'); // Remove OTP after verification
-                    // Redirect to the desired page
-                    wp_redirect(home_url());
-                    exit;
-                } else {
-                    // OTP verification failed
-                    echo 'Invalid OTP.';
-                }
+            // Add header contents if not empty
+            if (is_array($header_contents) && !empty($header_contents)) {
+                $bubble_message['contents']['header'] = array(
+                    'type' => 'box',
+                    'layout' => 'vertical',
+                    'contents' => $header_contents,
+                );
             }
-        }
         
+            // Add body contents if not empty
+            if (is_array($body_contents) && !empty($body_contents)) {
+                $bubble_message['contents']['body'] = array(
+                    'type' => 'box',
+                    'layout' => 'vertical',
+                    'contents' => $body_contents,
+                );
+            }
+        
+            // Add footer contents if not empty
+            if (is_array($footer_contents) && !empty($footer_contents)) {
+                $bubble_message['contents']['footer'] = array(
+                    'type' => 'box',
+                    'layout' => 'vertical',
+                    'contents' => $footer_contents,
+                );
+            }
+        
+            return $bubble_message;
+        }
+                
         // line-bot-api
         public function broadcastMessage($message) {
-    
             $header = array(
                 'Content-Type: application/json',
                 'Authorization: Bearer ' . $this->channel_access_token,
             );
-    
             $context = stream_context_create([
                 'http' => [
                     'ignore_errors' => true,
@@ -278,45 +194,76 @@ if (!class_exists('line_bot_api')) {
                     'content' => json_encode($message),
                 ],
             ]);
-    
             $response = file_get_contents('https://api.line.me/v2/bot/message/broadcast', false, $context);
             if (strpos($http_response_header[0], '200') === false) {
                 error_log('Request failed: ' . $response);
             }
         }
     
-        /**
-         * @param array<string, mixed> $message
-         * @return void
-         */
         public function replyMessage($message) {
-    
             $header = array(
                 'Content-Type: application/json',
                 'Authorization: Bearer ' . $this->channel_access_token,
             );
-    
             $context = stream_context_create([
                 'http' => [
                     'ignore_errors' => true,
                     'method' => 'POST',
                     'header' => implode("\r\n", $header),
-                    //'content' => json_encode($message, JSON_UNESCAPED_UNICODE),
                     'content' => json_encode($message),
                 ],
             ]);
-    
             $response = file_get_contents('https://api.line.me/v2/bot/message/reply', false, $context);
             if (strpos($http_response_header[0], '200') === false) {
                 error_log('Request failed: ' . $response);
             }
         }
     
-        /**
-         * @param array<string, mixed> $message
-         * @return void
-         */
         public function pushMessage($message) {
+            $header = array(
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $this->channel_access_token,
+            );
+            $context = stream_context_create([
+                'http' => [
+                    'ignore_errors' => true,
+                    'method' => 'POST',
+                    'header' => implode("\r\n", $header),
+                    'content' => json_encode($message),
+                ],
+            ]);
+            $response = file_get_contents('https://api.line.me/v2/bot/message/push', false, $context);
+            if (strpos($http_response_header[0], '200') === false) {
+                error_log('Request failed: ' . $response);
+            }
+        }
+    
+        public function getProfile($userId) {
+            $header = array(
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $this->channel_access_token,
+            );
+            $context = stream_context_create([
+                'http' => [
+                    'ignore_errors' => true,
+                    'method' => 'GET',
+                    'header' => implode("\r\n", $header),
+                ],
+            ]);
+            $response = file_get_contents('https://api.line.me/v2/bot/profile/'.$userId, false, $context);
+            if (strpos($http_response_header[0], '200') === false) {
+                error_log('Request failed: ' . $response);
+            }
+            $response = stripslashes($response);
+            $response = json_decode($response, true);
+            return $response;
+        }
+    
+        /**
+         * @param string $groupId
+         * @return object
+         */
+        public function getGroupSummary($groupId) {
     
             $header = array(
                 'Content-Type: application/json',
@@ -326,16 +273,50 @@ if (!class_exists('line_bot_api')) {
             $context = stream_context_create([
                 'http' => [
                     'ignore_errors' => true,
-                    'method' => 'POST',
+                    'method' => 'GET',
                     'header' => implode("\r\n", $header),
-                    'content' => json_encode($message),
                 ],
             ]);
     
-            $response = file_get_contents('https://api.line.me/v2/bot/message/push', false, $context);
+            $response = file_get_contents('https://api.line.me/v2/bot/group/'.$groupId.'/summary', false, $context);
             if (strpos($http_response_header[0], '200') === false) {
                 error_log('Request failed: ' . $response);
             }
+    
+            $response = stripslashes($response);
+            $response = json_decode($response, true);
+            
+            return $response;
+        }
+    
+        /**
+         * @param string $groupId, $userId
+         * @return object
+         */
+        public function getGroupMemberProfile($groupId, $userId) {
+    
+            $header = array(
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $this->channel_access_token,
+            );
+    
+            $context = stream_context_create([
+                'http' => [
+                    'ignore_errors' => true,
+                    'method' => 'GET',
+                    'header' => implode("\r\n", $header),
+                ],
+            ]);
+    
+            $response = file_get_contents('https://api.line.me/v2/bot/group/'.$groupId.'/member'.'/'.$userId, false, $context);
+            if (strpos($http_response_header[0], '200') === false) {
+                error_log('Request failed: ' . $response);
+            }
+    
+            $response = stripslashes($response);
+            $response = json_decode($response, true);
+            
+            return $response;
         }
     
         /**
@@ -422,97 +403,6 @@ if (!class_exists('line_bot_api')) {
             if (strpos($http_response_header[0], '200') === false) {
                 error_log('Request failed: ' . $response);
             }
-        }
-    
-        /**
-         * @param string $userId
-         * @return object
-         */
-        public function getProfile($userId) {
-    
-            $header = array(
-                'Content-Type: application/json',
-                'Authorization: Bearer ' . $this->channel_access_token,
-            );
-    
-            $context = stream_context_create([
-                'http' => [
-                    'ignore_errors' => true,
-                    'method' => 'GET',
-                    'header' => implode("\r\n", $header),
-                    //'content' => json_encode($userId),
-                ],
-            ]);
-    
-            $response = file_get_contents('https://api.line.me/v2/bot/profile/'.$userId, false, $context);
-            if (strpos($http_response_header[0], '200') === false) {
-                error_log('Request failed: ' . $response);
-            }
-    
-            $response = stripslashes($response);
-            $response = json_decode($response, true);
-            
-            return $response;
-        }
-    
-        /**
-         * @param string $groupId
-         * @return object
-         */
-        public function getGroupSummary($groupId) {
-    
-            $header = array(
-                'Content-Type: application/json',
-                'Authorization: Bearer ' . $this->channel_access_token,
-            );
-    
-            $context = stream_context_create([
-                'http' => [
-                    'ignore_errors' => true,
-                    'method' => 'GET',
-                    'header' => implode("\r\n", $header),
-                ],
-            ]);
-    
-            $response = file_get_contents('https://api.line.me/v2/bot/group/'.$groupId.'/summary', false, $context);
-            if (strpos($http_response_header[0], '200') === false) {
-                error_log('Request failed: ' . $response);
-            }
-    
-            $response = stripslashes($response);
-            $response = json_decode($response, true);
-            
-            return $response;
-        }
-    
-        /**
-         * @param string $groupId, $userId
-         * @return object
-         */
-        public function getGroupMemberProfile($groupId, $userId) {
-    
-            $header = array(
-                'Content-Type: application/json',
-                'Authorization: Bearer ' . $this->channel_access_token,
-            );
-    
-            $context = stream_context_create([
-                'http' => [
-                    'ignore_errors' => true,
-                    'method' => 'GET',
-                    'header' => implode("\r\n", $header),
-                ],
-            ]);
-    
-            $response = file_get_contents('https://api.line.me/v2/bot/group/'.$groupId.'/member'.'/'.$userId, false, $context);
-            if (strpos($http_response_header[0], '200') === false) {
-                error_log('Request failed: ' . $response);
-            }
-    
-            $response = stripslashes($response);
-            $response = json_decode($response, true);
-            
-            return $response;
         }
     
         /**

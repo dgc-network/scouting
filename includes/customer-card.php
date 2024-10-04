@@ -63,6 +63,7 @@ function display_customers_list() {
     // Display the customer data
     //ob_start();
     ?>
+    <h2>Customers list</h2>
     <ul>
         <?php foreach ($customers as $customer): ?>
             <li><?php echo esc_html($customer['displayName'] . ' (' . $customer['id'] . ')'); ?></li>

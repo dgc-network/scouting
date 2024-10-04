@@ -74,6 +74,45 @@ function display_customers_list() {
 
 // Function to get the company ID
 function get_company_id($access_token) {
+    // Retrieve tenant ID from WordPress options
+    $tenant_id = get_option('tenant_id');
+    
+    if (empty($tenant_id)) {
+        return 'Error: Tenant ID is missing.';
+    }
+
+    // Define the URL to get the list of companies
+    $url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/api/v1.0/companies";
+    
+    // Make the API request to retrieve company information
+    $response = wp_remote_get($url, [
+        'headers' => [
+            'Authorization' => 'Bearer ' . $access_token,
+            'Content-Type'  => 'application/json'
+        ]
+    ]);
+
+    // Check if the request failed
+    if (is_wp_error($response)) {
+        return 'Error: Unable to fetch company ID. ' . $response->get_error_message();
+    }
+
+    // Decode the API response body
+    $body = json_decode(wp_remote_retrieve_body($response));
+
+    // Check if the response contains the expected structure
+    if (empty($body) || !isset($body->value) || !is_array($body->value) || count($body->value) === 0) {
+        return 'Error: No companies found in the response. Please check if the access token is valid and if there are companies available.';
+    }
+
+    // Log the response for debugging (optional)
+    error_log(print_r($body, true)); // This will log the response to the WordPress debug log
+
+    // Return the ID of the first company in the response
+    return $body->value[0]->id ?? '';
+}
+/*
+function get_company_id($access_token) {
     $tenant_id = get_option('tenant_id');
     $url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/api/v1.0/companies";
     
@@ -93,7 +132,7 @@ function get_company_id($access_token) {
     // Assuming you want the first company in the list
     return $body->value[0]->id ?? '';
 }
-
+*/
 // Function to get the customers list
 function get_customers($access_token, $company_id) {
     $url = "https://api.businesscentral.dynamics.com/v2.0/{tenant_id}/api/v1.0/companies($company_id)/customers";

@@ -64,7 +64,7 @@ function display_customers_list() {
     ob_start();
     ?>
     <h2>Customers list</h2>
-    <div><?php echo $company_id;?></div>
+    <div><?php echo 'Company ID: '.$company_id;?></div>
     <ul>
         <?php foreach ($customers as $customer): ?>
             <li><?php echo esc_html($customer['displayName'] . ' (' . $customer['id'] . ')'); ?></li>

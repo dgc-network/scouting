@@ -61,7 +61,7 @@ function display_customers_list() {
     }
 
     // Display the customer data
-    //ob_start();
+    ob_start();
     ?>
     <h2>Customers list</h2>
     <ul>
@@ -70,7 +70,7 @@ function display_customers_list() {
         <?php endforeach; ?>
     </ul>
     <?php
-    //return ob_get_clean();
+    return ob_get_clean();
 }
 
 // Function to get the company ID

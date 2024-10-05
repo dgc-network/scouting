@@ -61,6 +61,36 @@ function display_accounts_chart() {
 }
 
 function get_chart_of_accounts($access_token) {
+    $tenant_id = get_option('tenant_id');
+    $company_name = 'My%20Company'; // Replace with your actual company name
+    $url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/Sandbox/WS/$company_name/Page/Chart_of_Accounts";
+
+    $response = wp_remote_get($url, [
+        'headers' => [
+            'Authorization' => 'Bearer ' . $access_token,
+            'Content-Type'  => 'application/json'
+        ]
+    ]);
+
+    if (is_wp_error($response)) {
+        return 'Error: Unable to retrieve Chart of Accounts. ' . $response->get_error_message();
+    }
+
+    $body = wp_remote_retrieve_body($response);
+
+    // Log the raw response for analysis
+    error_log("Chart of Accounts Response (Raw): " . print_r($body, true));
+
+    $data = json_decode($body, true);
+
+    if (empty($data) || !isset($data['value']) || !is_array($data['value'])) {
+        return 'Error: No Chart of Accounts found in the response. Please check the URL, access token, or permissions.';
+    }
+
+    return $data['value'];
+}
+/*
+function get_chart_of_accounts($access_token) {
     // Retrieve the tenant ID and company name from WordPress options
     $tenant_id = get_option('tenant_id');
     $company_name = 'My%20Company'; // Replace with your actual company name (use %20 for spaces)
@@ -92,3 +122,4 @@ function get_chart_of_accounts($access_token) {
     // Return the Chart of Accounts data
     return $body['value'];
 }
+*/

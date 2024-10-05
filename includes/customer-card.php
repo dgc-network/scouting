@@ -74,6 +74,39 @@ function display_customers_list() {
     return ob_get_clean();
 }
 
+function get_company_id($access_token) {
+    $tenant_id = get_option('tenant_id');
+    $url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/Sandbox/api/v1.0/companies";
+
+    $response = wp_remote_get($url, [
+        'headers' => [
+            'Authorization' => 'Bearer ' . $access_token,
+            'Content-Type'  => 'application/json'
+        ]
+    ]);
+
+    // Log the raw response for debugging
+    error_log("Response: " . print_r($response, true));
+
+    // Check if the request failed
+    if (is_wp_error($response)) {
+        return 'Error: Unable to fetch company ID. ' . $response->get_error_message();
+    }
+
+    $body = json_decode(wp_remote_retrieve_body($response));
+
+    // Log the decoded body for inspection
+    error_log("Response Body: " . print_r($body, true));
+
+    // Check if the response contains company data
+    if (empty($body) || !isset($body->value) || !is_array($body->value) || count($body->value) === 0) {
+        return 'Error: No companies found in the response. Please check if the access token is valid and if there are companies available.';
+    }
+
+    // Return the first company's ID
+    return $body->value[0]->id ?? '';
+}
+/*
 // Function to get the company ID
 function get_company_id($access_token) {
     // Retrieve tenant ID from WordPress options

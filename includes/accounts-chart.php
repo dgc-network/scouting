@@ -20,6 +20,42 @@ function display_accounts_chart() {
         'client_secret' => $client_secret,
         'scope' => $scope
     ];
+    
+    // Make the token request
+    $response = wp_remote_post($token_url, [
+        'body' => $body
+    ]);
+    
+    // Check for errors in the response
+    if (is_wp_error($response)) {
+        error_log('Failed to retrieve access token: ' . $response->get_error_message());
+        return 'Failed to retrieve access token. Please check the credentials.';
+    }
+    
+    // Decode the response and retrieve the access token
+    $token_response = json_decode(wp_remote_retrieve_body($response), true);
+    
+    // Log the token response for debugging
+    error_log('Token Response: ' . print_r($token_response, true));
+    
+    // Retrieve access token
+    $access_token = $token_response['access_token'] ?? '';
+    
+    // If access token is empty or not set, return an error
+    if (empty($access_token)) {
+        return 'Error: Unable to retrieve access token. Please check the credentials.';
+    }
+/*    
+    // Step 1: Get access token using OAuth 2.0 Client Credentials flow
+    $token_url = "https://login.microsoftonline.com/$tenant_id/oauth2/v2.0/token";
+
+    // Prepare the request body for the OAuth 2.0 token request
+    $body = [
+        'grant_type' => 'client_credentials',
+        'client_id' => $client_id,
+        'client_secret' => $client_secret,
+        'scope' => $scope
+    ];
 
     $response = wp_remote_post($token_url, [
         'body' => $body
@@ -38,7 +74,7 @@ function display_accounts_chart() {
     if (empty($access_token)) {
         return 'Error: Unable to retrieve access token.';
     }
-
+*/
     // Step 2: Get the Chart of Accounts using the access token
     $accounts = get_chart_of_accounts($access_token);
 

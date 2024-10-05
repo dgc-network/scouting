@@ -108,8 +108,9 @@ function get_company_id($access_token) {
 
 // Function to get the customers list
 function get_customers($access_token, $company_id) {
-    $url = "https://api.businesscentral.dynamics.com/v2.0/{tenant_id}/api/v1.0/companies($company_id)/customers";
-    $url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/Sandbox/WS/My%20Company/Page/Chart_of_Accounts";
+    $tenant_id = get_option('tenant_id');
+    $url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/api/v1.0/companies($company_id)/customers";
+    //$url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/Sandbox/WS/My%20Company/Page/Chart_of_Accounts";
 
     $response = wp_remote_get($url, [
         'headers' => [

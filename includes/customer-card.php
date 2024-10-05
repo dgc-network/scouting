@@ -86,6 +86,11 @@ function get_company_id($access_token) {
     // Define the URL to get the list of companies
     $url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/api/v1.0/companies";
     $url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/Sandbox/WS/My%20Company/Page/Chart_of_Accounts";
+    // For retrieving companies in the sandbox environment
+    $url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/Sandbox/api/v1.0/companies";
+
+    // For accessing a specific page, such as "Chart of Accounts", in the sandbox
+    //$url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/Sandbox/WS/My%20Company/Page/Chart_of_Accounts";
     
     // Make the API request to retrieve company information
     $response = wp_remote_get($url, [

@@ -66,5 +66,5 @@ function isURL($str) {
 }
 
 require_once plugin_dir_path( __FILE__ ) . 'services/services.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/customer-card.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/accounts-chart.php';
 

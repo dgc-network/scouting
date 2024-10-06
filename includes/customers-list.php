@@ -82,6 +82,7 @@ function display_customers_list() {
 function get_company_id($access_token) {
     $tenant_id = get_option('tenant_id');
     $url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/Sandbox/api/v1.0/companies";
+    $url = "https://api.businesscentral.dynamics.com/v2.0/".$tenant_id."/Sandbox/api/v1.0/companies";
 
     $response = wp_remote_get($url, [
         'headers' => [
@@ -131,57 +132,12 @@ function get_company_id($access_token) {
 
     return $body->value[0]->id ?? '';
 }
-/*
-function get_company_id($access_token) {
-    $tenant_id = get_option('tenant_id');
-    $url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/Sandbox/api/v1.0/companies";
 
-    $response = wp_remote_get($url, [
-        'headers' => [
-            'Authorization' => 'Bearer ' . $access_token,
-            'Content-Type'  => 'application/json'
-        ]
-    ]);
-
-    // Log the raw response for debugging
-    error_log("Response: " . print_r($response, true));
-
-    // Check if the request failed
-    if (is_wp_error($response)) {
-        return 'Error: Unable to fetch company ID. ' . $response->get_error_message();
-    }
-
-    $response_code = wp_remote_retrieve_response_code($response);
-    $response_body = wp_remote_retrieve_body($response);
-
-    // Check the response code for unauthorized access
-    if ($response_code == 401) {
-        return "Error: Unauthorized. Check if the access token has the required permissions and is not expired.";
-    }
-
-    if ($response_code !== 200) {
-        // Log the detailed response body for investigation
-        error_log("Response Body: " . $response_body);
-        $error_message = json_decode($response_body);
-        $error_details = $error_message->error->message ?? 'Unknown error';
-
-        return "Error: Failed to fetch company ID. HTTP Response Code: $response_code. Details: $error_details";
-    }
-
-    $body = json_decode($response_body);
-
-    if (empty($body) || !isset($body->value) || !is_array($body->value) || count($body->value) === 0) {
-        return 'Error: No companies found in the response. Please check if the access token is valid and if there are companies available.';
-    }
-
-    return $body->value[0]->id ?? '';
-}
-*/
 // Function to get the customers list
 function get_customers($access_token, $company_id) {
     $tenant_id = get_option('tenant_id');
     $url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/Sandbox/api/v1.0/companies($company_id)/customers";
-    //$url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/api/v1.0/companies($company_id)/customers";
+    $url = "https://api.businesscentral.dynamics.com/v2.0/".$tenant_id."/Sandbox/api/v1.0/companies(".$company_id.")/customers";
 
     $response = wp_remote_get($url, [
         'headers' => [

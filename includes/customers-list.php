@@ -90,7 +90,7 @@ function display_customers_list() {
 function get_company_id($access_token) {
     $tenant_id = get_option('tenant_id');
     $url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/Sandbox/api/v1.0/companies";
-    $url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/api/v1.0/companies";
+    //$url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/api/v1.0/companies";
 
     $response = wp_remote_get($url, [
         'headers' => [
@@ -133,7 +133,7 @@ function get_company_id($access_token) {
 function get_customers($access_token, $company_id) {
     $tenant_id = get_option('tenant_id');
     $url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/Sandbox/api/v1.0/companies($company_id)/customers";
-    $url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/api/v1.0/companies($company_id)/customers";
+    //$url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/api/v1.0/companies($company_id)/customers";
 
     $response = wp_remote_get($url, [
         'headers' => [

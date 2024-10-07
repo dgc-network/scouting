@@ -84,6 +84,10 @@ function get_company_id($access_token) {
     $url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/Sandbox/api/v1.0/companies";
     $url = "https://api.businesscentral.dynamics.com/v2.0/".$tenant_id."/Sandbox/api/v1.0/companies";
 
+    $userDomain = "iso-helper.com"; // e.g., contoso.com
+    $environment = "Sandbox"; // e.g., Production or Sandbox
+    $url = "https://api.businesscentral.dynamics.com/v2.0/$userDomain/$environment/api/v2.0/companies";
+
     $response = wp_remote_get($url, [
         'headers' => [
             'Authorization' => 'Bearer ' . $access_token,
@@ -139,6 +143,10 @@ function get_customers($access_token, $company_id) {
     $url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/Sandbox/api/v1.0/companies($company_id)/customers";
     $url = "https://api.businesscentral.dynamics.com/v2.0/".$tenant_id."/Sandbox/api/v1.0/companies(".$company_id.")/customers";
 
+    $userDomain = "iso-helper.com"; // e.g., contoso.com
+    $environment = "Sandbox"; // e.g., Sandbox or Production
+    $url = "https://api.businesscentral.dynamics.com/v2.0/".$userDomain."/".$environment."/api/v2.0/companies(".$company_id.")/customers";
+    
     $response = wp_remote_get($url, [
         'headers' => [
             'Authorization' => 'Bearer ' . $access_token,

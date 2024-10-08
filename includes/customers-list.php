@@ -13,6 +13,7 @@ function display_customers_list() {
     $client_secret = get_option('client_secret');
     $tenant_id = get_option('tenant_id');
     $scope = 'https://api.businesscentral.dynamics.com/.default';
+    $scope = 'Financials.ReadWrite.All';
 
     // Step 1: Get access token using OAuth 2.0 Client Credentials flow
     $token_url = "https://login.microsoftonline.com/$tenant_id/oauth2/v2.0/token";

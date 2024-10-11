@@ -8,6 +8,58 @@
 // Hook to create a custom page in WordPress
 add_shortcode('display-customers-list', 'display_customers_list');
 function display_customers_list() {
+    if ($_GET['_select_profile']=='business-central') {
+        // Example usage
+        $current_user_id = get_current_user_id();
+        $site_id = get_user_meta($current_user_id, 'site_id', true);
+        $_SESSION['original_url'] = get_current_page_url();
+
+        $params = array(
+            //'company' => 'CRONUS USA, Inc.',
+            'company' => 'dg',
+            //'service' => 'Chart_of_Accounts',
+            'service' => 'Customers',
+            //'post_type' => 'POST',
+            //'post_type' => 'PATCH',
+            //'post_type' => 'DELETE',
+            'etag_data' => array( // Include any data you need to send with the GET/PATCH/DELETE request
+                //'Name' => (string) get_post_time('U', true, $site_id),
+                //'No' => (string) time(),
+                //'Name' => 'New customer',
+                'No' => '1716883625',
+                //'Name' => '新客戶',
+                //'Display_Name' => get_the_title($site_id),
+                //'Balance' => 0,
+            ),
+            'body_data' => array( // Include any data you need to send with the POST request
+                //'Name' => (string) get_post_time('U', true, $site_id),
+                'No' => (string) time(),
+                //'Name' => 'New customer',
+                //'No' => '1716883625',
+                'Name' => '新客戶',
+                //'Display_Name' => get_the_title($site_id),
+                //'Balance' => 0,
+            ),
+        );    
+        redirect_to_authorization_url($params);
+    }
+
+    redirect_to_authorization_url($params);
+    // Check if the result is ready and retrieve it
+    if (isset($_GET['oauth_result_ready']) && $_GET['oauth_result_ready'] == '1') {
+        $oauth_callback_result = get_transient('oauth_callback_result');
+        if (!empty($oauth_callback_result)) {
+            echo '<pre>';
+            print_r($oauth_callback_result);
+            echo '</pre>';
+            delete_transient('oauth_callback_result'); // Clean up the transient
+        }
+    }
+
+}
+
+function display_customers_list_backup() {
+
     // Retrieve necessary options from the database
     $client_id = get_option('client_id');
     $client_secret = get_option('client_secret');

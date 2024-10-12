@@ -112,8 +112,7 @@ function display_customers_list() {
     error_log("Display Customers List Shortcode called.");
 
     // Check if OAuth result is ready and display it
-    //if (isset($_GET['oauth_result_ready']) && $_GET['oauth_result_ready'] == '1') {
-    if (isset($_GET['code'])) {
+    if (isset($_GET['oauth_result_ready']) && $_GET['oauth_result_ready'] == '1') {
         error_log("OAuth result ready.");
         $oauth_callback_result = get_transient('oauth_callback_result');
         if (!empty($oauth_callback_result)) {
@@ -132,7 +131,7 @@ function display_customers_list() {
 
     // Redirect to authorization URL
     redirect_to_authorization_url($params);
-    exit; // Prevent further execution after redirect
+    //exit; // Prevent further execution after redirect
 }
 
 function redirect_to_authorization_url($params) {

@@ -101,6 +101,12 @@ if (!class_exists('business_central')) {
     $business_central = new business_central();
 }
 
+if (isset($array[0])) {
+    // Safe to use $array[0]
+} else {
+    error_log('Array key 0 is not defined.');
+}
+
 add_shortcode('display-customers-list', 'display_customers_list');
 function display_customers_list() {
     // Error logging

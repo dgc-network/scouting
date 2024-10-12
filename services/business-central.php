@@ -101,14 +101,151 @@ if (!class_exists('business_central')) {
     $business_central = new business_central();
 }
 
-// Hook the display_customers_list function to init to ensure WP is fully loaded
 add_shortcode('display-customers-list', 'display_customers_list');
-/*
-add_action('init', 'register_customers_list_shortcode');
-function register_customers_list_shortcode() {
-    add_shortcode('display-customers-list', 'display_customers_list');
+function display_customers_list() {
+    // Error logging
+    error_log("Display Customers List Shortcode called.");
+
+    // Check if OAuth result is ready and display it
+    if (isset($_GET['oauth_result_ready']) && $_GET['oauth_result_ready'] == '1') {
+        error_log("OAuth result ready.");
+        $oauth_callback_result = get_transient('oauth_callback_result');
+        if (!empty($oauth_callback_result)) {
+            echo '<pre>';
+            print_r($oauth_callback_result);
+            echo '</pre>';
+            delete_transient('oauth_callback_result'); // Clean up after displaying result
+        }
+        return; // Stop further execution since we displayed the result
+    }
+
+    // Prepare the parameters (you need to define $params here)
+    $params = array(
+        'some_param' => 'some_value',  // Example placeholder for parameters
+    );
+
+    // Redirect to authorization URL
+    redirect_to_authorization_url($params);
+    //exit; // Prevent further execution after redirect
 }
-*/
+
+function redirect_to_authorization_url($params) {
+    // Error logging
+    error_log("Redirecting to authorization URL.");
+
+    $tenant_id = get_option('tenant_id');
+    $client_id = get_option('client_id');
+    $redirect_uri = get_option('redirect_uri');
+    $scope = array('https://api.businesscentral.dynamics.com/.default');
+
+    // Get the current URL and encode it for the redirect state
+    $original_url = (is_ssl() ? "https://" : "http://") . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    $encoded_original_url = urlencode($original_url);
+    $params['encoded_original_url'] = $encoded_original_url;
+
+    // Construct the authorize URL
+    $authorize_url = "https://login.microsoftonline.com/$tenant_id/oauth2/v2.0/authorize";
+    $state = base64_encode(json_encode($params));
+
+    // Authorization request parameters
+    $authorization_params = array(
+        'client_id' => $client_id,
+        'response_type' => 'code',
+        'redirect_uri' => $redirect_uri,
+        'scope' => implode(' ', $scope),
+        'state' => $state,
+    );
+
+    // Redirect to the authorization URL
+    wp_redirect($authorize_url . '?' . http_build_query($authorization_params));
+    exit;
+}
+
+function handle_oauth_callback_redirect() {
+    global $wp_query;
+    if (isset($wp_query->query_vars['oauth_callback'])) {
+        handle_oauth_callback();
+        exit;
+    }
+}
+add_action('template_redirect', 'handle_oauth_callback_redirect');
+
+// Register OAuth callback rewrite rule
+function register_oauth_callback_endpoint() {
+    add_rewrite_rule('^oauth-callback/?', 'index.php?oauth_callback=1', 'top');
+}
+add_action('init', 'register_oauth_callback_endpoint');
+
+function add_oauth_callback_query_var($vars) {
+    $vars[] = 'oauth_callback';
+    return $vars;
+}
+add_filter('query_vars', 'add_oauth_callback_query_var');
+
+// Flush rewrite rules after theme switch
+function flush_rewrite_rules_once() {
+    flush_rewrite_rules();
+}
+add_action('after_switch_theme', 'flush_rewrite_rules_once');
+
+// Handle the OAuth callback from Microsoft
+function handle_oauth_callback() {
+    if (isset($_GET['code'])) {
+        $code = sanitize_text_field($_GET['code']);
+        $state = isset($_GET['state']) ? json_decode(base64_decode(sanitize_text_field($_GET['state'])), true) : array();
+
+        // Retrieve OAuth settings
+        $tenant_id = get_option('tenant_id');
+        $client_id = get_option('client_id');
+        $client_secret = get_option('client_secret');
+        $redirect_uri = get_option('redirect_uri');
+        $scope = 'https://api.businesscentral.dynamics.com/.default';
+
+        // Token endpoint
+        $token_endpoint = "https://login.microsoftonline.com/$tenant_id/oauth2/v2.0/token";
+        $response = wp_remote_post($token_endpoint, array(
+            'body' => array(
+                'client_id' => $client_id,
+                'client_secret' => $client_secret,
+                'grant_type' => 'authorization_code',
+                'code' => $code,
+                'redirect_uri' => $redirect_uri,
+                'scope' => $scope,
+            ),
+        ));
+
+        // Handle token response
+        if (!is_wp_error($response)) {
+            $body = wp_remote_retrieve_body($response);
+            $data = json_decode($body);
+
+            if (isset($data->access_token)) {
+                $access_token = $data->access_token;
+
+                // Add here code to make API request using $access_token
+
+                // Redirect to original URL
+                wp_redirect(add_query_arg('oauth_result_ready', '1', home_url()));
+                exit;
+            } else {
+                set_transient('oauth_callback_result', 'Failed to get access token', 60);
+                wp_redirect(add_query_arg('oauth_result_ready', '1', home_url()));
+                exit;
+            }
+        } else {
+            $error_message = $response->get_error_message();
+            set_transient('oauth_callback_result', 'Error: ' . $error_message, 60);
+            wp_redirect(add_query_arg('oauth_result_ready', '1', home_url()));
+            exit;
+        }
+    } else {
+        set_transient('oauth_callback_result', 'Authorization code not found.', 60);
+        wp_redirect(add_query_arg('oauth_result_ready', '1', home_url()));
+        exit;
+    }
+}
+/*
+add_shortcode('display-customers-list', 'display_customers_list');
 function display_customers_list() {
     // Error logging
     error_log("Display Customers List Shortcode called.");
@@ -339,3 +476,4 @@ function handle_oauth_callback() {
         exit;
     }
 }
+*/

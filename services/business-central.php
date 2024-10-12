@@ -101,12 +101,89 @@ if (!class_exists('business_central')) {
     $business_central = new business_central();
 }
 
-if (isset($array[0])) {
+// Example array access with check
+if (isset($array) && isset($array[0])) {
     // Safe to use $array[0]
 } else {
     error_log('Array key 0 is not defined.');
 }
 
+add_shortcode('display-customers-list', 'display_customers_list');
+function display_customers_list() {
+    error_log("Display Customers List Shortcode called.");
+
+    // Check for OAuth callback (code present in URL)
+    if (isset($_GET['code'])) {
+        error_log("Authorization code detected, handling OAuth callback.");
+        handle_oauth_callback(); // Ensure this function processes the code correctly
+        return; // Stop further execution to avoid redirect loop
+    }
+
+    // Check if OAuth result is ready and display it
+    if (isset($_GET['oauth_result_ready']) && $_GET['oauth_result_ready'] == '1') {
+        error_log("OAuth result ready.");
+        $oauth_callback_result = get_transient('oauth_callback_result');
+        if (!empty($oauth_callback_result)) {
+            echo '<pre>';
+            print_r($oauth_callback_result);
+            echo '</pre>';
+            delete_transient('oauth_callback_result'); // Clean up after displaying result
+        }
+        return; // Stop further execution after displaying result
+    }
+
+    // Prevent redirect if already in OAuth flow
+    if (isset($_GET['oauth_in_progress']) && $_GET['oauth_in_progress'] == '1') {
+        error_log("OAuth flow in progress, preventing redirection.");
+        return; // Stop further execution if we're already in the OAuth process
+    }
+
+    // Prepare parameters for the redirect
+    $params = array(
+        'some_param' => 'some_value',  // Example placeholder for parameters
+    );
+
+    // Add a flag to indicate OAuth flow has started
+    $redirect_url = add_query_arg('oauth_in_progress', '1', (is_ssl() ? "https://" : "http://") . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+
+    // Redirect to authorization URL
+    error_log("Redirecting to authorization URL.");
+    redirect_to_authorization_url($params, $redirect_url);
+    exit; // Stop further execution after redirect
+}
+
+function redirect_to_authorization_url($params, $redirect_url) {
+    error_log("Redirecting to authorization URL.");
+
+    $tenant_id = get_option('tenant_id');
+    $client_id = get_option('client_id');
+    $redirect_uri = get_option('redirect_uri');
+    $scope = array('https://api.businesscentral.dynamics.com/.default');
+
+    // Encode the redirect URL for OAuth state
+    $encoded_original_url = urlencode($redirect_url);
+    $params['encoded_original_url'] = $encoded_original_url;
+
+    // Construct the authorize URL
+    $authorize_url = "https://login.microsoftonline.com/$tenant_id/oauth2/v2.0/authorize";
+    $state = base64_encode(json_encode($params));
+
+    // Authorization request parameters
+    $authorization_params = array(
+        'client_id' => $client_id,
+        'response_type' => 'code',
+        'redirect_uri' => $redirect_uri,
+        'scope' => implode(' ', $scope),
+        'state' => $state,
+    );
+
+    // Log and redirect
+    $redirect_uri_full = $authorize_url . '?' . http_build_query($authorization_params);
+    error_log("Redirecting to: " . $redirect_uri_full);
+    wp_redirect($redirect_uri_full);
+    exit;
+}
+/*
 add_shortcode('display-customers-list', 'display_customers_list');
 function display_customers_list() {
     // Error logging

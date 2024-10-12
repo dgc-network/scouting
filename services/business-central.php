@@ -112,6 +112,83 @@ function display_customers_list() {
     // Error logging
     error_log("Display Customers List Shortcode called.");
 
+    // Prevent redirection loop by checking for 'code' in the URL (OAuth callback)
+    if (isset($_GET['code'])) {
+        error_log("Authorization code detected, handling OAuth callback.");
+        handle_oauth_callback();
+        return; // Stop further execution to avoid redirect loop
+    }
+
+    // Check if OAuth result is ready and display it
+    if (isset($_GET['oauth_result_ready']) && $_GET['oauth_result_ready'] == '1') {
+        error_log("OAuth result ready.");
+        $oauth_callback_result = get_transient('oauth_callback_result');
+        if (!empty($oauth_callback_result)) {
+            echo '<pre>';
+            print_r($oauth_callback_result);
+            echo '</pre>';
+            delete_transient('oauth_callback_result'); // Clean up after displaying result
+        }
+        return; // Stop further execution after displaying result
+    }
+
+    // Prevent redirect if already in OAuth flow
+    if (isset($_GET['oauth_in_progress']) && $_GET['oauth_in_progress'] == '1') {
+        error_log("OAuth flow in progress, preventing redirection.");
+        return; // Stop further execution if we're already in the OAuth process
+    }
+
+    // Prepare parameters
+    $params = array(
+        'some_param' => 'some_value',  // Example placeholder for parameters
+    );
+
+    // Add a flag to indicate OAuth flow has started
+    $redirect_url = add_query_arg('oauth_in_progress', '1', (is_ssl() ? "https://" : "http://") . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+
+    // Redirect to authorization URL
+    error_log("Redirecting to authorization URL.");
+    redirect_to_authorization_url($params, $redirect_url);
+    exit; // Stop further execution after redirect
+}
+
+function redirect_to_authorization_url($params, $redirect_url) {
+    // Error logging
+    error_log("Redirecting to authorization URL.");
+
+    $tenant_id = get_option('tenant_id');
+    $client_id = get_option('client_id');
+    $redirect_uri = get_option('redirect_uri');
+    $scope = array('https://api.businesscentral.dynamics.com/.default');
+
+    // Encode the redirect URL for OAuth state
+    $encoded_original_url = urlencode($redirect_url);
+    $params['encoded_original_url'] = $encoded_original_url;
+
+    // Construct the authorize URL
+    $authorize_url = "https://login.microsoftonline.com/$tenant_id/oauth2/v2.0/authorize";
+    $state = base64_encode(json_encode($params));
+
+    // Authorization request parameters
+    $authorization_params = array(
+        'client_id' => $client_id,
+        'response_type' => 'code',
+        'redirect_uri' => $redirect_uri,
+        'scope' => implode(' ', $scope),
+        'state' => $state,
+    );
+
+    // Redirect to the authorization URL
+    error_log("Redirecting to: " . $authorize_url . '?' . http_build_query($authorization_params));
+    wp_redirect($authorize_url . '?' . http_build_query($authorization_params));
+    exit;
+}
+/*
+add_shortcode('display-customers-list', 'display_customers_list');
+function display_customers_list() {
+    // Error logging
+    error_log("Display Customers List Shortcode called.");
+
     // Check if 'code' parameter exists in the URL (user returned from OAuth authorization)
     if (isset($_GET['code'])) {
         error_log("Authorization code detected, handling OAuth callback.");
@@ -417,7 +494,7 @@ function display_customers_list() {
     redirect_to_authorization_url($params);
     //exit; // Prevent further execution after redirect
 }
-*/
+
 function redirect_to_authorization_url($params) {
     // Error logging
     error_log("Redirecting to authorization URL.");
@@ -449,7 +526,7 @@ function redirect_to_authorization_url($params) {
     wp_redirect($authorize_url . '?' . http_build_query($authorization_params));
     exit;
 }
-
+*/
 function handle_oauth_callback_redirect() {
     global $wp_query;
     if (isset($wp_query->query_vars['oauth_callback'])) {

@@ -102,7 +102,130 @@ if (!class_exists('business_central')) {
 }
 
 
+add_shortcode('display-customers-list', 'display_customers_list');
+function display_customers_list() {
+    // Error logging
+    error_log("Display Customers List Shortcode called.");
 
+    // Check if OAuth result is ready and display it
+    if (isset($_GET['oauth_result_ready']) && $_GET['oauth_result_ready'] == '1') {
+        error_log("OAuth result ready.");
+        $oauth_callback_result = get_transient('oauth_callback_result');
+        if (!empty($oauth_callback_result)) {
+            echo '<pre>';
+            print_r($oauth_callback_result);
+            echo '</pre>';
+            delete_transient('oauth_callback_result'); // Clean up after displaying result
+        }
+        return; // Stop further execution since we displayed the result
+    }
+
+    // Check if the 'code' parameter exists in the URL (user returned from OAuth authorization)
+    if (isset($_GET['code'])) {
+        error_log("Authorization code detected, handling OAuth callback.");
+        // Handle the OAuth callback and prevent redirect loop
+        handle_oauth_callback();
+        return; // Stop further execution, as the OAuth callback is now handled
+    }
+
+    // Prepare the parameters (you need to define $params here)
+    $params = array(
+        'some_param' => 'some_value',  // Example placeholder for parameters
+    );
+
+    // Redirect to authorization URL
+    error_log("Redirecting to authorization URL.");
+    redirect_to_authorization_url($params);
+    // exit is not needed here as we already stop further execution in the handle_oauth_callback
+}
+
+function handle_oauth_callback() {
+    if (isset($_GET['code'])) {
+        error_log("Handling OAuth callback.");
+
+        $code = sanitize_text_field($_GET['code']);
+        $state = isset($_GET['state']) ? json_decode(base64_decode(sanitize_text_field($_GET['state'])), true) : array();
+
+        // Retrieve OAuth settings
+        $tenant_id = get_option('tenant_id');
+        $client_id = get_option('client_id');
+        $client_secret = get_option('client_secret');
+        $redirect_uri = get_option('redirect_uri');
+        $scope = 'https://api.businesscentral.dynamics.com/.default';
+
+        // Token endpoint
+        $token_endpoint = "https://login.microsoftonline.com/$tenant_id/oauth2/v2.0/token";
+        $response = wp_remote_post($token_endpoint, array(
+            'body' => array(
+                'client_id' => $client_id,
+                'client_secret' => $client_secret,
+                'grant_type' => 'authorization_code',
+                'code' => $code,
+                'redirect_uri' => $redirect_uri,
+                'scope' => $scope,
+            ),
+        ));
+
+        // Handle token response
+        if (!is_wp_error($response)) {
+            $body = wp_remote_retrieve_body($response);
+            $data = json_decode($body, true);
+
+            if (isset($data['access_token'])) {
+                error_log("Access token retrieved.");
+
+                $access_token = $data['access_token'];
+                $company = isset($state['company']) ? $state['company'] : 'CRONUS USA, Inc.';
+                $service = isset($state['service']) ? $state['service'] : 'dgCompanies';
+                $post_type = isset($state['post_type']) ? $state['post_type'] : 'GET';
+                $body_data = isset($state['body_data']) ? $state['body_data'] : array();
+                $etag_data = isset($state['etag_data']) ? $state['etag_data'] : array();
+
+                // Decode and use original URL
+                $original_url = isset($state['original_url']) ? urldecode($state['original_url']) : home_url() . '/display-profiles/';
+
+                // Define API endpoint URL
+                $endpoint_url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/Production/ODataV4/Company('$company')/$service";
+
+                // Handle API response
+                $response = wp_remote_get($endpoint_url, array(
+                    'headers' => array('Authorization' => 'Bearer ' . $access_token),
+                ));
+
+                if (!is_wp_error($response)) {
+                    error_log("API request successful.");
+                    $body = wp_remote_retrieve_body($response);
+                    $properties = json_decode($body, true);
+
+                    if ($properties !== null) {
+                        set_transient('oauth_callback_result', $properties, 60);
+                    } else {
+                        set_transient('oauth_callback_result', 'Error decoding JSON', 60);
+                    }
+                } else {
+                    $error_message = $response->get_error_message();
+                    set_transient('oauth_callback_result', 'Error: ' . $error_message, 60);
+                }
+
+                // Redirect to original URL with oauth_result_ready flag
+                wp_redirect(add_query_arg('oauth_result_ready', '1', $original_url));
+                exit;
+            } else {
+                error_log("Failed to retrieve access token.");
+                set_transient('oauth_callback_result', 'Failed to get access token', 60);
+            }
+        } else {
+            $error_message = $response->get_error_message();
+            error_log("Error during token exchange: " . $error_message);
+            set_transient('oauth_callback_result', 'Error: ' . $error_message, 60);
+        }
+
+        // Redirect back to original URL in case of failure
+        wp_redirect(add_query_arg('oauth_result_ready', '1', home_url()));
+        exit;
+    }
+}
+/*
 add_shortcode('display-customers-list', 'display_customers_list');
 function display_customers_list() {
     // Error logging
@@ -224,7 +347,7 @@ function flush_rewrite_rules_once() {
     flush_rewrite_rules();
 }
 add_action('after_switch_theme', 'flush_rewrite_rules_once');
-
+/*
 // Handle the OAuth callback from Microsoft
 function handle_oauth_callback() {
     if (isset($_GET['code'])) {

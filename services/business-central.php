@@ -101,6 +101,43 @@ if (!class_exists('business_central')) {
     $business_central = new business_central();
 }
 
+
+
+add_shortcode('display-customers-list', 'display_customers_list');
+function display_customers_list() {
+    // Error logging
+    error_log("Display Customers List Shortcode called.");
+
+    // Check if OAuth result is ready and display it
+    if (isset($_GET['oauth_result_ready']) && $_GET['oauth_result_ready'] == '1') {
+        error_log("OAuth result ready.");
+        $oauth_callback_result = get_transient('oauth_callback_result');
+        if (!empty($oauth_callback_result)) {
+            echo '<pre>';
+            print_r($oauth_callback_result);
+            echo '</pre>';
+            delete_transient('oauth_callback_result'); // Clean up after displaying result
+        }
+        return; // Stop further execution since we displayed the result
+    }
+
+    // Check if the 'code' parameter exists in the URL (user returned from OAuth authorization)
+    if (isset($_GET['code'])) {
+        // Handle the OAuth callback and prevent redirect loop
+        handle_oauth_callback();
+        return; // Stop further execution, as the OAuth callback is now handled
+    }
+
+    // Prepare the parameters (you need to define $params here)
+    $params = array(
+        'some_param' => 'some_value',  // Example placeholder for parameters
+    );
+
+    // Redirect to authorization URL
+    redirect_to_authorization_url($params);
+    // exit is not needed here as we already stop further execution in the handle_oauth_callback
+}
+/*
 add_shortcode('display-customers-list', 'display_customers_list');
 function display_customers_list() {
     // Error logging
@@ -128,7 +165,7 @@ function display_customers_list() {
     redirect_to_authorization_url($params);
     //exit; // Prevent further execution after redirect
 }
-
+*/
 function redirect_to_authorization_url($params) {
     // Error logging
     error_log("Redirecting to authorization URL.");

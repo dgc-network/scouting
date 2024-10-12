@@ -6,7 +6,7 @@
  */
 
 // Hook to create a custom page in WordPress
-add_shortcode('display-customers-list', 'display_customers_list');
+//add_shortcode('display-customers-list', 'display_customers_list');
 function display_customers_list() {
     if ($_GET['_select_profile']=='business-central') {
         // Example usage

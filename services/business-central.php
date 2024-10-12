@@ -101,6 +101,31 @@ if (!class_exists('business_central')) {
     $business_central = new business_central();
 }
 
+add_shortcode('display-customers-list', 'display_customers_list');
+
+function display_customers_list() {
+    // Check if OAuth result is ready and display it
+    if (isset($_GET['oauth_result_ready']) && $_GET['oauth_result_ready'] == '1') {
+        $oauth_callback_result = get_transient('oauth_callback_result');
+        if (!empty($oauth_callback_result)) {
+            echo '<pre>';
+            print_r($oauth_callback_result);
+            echo '</pre>';
+            delete_transient('oauth_callback_result'); // Clean up after displaying result
+        }
+        return; // Stop further execution since we displayed the result
+    }
+
+    // Prepare the parameters (you need to define $params here or pass it in the request)
+    $params = array(
+        'some_param' => 'some_value',  // Example placeholder for parameters
+    );
+
+    // Redirect to authorization URL
+    redirect_to_authorization_url($params);
+    exit; // Prevent further execution after redirect
+}
+
 function redirect_to_authorization_url($params) {
     $tenant_id = get_option('tenant_id');
     $client_id = get_option('client_id');
@@ -129,7 +154,54 @@ function redirect_to_authorization_url($params) {
     wp_redirect($authorize_url . '?' . http_build_query($authorization_params));
     exit;
 }
+/*
+add_shortcode('display-customers-list', 'display_customers_list');
+function display_customers_list() {
+    // Redirect to authorization URL
+    redirect_to_authorization_url($params);
+    exit; // Prevent further execution after redirect
 
+    // Check if OAuth result is ready and display it
+    if (isset($_GET['oauth_result_ready']) && $_GET['oauth_result_ready'] == '1') {
+        $oauth_callback_result = get_transient('oauth_callback_result');
+        if (!empty($oauth_callback_result)) {
+            echo '<pre>';
+            print_r($oauth_callback_result);
+            echo '</pre>';
+            delete_transient('oauth_callback_result'); // Clean up after displaying result
+        }
+    }
+}
+
+function redirect_to_authorization_url($params) {
+    $tenant_id = get_option('tenant_id');
+    $client_id = get_option('client_id');
+    $redirect_uri = get_option('redirect_uri');
+    $scope = array('https://api.businesscentral.dynamics.com/.default');
+
+    // Get the current URL and encode it for the redirect state
+    $original_url = (is_ssl() ? "https://" : "http://") . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    $encoded_original_url = urlencode($original_url);
+    $params['encoded_original_url'] = $encoded_original_url;
+
+    // Construct the authorize URL
+    $authorize_url = "https://login.microsoftonline.com/$tenant_id/oauth2/v2.0/authorize";
+    $state = base64_encode(json_encode($params));
+
+    // Authorization request parameters
+    $authorization_params = array(
+        'client_id' => $client_id,
+        'response_type' => 'code',
+        'redirect_uri' => $redirect_uri,
+        'scope' => implode(' ', $scope),
+        'state' => $state,
+    );
+
+    // Redirect to the authorization URL
+    wp_redirect($authorize_url . '?' . http_build_query($authorization_params));
+    exit;
+}
+*/
 function handle_oauth_callback_redirect() {
     global $wp_query;
     if (isset($wp_query->query_vars['oauth_callback'])) {

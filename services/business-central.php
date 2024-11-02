@@ -448,7 +448,8 @@ function get_business_central_orders() {
 }
 */
 function display_business_central_orders() {
-    $orders = get_business_central_orders();
+    //$orders = get_business_central_orders();
+    $orders = get_business_central_sales_orders();
 
     if (is_string($orders)) {
         return '<p>' . esc_html($orders) . '</p>';

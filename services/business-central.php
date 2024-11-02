@@ -58,13 +58,13 @@ if (!class_exists('business_central')) {
             register_setting('web-service-settings', 'redirect_uri');
         
             add_settings_field(
-                'bc_scope',
-                'Scope',
-                array( $this, 'bc_scope_callback' ),
+                'company_name',
+                'Company name',
+                array( $this, 'company_name_callback' ),
                 'web-service-settings',
                 'business-central-section-settings',
             );
-            register_setting('web-service-settings', 'bc_scope');        
+            register_setting('web-service-settings', 'company_name');        
         }
 
         function business_central_section_settings_callback() {
@@ -91,16 +91,16 @@ if (!class_exists('business_central')) {
             echo '<input type="text" name="redirect_uri" style="width:100%;" value="' . esc_attr($value) . '" />';
         }
         
-        function bc_scope_callback() {
-            $value = get_option('bc_scope');
-            echo '<input type="text" name="bc_scope" style="width:100%;" value="' . esc_attr($value) . '" />';
+        function company_name_callback() {
+            $value = get_option('company_name');
+            echo '<input type="text" name="company_name" style="width:100%;" value="' . esc_attr($value) . '" />';
         }
         
     
     }
     $business_central = new business_central();
 }
-
+/*
 if (isset($yourArray[0])) {
     // Your code using $yourArray[0]
 } else {
@@ -266,3 +266,80 @@ function handle_oauth_callback() {
         exit;
     }
 }
+*/
+
+
+function get_business_central_access_token() {
+    $tenant_id = get_option('tenant_id');
+    $client_id = get_option('client_id');
+    $client_secret = get_option('client_secret');
+
+    $url = "https://login.microsoftonline.com/$tenant_id/oauth2/v2.0/token";
+
+    $body = [
+        'client_id' => $client_id,
+        'client_secret' => $client_secret,
+        'scope' => 'https://api.businesscentral.dynamics.com/.default',
+        'grant_type' => 'client_credentials',
+    ];
+
+    $response = wp_remote_post($url, [
+        'body' => $body,
+    ]);
+
+    if (is_wp_error($response)) {
+        error_log("Error getting access token: " . $response->get_error_message());
+        return false;
+    }
+
+    $data = json_decode(wp_remote_retrieve_body($response), true);
+    return $data['access_token'] ?? false;
+}
+
+function get_business_central_orders() {
+    $access_token = get_business_central_access_token();
+    $tenant_id = get_option('tenant_id');
+    $company_name = get_option('company_name');
+
+    if (!$access_token) {
+        return 'Failed to retrieve access token';
+    }
+
+    $url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/Sandbox/ODataV4/Company(\"$company_name\")/SalesOrders";
+
+    $response = wp_remote_get($url, [
+        'headers' => [
+            'Authorization' => 'Bearer ' . $access_token,
+            'Content-Type'  => 'application/json',
+        ],
+    ]);
+
+    if (is_wp_error($response)) {
+        return 'Error retrieving orders: ' . $response->get_error_message();
+    }
+
+    $orders = json_decode(wp_remote_retrieve_body($response), true);
+
+    if (isset($orders['value'])) {
+        return $orders['value'];
+    }
+
+    return 'No orders found';
+}
+
+function display_business_central_orders() {
+    $orders = get_business_central_orders();
+
+    if (is_string($orders)) {
+        return '<p>' . esc_html($orders) . '</p>';
+    }
+
+    $output = '<ul>';
+    foreach ($orders as $order) {
+        $output .= '<li>Order No: ' . esc_html($order['No']) . ' - Customer: ' . esc_html($order['CustomerName']) . '</li>';
+    }
+    $output .= '</ul>';
+
+    return $output;
+}
+add_shortcode('business_central_orders', 'display_business_central_orders');

@@ -339,7 +339,7 @@ function get_business_central_company_id() {
 
         $response_body = wp_remote_retrieve_body($response);
         $data = json_decode($response_body, true);
-        error_log(print_r($data, true));
+        error_log('Companies: ' . print_r($data, true));
 
         if (!empty($data['value'])) {
             // Return the first company's ID as an example
@@ -360,6 +360,7 @@ function get_business_central_sales_orders() {
     //$company_id = 'CRONUS USA, Inc.';
     // To use the function and print the company ID
     $company_id = get_business_central_company_id();
+    error_log('Company ID: ' . print_r($company_id, true));
     //echo 'Company ID: ' . $company_id;
     
 
@@ -400,6 +401,7 @@ function get_business_central_sales_orders() {
 
         $response_body = wp_remote_retrieve_body($response);
         $data = json_decode($response_body, true);
+        error_log('Sales Orders: ' . print_r($data, true));
 
         if (!empty($data['value'])) {
             return $data['value']; // Returns the array of sales orders

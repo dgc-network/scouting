@@ -158,8 +158,8 @@ function get_business_central_company_id() {
         'body' => [
             'client_id' => $client_id,
             'client_secret' => $client_secret,
-            //'scope' => 'https://api.businesscentral.dynamics.com/.default',
-            'scope' => 'https://api.businesscentral.dynamics.com/Financials.ReadWrite.All',
+            'scope' => 'https://api.businesscentral.dynamics.com/.default',
+            //'scope' => 'https://api.businesscentral.dynamics.com/Financials.ReadWrite.All',
             'grant_type' => 'client_credentials'
         ]
     ]);

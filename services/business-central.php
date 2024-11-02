@@ -164,7 +164,12 @@ function get_business_central_company_id() {
     ]);
 
     $body = json_decode(wp_remote_retrieve_body($response), true);
-
+    if (isset($body['error'])) {
+        error_log('Token Error: ' . print_r($body, true));
+    } else {
+        $access_token = $body['access_token'];
+    }
+    
     if (isset($body['access_token'])) {
         $access_token = $body['access_token'];
         error_log('Access token: ' . print_r($access_token, true));

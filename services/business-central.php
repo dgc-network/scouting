@@ -296,6 +296,126 @@ function get_business_central_access_token() {
     return $data['access_token'] ?? false;
 }
 
+function get_business_central_company_id() {
+    $tenant_id = get_option('tenant_id');
+    $client_id = get_option('client_id');
+    $client_secret = get_option('client_secret');
+    $environment = 'Sandbox';
+
+    // Set up the OAuth 2.0 token URL
+    $token_url = "https://login.microsoftonline.com/{$tenant_id}/oauth2/v2.0/token";
+
+    // Request access token
+    $response = wp_remote_post($token_url, [
+        'body' => [
+            'client_id' => $client_id,
+            'client_secret' => $client_secret,
+            'scope' => 'https://api.businesscentral.dynamics.com/.default',
+            'grant_type' => 'client_credentials'
+        ]
+    ]);
+
+    $body = json_decode(wp_remote_retrieve_body($response), true);
+
+    if (isset($body['access_token'])) {
+        $access_token = $body['access_token'];
+
+        // Set up the companies API endpoint
+        $url = "https://api.businesscentral.dynamics.com/v2.0/{$environment}/api/v2.0/companies";
+
+        // Set up the headers
+        $headers = [
+            'Authorization' => 'Bearer ' . $access_token,
+            'Content-Type' => 'application/json'
+        ];
+
+        // Make the request to the API
+        $response = wp_remote_get($url, ['headers' => $headers]);
+
+        // Check for errors
+        if (is_wp_error($response)) {
+            return 'Request failed: ' . $response->get_error_message();
+        }
+
+        $response_body = wp_remote_retrieve_body($response);
+        $data = json_decode($response_body, true);
+
+        if (!empty($data['value'])) {
+            // Return the first company's ID as an example
+            return $data['value'][0]['id']; // Replace 0 with the appropriate index if needed
+        } else {
+            return 'No companies found.';
+        }
+    } else {
+        return 'Failed to retrieve access token.';
+    }
+}
+
+function get_business_central_sales_orders() {
+    $tenant_id = get_option('tenant_id');
+    $client_id = get_option('client_id');
+    $client_secret = get_option('client_secret');
+    $environment = 'Sandbox';
+    $company_id = 'My Company';
+    // To use the function and print the company ID
+    $company_id = get_business_central_company_id();
+    //echo 'Company ID: ' . $company_id;
+    
+
+    // Set up the OAuth 2.0 token URL
+    $token_url = "https://login.microsoftonline.com/{$tenant_id}/oauth2/v2.0/token";
+
+    // Request access token
+    $response = wp_remote_post($token_url, [
+        'body' => [
+            'client_id' => $client_id,
+            'client_secret' => $client_secret,
+            'scope' => 'https://api.businesscentral.dynamics.com/.default',
+            'grant_type' => 'client_credentials'
+        ]
+    ]);
+
+    $body = json_decode(wp_remote_retrieve_body($response), true);
+
+    if (isset($body['access_token'])) {
+        $access_token = $body['access_token'];
+
+        // Set up the API endpoint
+        $url = "https://api.businesscentral.dynamics.com/v2.0/{$environment}/api/v2.0/companies('{$company_id}')/salesOrders";
+
+        // Set up the headers
+        $headers = [
+            'Authorization' => 'Bearer ' . $access_token,
+            'Content-Type' => 'application/json'
+        ];
+
+        // Make the request to the API
+        $response = wp_remote_get($url, ['headers' => $headers]);
+
+        // Check for errors
+        if (is_wp_error($response)) {
+            return 'Request failed: ' . $response->get_error_message();
+        }
+
+        $response_body = wp_remote_retrieve_body($response);
+        $data = json_decode($response_body, true);
+
+        if (!empty($data['value'])) {
+            return $data['value']; // Returns the array of sales orders
+        } else {
+            return 'No sales orders found.';
+        }
+    } else {
+        return 'Failed to retrieve access token.';
+    }
+}
+/*
+// To use the function and print results
+$sales_orders = get_business_central_sales_orders();
+echo '<pre>';
+print_r($sales_orders);
+echo '</pre>';
+
 function get_business_central_orders() {
     $access_token = get_business_central_access_token();
     $tenant_id = get_option('tenant_id');
@@ -326,7 +446,7 @@ function get_business_central_orders() {
 
     return 'No orders found';
 }
-
+*/
 function display_business_central_orders() {
     $orders = get_business_central_orders();
 

@@ -128,6 +128,22 @@ function get_business_central_access_token() {
     return $data['access_token'] ?? false;
 }
 
+function parse_jwt($jwt) {
+    // Split the JWT into its three parts: header, payload, and signature
+    $tokenParts = explode('.', $jwt);
+    if (count($tokenParts) !== 3) {
+        return 'Invalid token format';
+    }
+
+    // Decode the payload (second part) from base64
+    $payload = base64_decode(str_replace(['-', '_'], ['+', '/'], $tokenParts[1]));
+
+    // Convert the payload from JSON to an associative array
+    $data = json_decode($payload, true);
+
+    return $data;
+}
+
 function get_business_central_company_id() {
     $tenant_id = get_option('tenant_id');
     $client_id = get_option('client_id');
@@ -152,7 +168,13 @@ function get_business_central_company_id() {
     if (isset($body['access_token'])) {
         $access_token = $body['access_token'];
         error_log('Access token: ' . print_r($access_token, true));
-
+        //$access_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCIsImtpZCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCJ9.eyJhdWQiOiJodHRwczovL2FwaS5idXNpbmVzc2NlbnRyYWwuZHluYW1pY3MuY29tIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvOGZkNDhjZmQtMTE1Ni00YjNhLWJjMjEtMzJlMGU4OTFlZGE5LyIsImlhdCI6MTczMDU1NzE5OSwibmJmIjoxNzMwNTU3MTk5LCJleHAiOjE3MzA1NjEwOTksImFpbyI6ImsyQmdZT0ROZUJtOTFVTnV0NkpkOEJJbTNnZ21BQT09IiwiYXBwaWQiOiI5MTRlZjRjYi05MzczLTQwZTMtODZkZS01ZWQ3MzIzMDQyNjEiLCJhcHBpZGFjciI6IjEiLCJpZHAiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC84ZmQ0OGNmZC0xMTU2LTRiM2EtYmMyMS0zMmUwZTg5MWVkYTkvIiwiaWR0eXAiOiJhcHAiLCJvaWQiOiIwZTFlYjFiOC0yYzEyLTQyYjctODJiNy02ODg1MGRlM2U4NWMiLCJyaCI6IjEuQWJjQV9ZelVqMVlST2t1OElUTGc2Skh0cVQzdmJabHNzMU5CaGdlbV9Ud0J1Sl84QUFDM0FBLiIsInJvbGVzIjpbIkFkbWluQ2VudGVyLlJlYWRXcml0ZS5BbGwiLCJBUEkuUmVhZFdyaXRlLkFsbCJdLCJzdWIiOiIwZTFlYjFiOC0yYzEyLTQyYjctODJiNy02ODg1MGRlM2U4NWMiLCJ0aWQiOiI4ZmQ0OGNmZC0xMTU2LTRiM2EtYmMyMS0zMmUwZTg5MWVkYTkiLCJ1dGkiOiJ5UWcwUW9tRDVFaUFnY0tFYUNRSEFBIiwidmVyIjoiMS4wIiwieG1zX2lkcmVsIjoiMTYgNyJ9.IejLjISATuVN5YpzvfK8NC36LZT-NAxF-8tVl2kdoZ2FiocGvFHx5TwJF77-c9lFifNJpeErUt847L4BF9_a_6DpcU76HRHLE8ONM1eOT4WWxVtNUVhudhvGnfmElUKFZGgizmjLP72v9sK2xgT7LuJIMl1WWhoKK9OpOVZTS0njRL5JAz3Pyv-GppFMnH1_jadBbbJrFd0arp1znIdwHVht_jUV0GGr7GbohpYR2yw976V_chX0RUzXITqlB-fpMruoz4qLvfyPheS_3YzWtuPsZFrB1JwPz_gngghhklCXt8nM1PtMHgOIiO6_1hjZLtPM2wmPFdYMWCRywinn3w";
+        $data = parse_jwt($access_token);
+        
+        // Log the parsed data
+        error_log('Access Token Data: ' . print_r($data, true));
+        
+        
         // Set up the companies API endpoint
         $url = "https://api.businesscentral.dynamics.com/v2.0/{$environment}/api/v2.0/companies";
 

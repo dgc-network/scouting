@@ -203,14 +203,14 @@ add_action('template_redirect', 'handle_authorization_redirect');
 
 function get_business_central_data($access_token) {
 
-    //error_log('Access token: ' . print_r($access_token, true));
+    error_log('Access token: ' . print_r($access_token, true));
     $tenant_id = get_option('tenant_id');
     $environment = 'Sandbox';
     $company_name = 'CRONUS USA, Inc.';  // Original company name
     // URL-encode the company name to handle spaces and special characters
     $encoded_company_name = rawurlencode($company_name);
     $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/Company('{$encoded_company_name}')/Chart_of_Accounts";
-    $url = "https://api.businesscentral.dynamics.com/v2.0/8fd48cfd-1156-4b3a-bc21-32e0e891eda9/Sandbox/ODataV4/Company('CRONUS%20USA%2C%20Inc.')/Chart_of_Accounts";
+    //$url = "https://api.businesscentral.dynamics.com/v2.0/8fd48cfd-1156-4b3a-bc21-32e0e891eda9/Sandbox/ODataV4/Company('CRONUS%20USA%2C%20Inc.')/Chart_of_Accounts";
     $headers = [
         'Authorization' => 'Bearer ' . $access_token,
         'Content-Type' => 'application/json'

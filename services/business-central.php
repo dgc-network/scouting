@@ -190,7 +190,7 @@ function handle_authorization_redirect() {
             if ($access_token) {
                 update_option('business_central_access_token', $access_token);
                 //$data = get_business_central_data($access_token);
-                error_log('Access token: ' . print_r($access_token, true));
+                //error_log('Access token: ' . print_r($access_token, true));
             } else {
                 error_log('Failed to retrieve access token.');
             }
@@ -226,9 +226,11 @@ function get_business_central_data($access_token) {
 function display_business_central_data() {
     // Retrieve the stored access token, if any
     $access_token = get_option('business_central_access_token');
-    
+    //error_log('Access token: ' . print_r($access_token, true));
+
     // Check if the access token exists and is valid
-    if (!$access_token || token_is_expired($access_token)) {
+    //if (!$access_token || token_is_expired($access_token)) {
+    if (!$access_token) {
         // No valid access token, redirect to Microsoft authorization
         redirect_to_microsoft_auth();
         //redirect_to_authorization_url();

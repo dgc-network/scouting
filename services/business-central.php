@@ -374,6 +374,10 @@ function handle_authorization_redirect() {
     if (isset($_GET['code']) && isset($_GET['state']) && wp_verify_nonce($_GET['state'], 'microsoft_auth')) {
         $auth_code = sanitize_text_field($_GET['code']);
 
+        update_option('microsoft_auth_code', $auth_code); // Store the auth code
+
+        error_log('Authorization code stored successfully.');
+/*        
         // Exchange the authorization code for an access token
         $access_token = exchange_authorization_code_for_token($auth_code);
         
@@ -388,6 +392,7 @@ function handle_authorization_redirect() {
         } else {
             error_log('Failed to retrieve access token.');
         }
+*/
     } else {
         error_log('Authorization failed or invalid state.');
     }
@@ -459,3 +464,37 @@ function get_business_central_data($access_token) {
 
     return $data;
 }
+
+// Shortcode function to retrieve and display Business Central data
+function display_business_central_data() {
+    // Retrieve the authorization code (ensure you have previously stored it after user login)
+    $auth_code = get_option('microsoft_auth_code'); // Replace with how you handle storing/retrieving the auth code
+    
+    if (!$auth_code) {
+        return 'Authorization code not found. Please authenticate first.';
+    }
+
+    // Exchange the authorization code for an access token
+    $access_token = exchange_authorization_code_for_token($auth_code);
+
+    if (!$access_token) {
+        return 'Failed to retrieve access token.';
+    }
+
+    // Retrieve Business Central data using the access token
+    $data = get_business_central_data($access_token);
+
+    if (is_array($data)) {
+        // Format the data for output
+        ob_start(); // Start output buffering to capture HTML output
+        echo '<h2>Business Central Data:</h2><pre>';
+        print_r($data); // Print the data in a readable format
+        echo '</pre>';
+        return ob_get_clean(); // Return the buffered output
+    } else {
+        return 'No data found or failed to retrieve data.';
+    }
+}
+
+// Register the shortcode
+add_shortcode('business_central_data', 'display_business_central_data');

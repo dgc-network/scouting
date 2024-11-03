@@ -241,8 +241,18 @@ function handle_authorization_redirect() {
 }
 add_action('template_redirect', 'handle_authorization_redirect');
 
-function get_business_central_data($access_token) {
+//function get_business_central_data($access_token) {
+function get_business_central_data() {
 
+    // Retrieve the stored access token, if any
+    $access_token = get_option('business_central_access_token');
+
+    // Check if the access token exists and is valid
+    if (!$access_token || token_is_expired($access_token)) {
+        // No valid access token, redirect to Microsoft authorization
+        redirect_to_authorization_url();
+        exit; // Stop further execution until authorization completes
+    }
     //error_log('Access token: ' . print_r($access_token, true));
     $tenant_id = get_option('tenant_id');
     $environment = 'Sandbox';
@@ -257,29 +267,27 @@ function get_business_central_data($access_token) {
     ];
 
     $response = wp_remote_get($url, ['headers' => $headers]);
-    //error_log('Response: ' . print_r($response, true));
     $data = json_decode(wp_remote_retrieve_body($response), true);
-
     //error_log('Business Central Data: ' . print_r($data, true));
 
     return $data;
 }
 
 function display_business_central_data() {
+/*    
     // Retrieve the stored access token, if any
     $access_token = get_option('business_central_access_token');
-    //error_log('Access token: ' . print_r($access_token, true));
 
     // Check if the access token exists and is valid
     if (!$access_token || token_is_expired($access_token)) {
         // No valid access token, redirect to Microsoft authorization
-        //redirect_to_microsoft_auth();
         redirect_to_authorization_url();
         exit; // Stop further execution until authorization completes
     }
-    
+*/    
     // Use the access token to retrieve and display Business Central data
-    $data = get_business_central_data($access_token);
+    //$data = get_business_central_data($access_token);
+    $data = get_business_central_data();
     
     if ($data) {
         // Display the data (or handle it as needed)
@@ -289,64 +297,3 @@ function display_business_central_data() {
     }
 }
 add_shortcode('business_central_data', 'display_business_central_data');
-
-/*
-function get_business_central_chart_of_accounts() {
-    $tenant_id = get_option('tenant_id');
-    $client_id = get_option('client_id');
-    $client_secret = get_option('client_secret');
-    $environment = 'Sandbox';
-    $company_name = 'CRONUS USA, Inc.';  // Original company name
-
-    // URL-encode the company name to handle spaces and special characters
-    $encoded_company_name = rawurlencode($company_name);
-
-    // Set up the OAuth 2.0 token URL
-    $token_url = "https://login.microsoftonline.com/{$tenant_id}/oauth2/v2.0/token";
-
-    // Request access token
-    $response = wp_remote_post($token_url, [
-        'body' => [
-            'client_id' => $client_id,
-            'client_secret' => $client_secret,
-            'scope' => 'https://api.businesscentral.dynamics.com/.default',
-            'grant_type' => 'client_credentials'
-        ]
-    ]);
-
-    $body = json_decode(wp_remote_retrieve_body($response), true);
-
-    if (isset($body['access_token'])) {
-        $access_token = $body['access_token'];
-
-        // Set up the API endpoint with the encoded company name
-        $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/Company('{$encoded_company_name}')/Chart_of_Accounts";
-
-        // Set up the headers
-        $headers = [
-            'Authorization' => 'Bearer ' . $access_token,
-            'Content-Type' => 'application/json'
-        ];
-
-        // Make the request to the API
-        $response = wp_remote_get($url, ['headers' => $headers]);
-
-        // Check for errors
-        if (is_wp_error($response)) {
-            return 'Request failed: ' . $response->get_error_message();
-        }
-
-        $response_body = wp_remote_retrieve_body($response);
-        $data = json_decode($response_body, true);
-        error_log('Chart of Accounts: ' . print_r($data, true));
-
-        if (!empty($data['value'])) {
-            return $data['value']; // Returns the array of Chart of Accounts
-        } else {
-            return 'No Chart of Accounts found.';
-        }
-    } else {
-        return 'Failed to retrieve access token.';
-    }
-}
-*/

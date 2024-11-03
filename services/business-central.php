@@ -369,7 +369,7 @@ function redirect_to_authorization_url() {
     wp_redirect($auth_url);
     exit;
 }
-
+/*
 function handle_authorization_redirect() {
     if (isset($_GET['code']) && isset($_GET['state']) && wp_verify_nonce($_GET['state'], 'microsoft_auth')) {
         $auth_code = sanitize_text_field($_GET['code']);
@@ -377,7 +377,7 @@ function handle_authorization_redirect() {
         update_option('microsoft_auth_code', $auth_code); // Store the auth code
 
         error_log('Authorization code stored successfully.');
-/*        
+
         // Exchange the authorization code for an access token
         $access_token = exchange_authorization_code_for_token($auth_code);
         
@@ -392,26 +392,7 @@ function handle_authorization_redirect() {
         } else {
             error_log('Failed to retrieve access token.');
         }
-*/
-    } else {
-        error_log('Authorization failed or invalid state.');
-    }
-}
-add_action('template_redirect', 'handle_authorization_redirect');
-/*
-function handle_authorization_redirect() {
-    if (isset($_GET['code']) && isset($_GET['state']) && wp_verify_nonce($_GET['state'], 'microsoft_auth')) {
-        $auth_code = sanitize_text_field($_GET['code']);
 
-        // Exchange the authorization code for an access token
-        $token = exchange_authorization_code_for_token($auth_code);
-        
-        if ($token) {
-            error_log('Access Token: ' . $token);
-            // Use $token to make API requests
-        } else {
-            error_log('Failed to retrieve access token.');
-        }
     } else {
         error_log('Authorization failed or invalid state.');
     }
@@ -498,3 +479,47 @@ function display_business_central_data() {
 
 // Register the shortcode
 add_shortcode('business_central_data', 'display_business_central_data');
+
+// Redirect to authorization endpoint
+function redirect_to_microsoft_auth() {
+    $state = wp_create_nonce('microsoft_auth');
+    $tenant_id = get_option('tenant_id');
+    $client_id = get_option('client_id');
+    $redirect_uri = urlencode(site_url('/your-redirect-endpoint')); // Define your callback URL
+    $scope = 'https://api.businesscentral.dynamics.com/.default';
+
+    $authorization_url = "https://login.microsoftonline.com/{$tenant_id}/oauth2/v2.0/authorize?client_id={$client_id}&response_type=code&redirect_uri={$redirect_uri}&response_mode=query&scope={$scope}&state={$state}";
+
+    error_log('Generated state: ' . $state); // Log for debugging
+    wp_redirect($authorization_url);
+    exit;
+}
+
+// Handle the authorization callback
+function handle_authorization_redirect() {
+    if (isset($_GET['code']) && isset($_GET['state'])) {
+        $state = sanitize_text_field($_GET['state']);
+        
+        error_log('Received state: ' . $state); // Log received state for debugging
+
+        // Verify nonce to check state validity
+        if (wp_verify_nonce($state, 'microsoft_auth')) {
+            $auth_code = sanitize_text_field($_GET['code']);
+            update_option('microsoft_auth_code', $auth_code);
+
+            error_log('Authorization code stored successfully.');
+            $access_token = exchange_authorization_code_for_token($auth_code);
+            
+            if ($access_token) {
+                $data = get_business_central_data($access_token);
+                error_log('Business Central Data: ' . print_r($data, true));
+            } else {
+                error_log('Failed to retrieve access token.');
+            }
+        } else {
+            error_log('Authorization failed or invalid state.');
+        }
+    }
+}
+
+add_action('template_redirect', 'handle_authorization_redirect');

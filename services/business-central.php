@@ -445,7 +445,7 @@ function get_business_central_data($access_token) {
 
     return $data;
 }
-
+/*
 // Shortcode function to retrieve and display Business Central data
 function display_business_central_data() {
     // Retrieve the authorization code (ensure you have previously stored it after user login)
@@ -479,6 +479,37 @@ function display_business_central_data() {
 
 // Register the shortcode
 add_shortcode('business_central_data', 'display_business_central_data');
+*/
+function display_business_central_data() {
+    // Retrieve the stored access token, if any
+    $access_token = get_option('business_central_access_token');
+    
+    // Check if the access token exists and is valid
+    if (!$access_token || token_is_expired($access_token)) {
+        // No valid access token, redirect to Microsoft authorization
+        redirect_to_microsoft_auth();
+        exit; // Stop further execution until authorization completes
+    }
+    
+    // Use the access token to retrieve and display Business Central data
+    $data = get_business_central_data($access_token);
+    
+    if ($data) {
+        // Display the data (or handle it as needed)
+        echo '<pre>' . print_r($data, true) . '</pre>';
+    } else {
+        echo 'No data available or failed to retrieve data.';
+    }
+}
+add_shortcode('business_central_data', 'display_business_central_data');
+
+function token_is_expired($access_token) {
+    // Retrieve token's expiration time from options
+    $expiration = get_option('business_central_token_expiration');
+    
+    // Check if the current time is past the token's expiration time
+    return time() >= $expiration;
+}
 
 // Redirect to authorization endpoint
 function redirect_to_microsoft_auth() {

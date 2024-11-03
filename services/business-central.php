@@ -516,7 +516,7 @@ function redirect_to_microsoft_auth() {
     $state = wp_create_nonce('microsoft_auth');
     $tenant_id = get_option('tenant_id');
     $client_id = get_option('client_id');
-    $redirect_uri = urlencode(site_url('/your-redirect-endpoint')); // Define your callback URL
+    $redirect_uri = urlencode(site_url('/your-redirect-handler')); // Define your callback URL
     $scope = 'https://api.businesscentral.dynamics.com/.default';
 
     $authorization_url = "https://login.microsoftonline.com/{$tenant_id}/oauth2/v2.0/authorize?client_id={$client_id}&response_type=code&redirect_uri={$redirect_uri}&response_mode=query&scope={$scope}&state={$state}";

@@ -242,7 +242,7 @@ function handle_authorization_redirect() {
 add_action('template_redirect', 'handle_authorization_redirect');
 
 //function get_business_central_data($access_token) {
-function get_business_central_data() {
+function get_business_central_data($service='Chart_of_Accounts', $company_name='CRONUS USA, Inc.', $environment='Sandbox') {
 
     // Retrieve the stored access token, if any
     $access_token = get_option('business_central_access_token');
@@ -255,11 +255,11 @@ function get_business_central_data() {
     }
     //error_log('Access token: ' . print_r($access_token, true));
     $tenant_id = get_option('tenant_id');
-    $environment = 'Sandbox';
-    $company_name = 'CRONUS USA, Inc.';  // Original company name
+    //$environment = 'Sandbox';
+    //$company_name = 'CRONUS USA, Inc.';  // Original company name
     // URL-encode the company name to handle spaces and special characters
     $encoded_company_name = rawurlencode($company_name);
-    $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/Company('{$encoded_company_name}')/Chart_of_Accounts";
+    $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/Company('{$encoded_company_name}')/{$service}";
 
     $headers = [
         'Authorization' => 'Bearer ' . $access_token,

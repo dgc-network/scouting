@@ -100,7 +100,7 @@ if (!class_exists('business_central')) {
     }
     $business_central = new business_central();
 }
-
+/*
 function get_business_central_access_token() {
     $tenant_id = get_option('tenant_id');
     $client_id = get_option('client_id');
@@ -349,3 +349,113 @@ function display_business_central_orders() {
     return $output;
 }
 add_shortcode('business_central_orders', 'display_business_central_orders');
+*/
+
+function redirect_to_authorization_url() {
+    $tenant_id = get_option('tenant_id');
+    $client_id = get_option('client_id');
+    $redirect_uri = urlencode(site_url('/your-redirect-handler')); // Replace with your handler URL
+    
+    // The authorization URL
+    $auth_url = "https://login.microsoftonline.com/{$tenant_id}/oauth2/v2.0/authorize";
+    $auth_url .= "?client_id={$client_id}";
+    $auth_url .= "&response_type=code";
+    $auth_url .= "&redirect_uri={$redirect_uri}";
+    $auth_url .= "&response_mode=query";
+    $auth_url .= "&scope=" . urlencode('https://api.businesscentral.dynamics.com/.default');
+    $auth_url .= "&state=" . wp_create_nonce('microsoft_auth');
+
+    // Redirect the user
+    wp_redirect($auth_url);
+    exit;
+}
+
+function handle_authorization_redirect() {
+    if (isset($_GET['code']) && isset($_GET['state']) && wp_verify_nonce($_GET['state'], 'microsoft_auth')) {
+        $auth_code = sanitize_text_field($_GET['code']);
+
+        // Exchange the authorization code for an access token
+        $access_token = exchange_authorization_code_for_token($auth_code);
+        
+        if ($access_token) {
+            error_log('Access Token: ' . $access_token);
+
+            // Call the function to retrieve Business Central data
+            $data = get_business_central_data($access_token);
+
+            // Log or handle the returned data
+            error_log('Business Central Data: ' . print_r($data, true));
+        } else {
+            error_log('Failed to retrieve access token.');
+        }
+    } else {
+        error_log('Authorization failed or invalid state.');
+    }
+}
+add_action('template_redirect', 'handle_authorization_redirect');
+/*
+function handle_authorization_redirect() {
+    if (isset($_GET['code']) && isset($_GET['state']) && wp_verify_nonce($_GET['state'], 'microsoft_auth')) {
+        $auth_code = sanitize_text_field($_GET['code']);
+
+        // Exchange the authorization code for an access token
+        $token = exchange_authorization_code_for_token($auth_code);
+        
+        if ($token) {
+            error_log('Access Token: ' . $token);
+            // Use $token to make API requests
+        } else {
+            error_log('Failed to retrieve access token.');
+        }
+    } else {
+        error_log('Authorization failed or invalid state.');
+    }
+}
+add_action('template_redirect', 'handle_authorization_redirect');
+*/
+function exchange_authorization_code_for_token($auth_code) {
+    $tenant_id = get_option('tenant_id');
+    $client_id = get_option('client_id');
+    $client_secret = get_option('client_secret');
+    $redirect_uri = site_url('/your-redirect-handler'); // Must match the redirect URI used earlier
+
+    $token_url = "https://login.microsoftonline.com/{$tenant_id}/oauth2/v2.0/token";
+
+    $response = wp_remote_post($token_url, [
+        'body' => [
+            'client_id' => $client_id,
+            'client_secret' => $client_secret,
+            'grant_type' => 'authorization_code',
+            'code' => $auth_code,
+            'redirect_uri' => $redirect_uri,
+            'scope' => 'https://api.businesscentral.dynamics.com/.default'
+        ]
+    ]);
+
+    $body = json_decode(wp_remote_retrieve_body($response), true);
+
+    if (isset($body['access_token'])) {
+        return $body['access_token'];
+    } else {
+        error_log('Error retrieving access token: ' . print_r($body, true));
+        return false;
+    }
+}
+
+function get_business_central_data($access_token) {
+    $company_id = 'your_company_id'; // Replace with your actual company ID
+    $company_id = 'CRONUS USA, Inc.';
+    $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/Sandbox/api/v2.0/companies({$company_id})/chartOfAccounts";
+
+    $headers = [
+        'Authorization' => 'Bearer ' . $access_token,
+        'Content-Type' => 'application/json'
+    ];
+
+    $response = wp_remote_get($url, ['headers' => $headers]);
+    $data = json_decode(wp_remote_retrieve_body($response), true);
+
+    error_log('Business Central Data: ' . print_r($data, true));
+
+    return $data;
+}

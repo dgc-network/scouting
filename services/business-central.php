@@ -189,7 +189,7 @@ function handle_authorization_redirect() {
 
             if ($access_token) {
                 update_option('business_central_access_token', $access_token);
-                //$data = get_business_central_data($access_token);
+                $data = get_business_central_data($access_token);
                 //error_log('Access token: ' . print_r($access_token, true));
             } else {
                 error_log('Failed to retrieve access token.');

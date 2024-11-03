@@ -102,21 +102,6 @@ if (!class_exists('business_central')) {
 }
 
 // Redirect to authorization endpoint
-/*
-function redirect_to_microsoft_auth() {
-    $state = wp_create_nonce('microsoft_auth');
-    $tenant_id = get_option('tenant_id');
-    $client_id = get_option('client_id');
-    $redirect_uri = urlencode(site_url('/your-redirect-handler')); // Define your callback URL
-    $scope = 'https://api.businesscentral.dynamics.com/.default';
-
-    $authorization_url = "https://login.microsoftonline.com/{$tenant_id}/oauth2/v2.0/authorize?client_id={$client_id}&response_type=code&redirect_uri={$redirect_uri}&response_mode=query&scope={$scope}&state={$state}";
-
-    error_log('Generated state: ' . $state); // Log for debugging
-    wp_redirect($authorization_url);
-    exit;
-}
-*/
 function redirect_to_authorization_url() {
     $tenant_id = get_option('tenant_id');
     $client_id = get_option('client_id');
@@ -185,34 +170,7 @@ function token_is_expired($access_token) {
     // If the token format is invalid or 'exp' claim is missing, assume token is expired
     return true;
 }
-/*
-function token_is_expired($access_token) {
-    // Retrieve token's expiration time from options
-    $expiration = get_token_expiration($access_token);
 
-    // Check if the current time is past the token's expiration time
-    return time() >= $expiration;
-}
-
-function get_token_expiration($access_token) {
-    // Split the token into its three parts: header, payload, and signature
-    $token_parts = explode('.', $access_token);
-    
-    if (count($token_parts) !== 3) {
-        return null; // Invalid token format
-    }
-    
-    // Decode the payload (second part of the token) from base64
-    $payload = json_decode(base64_decode($token_parts[1]), true);
-    
-    // Check if the payload contains the 'exp' claim
-    if (isset($payload['exp'])) {
-        return $payload['exp']; // Return the expiration timestamp
-    } else {
-        return null; // No expiration found in token
-    }
-}
-*/
 // Handle the authorization callback
 function handle_authorization_redirect() {
     if (isset($_GET['code']) && isset($_GET['state'])) {
@@ -241,11 +199,11 @@ function handle_authorization_redirect() {
 }
 add_action('template_redirect', 'handle_authorization_redirect');
 
-//function get_business_central_data($access_token) {
 function get_business_central_data($service='Chart_of_Accounts', $company_name='CRONUS USA, Inc.', $environment='Sandbox') {
 
     // Retrieve the stored access token, if any
     $access_token = get_option('business_central_access_token');
+    //error_log('Access token: ' . print_r($access_token, true));
 
     // Check if the access token exists and is valid
     if (!$access_token || token_is_expired($access_token)) {
@@ -253,11 +211,7 @@ function get_business_central_data($service='Chart_of_Accounts', $company_name='
         redirect_to_authorization_url();
         exit; // Stop further execution until authorization completes
     }
-    //error_log('Access token: ' . print_r($access_token, true));
     $tenant_id = get_option('tenant_id');
-    //$environment = 'Sandbox';
-    //$company_name = 'CRONUS USA, Inc.';  // Original company name
-    // URL-encode the company name to handle spaces and special characters
     $encoded_company_name = rawurlencode($company_name);
     $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/Company('{$encoded_company_name}')/{$service}";
 
@@ -274,20 +228,11 @@ function get_business_central_data($service='Chart_of_Accounts', $company_name='
 }
 
 function display_business_central_data() {
-/*    
-    // Retrieve the stored access token, if any
-    $access_token = get_option('business_central_access_token');
 
-    // Check if the access token exists and is valid
-    if (!$access_token || token_is_expired($access_token)) {
-        // No valid access token, redirect to Microsoft authorization
-        redirect_to_authorization_url();
-        exit; // Stop further execution until authorization completes
-    }
-*/    
-    // Use the access token to retrieve and display Business Central data
-    //$data = get_business_central_data($access_token);
-    $data = get_business_central_data();
+    $service='Chart_of_Accounts';
+    $environment = 'Sandbox';
+    $company_name = 'CRONUS USA, Inc.';  // Original company name
+    $data = get_business_central_data($service, $company_name, $environment);
     
     if ($data) {
         // Display the data (or handle it as needed)

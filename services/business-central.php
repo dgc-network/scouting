@@ -203,7 +203,7 @@ add_action('template_redirect', 'handle_authorization_redirect');
 
 function get_business_central_data($access_token) {
 
-    error_log('Access token: ' . print_r($access_token, true));
+    //error_log('Access token: ' . print_r($access_token, true));
     $tenant_id = get_option('tenant_id');
     $environment = 'Sandbox';
     $company_name = 'CRONUS USA, Inc.';  // Original company name
@@ -217,6 +217,7 @@ function get_business_central_data($access_token) {
     ];
 
     $response = wp_remote_get($url, ['headers' => $headers]);
+    error_log('Response: ' . print_r($response, true));
     $data = json_decode(wp_remote_retrieve_body($response), true);
 
     error_log('Business Central Data: ' . print_r($data, true));

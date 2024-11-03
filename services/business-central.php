@@ -149,6 +149,7 @@ function get_business_central_company_id() {
     $client_id = get_option('client_id');
     $client_secret = get_option('client_secret');
     $environment = 'Sandbox';
+    //$access_token = get_business_central_access_token();
 
     // Set up the OAuth 2.0 token URL
     $token_url = "https://login.microsoftonline.com/{$tenant_id}/oauth2/v2.0/token";
@@ -169,7 +170,7 @@ function get_business_central_company_id() {
     } else {
         $access_token = $body['access_token'];
     }
-    
+
     if (isset($body['access_token'])) {
         $access_token = $body['access_token'];
         error_log('Access token: ' . print_r($access_token, true));
@@ -184,6 +185,7 @@ function get_business_central_company_id() {
         // Set up the headers
         $headers = [
             'Authorization' => 'Bearer ' . $access_token,
+            'scope' => 'https://dynamics.microsoft.com/business-central/overview/Financials.ReadWrite.All',
             'Content-Type' => 'application/json'
         ];
 
@@ -205,6 +207,7 @@ function get_business_central_company_id() {
         } else {
             return 'No companies found.';
         }
+
     } else {
         return 'Failed to retrieve access token.';
     }
@@ -235,12 +238,12 @@ function get_business_central_chart_of_accounts() {
         $access_token = $body['access_token'];
 
         // Set up the API endpoint
-        $url = "https://api.businesscentral.dynamics.com/v2.0/{$environment}/api/v2.0/companies('{$company_id}')/salesOrders";
         $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/Company('{$company_name}')/Chart_of_Accounts";
 
         // Set up the headers
         $headers = [
             'Authorization' => 'Bearer ' . $access_token,
+            'scope' => 'https://dynamics.microsoft.com/business-central/overview/Financials.ReadWrite.All',
             'Content-Type' => 'application/json'
         ];
 
@@ -302,6 +305,7 @@ function get_business_central_sales_orders() {
         // Set up the headers
         $headers = [
             'Authorization' => 'Bearer ' . $access_token,
+            'scope' => 'https://dynamics.microsoft.com/business-central/overview/Financials.ReadWrite.All',
             'Content-Type' => 'application/json'
         ];
 

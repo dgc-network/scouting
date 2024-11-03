@@ -102,6 +102,7 @@ if (!class_exists('business_central')) {
 }
 
 // Redirect to authorization endpoint
+/*
 function redirect_to_microsoft_auth() {
     $state = wp_create_nonce('microsoft_auth');
     $tenant_id = get_option('tenant_id');
@@ -115,7 +116,7 @@ function redirect_to_microsoft_auth() {
     wp_redirect($authorization_url);
     exit;
 }
-
+*/
 function redirect_to_authorization_url() {
     $tenant_id = get_option('tenant_id');
     $client_id = get_option('client_id');
@@ -165,6 +166,27 @@ function exchange_authorization_code_for_token($auth_code) {
 }
 
 function token_is_expired($access_token) {
+    // Split the token into its three parts: header, payload, and signature
+    $token_parts = explode('.', $access_token);
+
+    if (count($token_parts) === 3) {
+        // Decode the payload (second part of the token) from base64
+        $payload = json_decode(base64_decode($token_parts[1]), true);
+
+        // Check if the payload contains the 'exp' claim
+        if (isset($payload['exp'])) {
+            $expiration = $payload['exp'];
+
+            // Check if the current time is past the token's expiration time
+            return time() >= $expiration;
+        }
+    }
+
+    // If the token format is invalid or 'exp' claim is missing, assume token is expired
+    return true;
+}
+/*
+function token_is_expired($access_token) {
     // Retrieve token's expiration time from options
     $expiration = get_token_expiration($access_token);
 
@@ -190,7 +212,7 @@ function get_token_expiration($access_token) {
         return null; // No expiration found in token
     }
 }
-
+*/
 // Handle the authorization callback
 function handle_authorization_redirect() {
     if (isset($_GET['code']) && isset($_GET['state'])) {

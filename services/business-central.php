@@ -166,20 +166,7 @@ function exchange_authorization_code_for_token($auth_code) {
 
 function token_is_expired($access_token) {
     // Retrieve token's expiration time from options
-    //$expiration = get_option('business_central_token_expiration');
-    
-    // Usage example:
-    //$access_token = 'your_access_token_here';
     $expiration = get_token_expiration($access_token);
-/*
-    if ($expiration) {
-        // Store expiration time in WordPress options
-        update_option('business_central_token_expiration', $expiration);
-        echo "Token expiration time stored: " . date('Y-m-d H:i:s', $expiration);
-    } else {
-        echo "Failed to retrieve expiration time from token.";
-    }
-*/    
 
     // Check if the current time is past the token's expiration time
     return time() >= $expiration;
@@ -221,7 +208,6 @@ function handle_authorization_redirect() {
 
             if ($access_token) {
                 update_option('business_central_access_token', $access_token);
-                //$data = get_business_central_data($access_token);
                 //error_log('Access token: ' . print_r($access_token, true));
             } else {
                 error_log('Failed to retrieve access token.');
@@ -235,14 +221,14 @@ add_action('template_redirect', 'handle_authorization_redirect');
 
 function get_business_central_data($access_token) {
 
-    error_log('Access token: ' . print_r($access_token, true));
+    //error_log('Access token: ' . print_r($access_token, true));
     $tenant_id = get_option('tenant_id');
     $environment = 'Sandbox';
     $company_name = 'CRONUS USA, Inc.';  // Original company name
     // URL-encode the company name to handle spaces and special characters
     $encoded_company_name = rawurlencode($company_name);
     $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/Company('{$encoded_company_name}')/Chart_of_Accounts";
-    //$url = "https://api.businesscentral.dynamics.com/v2.0/8fd48cfd-1156-4b3a-bc21-32e0e891eda9/Sandbox/ODataV4/Company('CRONUS%20USA%2C%20Inc.')/Chart_of_Accounts";
+
     $headers = [
         'Authorization' => 'Bearer ' . $access_token,
         'Content-Type' => 'application/json'
@@ -252,7 +238,7 @@ function get_business_central_data($access_token) {
     //error_log('Response: ' . print_r($response, true));
     $data = json_decode(wp_remote_retrieve_body($response), true);
 
-    error_log('Business Central Data: ' . print_r($data, true));
+    //error_log('Business Central Data: ' . print_r($data, true));
 
     return $data;
 }
@@ -264,10 +250,9 @@ function display_business_central_data() {
 
     // Check if the access token exists and is valid
     if (!$access_token || token_is_expired($access_token)) {
-    //if (!$access_token) {
         // No valid access token, redirect to Microsoft authorization
-        redirect_to_microsoft_auth();
-        //redirect_to_authorization_url();
+        //redirect_to_microsoft_auth();
+        redirect_to_authorization_url();
         exit; // Stop further execution until authorization completes
     }
     

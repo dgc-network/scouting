@@ -166,10 +166,42 @@ function exchange_authorization_code_for_token($auth_code) {
 
 function token_is_expired($access_token) {
     // Retrieve token's expiration time from options
-    $expiration = get_option('business_central_token_expiration');
+    //$expiration = get_option('business_central_token_expiration');
     
+    // Usage example:
+    //$access_token = 'your_access_token_here';
+    $expiration = get_token_expiration($access_token);
+/*
+    if ($expiration) {
+        // Store expiration time in WordPress options
+        update_option('business_central_token_expiration', $expiration);
+        echo "Token expiration time stored: " . date('Y-m-d H:i:s', $expiration);
+    } else {
+        echo "Failed to retrieve expiration time from token.";
+    }
+*/    
+
     // Check if the current time is past the token's expiration time
     return time() >= $expiration;
+}
+
+function get_token_expiration($access_token) {
+    // Split the token into its three parts: header, payload, and signature
+    $token_parts = explode('.', $access_token);
+    
+    if (count($token_parts) !== 3) {
+        return null; // Invalid token format
+    }
+    
+    // Decode the payload (second part of the token) from base64
+    $payload = json_decode(base64_decode($token_parts[1]), true);
+    
+    // Check if the payload contains the 'exp' claim
+    if (isset($payload['exp'])) {
+        return $payload['exp']; // Return the expiration timestamp
+    } else {
+        return null; // No expiration found in token
+    }
 }
 
 // Handle the authorization callback
@@ -231,8 +263,8 @@ function display_business_central_data() {
     //error_log('Access token: ' . print_r($access_token, true));
 
     // Check if the access token exists and is valid
-    //if (!$access_token || token_is_expired($access_token)) {
-    if (!$access_token) {
+    if (!$access_token || token_is_expired($access_token)) {
+    //if (!$access_token) {
         // No valid access token, redirect to Microsoft authorization
         redirect_to_microsoft_auth();
         //redirect_to_authorization_url();

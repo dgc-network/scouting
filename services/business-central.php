@@ -330,48 +330,11 @@ function get_business_central_sales_orders() {
         return 'Failed to retrieve access token.';
     }
 }
-/*
-// To use the function and print results
-$sales_orders = get_business_central_sales_orders();
-echo '<pre>';
-print_r($sales_orders);
-echo '</pre>';
 
-function get_business_central_orders() {
-    $access_token = get_business_central_access_token();
-    $tenant_id = get_option('tenant_id');
-    $company_name = get_option('company_name');
-
-    if (!$access_token) {
-        return 'Failed to retrieve access token';
-    }
-
-    $url = "https://api.businesscentral.dynamics.com/v2.0/$tenant_id/Sandbox/ODataV4/Company(\"$company_name\")/SalesOrders";
-
-    $response = wp_remote_get($url, [
-        'headers' => [
-            'Authorization' => 'Bearer ' . $access_token,
-            'Content-Type'  => 'application/json',
-        ],
-    ]);
-
-    if (is_wp_error($response)) {
-        return 'Error retrieving orders: ' . $response->get_error_message();
-    }
-
-    $orders = json_decode(wp_remote_retrieve_body($response), true);
-
-    if (isset($orders['value'])) {
-        return $orders['value'];
-    }
-
-    return 'No orders found';
-}
-*/
 function display_business_central_orders() {
     //$orders = get_business_central_orders();
-    //$orders = get_business_central_sales_orders();
-    $orders = get_business_central_chart_of_accounts();
+    $orders = get_business_central_sales_orders();
+    //$orders = get_business_central_chart_of_accounts();
 
     if (is_string($orders)) {
         return '<p>' . esc_html($orders) . '</p>';

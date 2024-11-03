@@ -428,23 +428,6 @@ function exchange_authorization_code_for_token($auth_code) {
     }
 }
 
-function get_business_central_data($access_token) {
-    $company_id = 'your_company_id'; // Replace with your actual company ID
-    $company_id = 'CRONUS USA, Inc.';
-    $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/Sandbox/api/v2.0/companies({$company_id})/chartOfAccounts";
-
-    $headers = [
-        'Authorization' => 'Bearer ' . $access_token,
-        'Content-Type' => 'application/json'
-    ];
-
-    $response = wp_remote_get($url, ['headers' => $headers]);
-    $data = json_decode(wp_remote_retrieve_body($response), true);
-
-    error_log('Business Central Data: ' . print_r($data, true));
-
-    return $data;
-}
 /*
 // Shortcode function to retrieve and display Business Central data
 function display_business_central_data() {
@@ -554,3 +537,84 @@ function handle_authorization_redirect() {
 }
 
 add_action('template_redirect', 'handle_authorization_redirect');
+
+function get_business_central_chart_of_accounts() {
+    $tenant_id = get_option('tenant_id');
+    $client_id = get_option('client_id');
+    $client_secret = get_option('client_secret');
+    $environment = 'Sandbox';
+    $company_name = 'CRONUS USA, Inc.';  // Original company name
+
+    // URL-encode the company name to handle spaces and special characters
+    $encoded_company_name = rawurlencode($company_name);
+
+    // Set up the OAuth 2.0 token URL
+    $token_url = "https://login.microsoftonline.com/{$tenant_id}/oauth2/v2.0/token";
+
+    // Request access token
+    $response = wp_remote_post($token_url, [
+        'body' => [
+            'client_id' => $client_id,
+            'client_secret' => $client_secret,
+            'scope' => 'https://api.businesscentral.dynamics.com/.default',
+            'grant_type' => 'client_credentials'
+        ]
+    ]);
+
+    $body = json_decode(wp_remote_retrieve_body($response), true);
+
+    if (isset($body['access_token'])) {
+        $access_token = $body['access_token'];
+
+        // Set up the API endpoint with the encoded company name
+        $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/Company('{$encoded_company_name}')/Chart_of_Accounts";
+
+        // Set up the headers
+        $headers = [
+            'Authorization' => 'Bearer ' . $access_token,
+            'Content-Type' => 'application/json'
+        ];
+
+        // Make the request to the API
+        $response = wp_remote_get($url, ['headers' => $headers]);
+
+        // Check for errors
+        if (is_wp_error($response)) {
+            return 'Request failed: ' . $response->get_error_message();
+        }
+
+        $response_body = wp_remote_retrieve_body($response);
+        $data = json_decode($response_body, true);
+        error_log('Chart of Accounts: ' . print_r($data, true));
+
+        if (!empty($data['value'])) {
+            return $data['value']; // Returns the array of Chart of Accounts
+        } else {
+            return 'No Chart of Accounts found.';
+        }
+    } else {
+        return 'Failed to retrieve access token.';
+    }
+}
+
+function get_business_central_data($access_token) {
+
+    $tenant_id = get_option('tenant_id');
+    $environment = 'Sandbox';
+    $company_name = 'CRONUS USA, Inc.';  // Original company name
+    // URL-encode the company name to handle spaces and special characters
+    $encoded_company_name = rawurlencode($company_name);
+    $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/Company('{$encoded_company_name}')/Chart_of_Accounts";
+
+    $headers = [
+        'Authorization' => 'Bearer ' . $access_token,
+        'Content-Type' => 'application/json'
+    ];
+
+    $response = wp_remote_get($url, ['headers' => $headers]);
+    $data = json_decode(wp_remote_retrieve_body($response), true);
+
+    error_log('Business Central Data: ' . print_r($data, true));
+
+    return $data;
+}

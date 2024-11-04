@@ -267,9 +267,8 @@ function get_available_services($environment='Sandbox') {
     // Parse the XML to extract service names
     $services = [];
     if ($body) {
-        //$xml = simplexml_load_string($body);
-        $xml = new SimpleXMLElement($body);
-        $namespaces = $xml->getNamespaces(true);
+        $xml = simplexml_load_string($body);
+        //$namespaces = $xml->getNamespaces(true);
 
         // Look for EntitySets within the metadata (adjust if needed based on response format)
         foreach ($xml->xpath('//edmx:Edmx/edmx:DataServices/schema:Schema/schema:EntityContainer/schema:EntitySet') as $entitySet) {
@@ -277,7 +276,32 @@ function get_available_services($environment='Sandbox') {
             $services[$entityName] = $entityName;
         }
     }
+/*
+    $response = wp_remote_get($metadata_url);
+    $body = wp_remote_retrieve_body($response);
 
+    $services = [];
+    if ($body) {
+        try {
+            $xml = new SimpleXMLElement($body);
+    
+            // Get namespaces if parsing is successful
+            $namespaces = $xml->getNamespaces(true);
+            error_log(print_r($namespaces, true)); // Log to verify namespaces
+
+            // Look for EntitySets within the metadata (adjust if needed based on response format)
+            foreach ($xml->xpath('//edmx:Edmx/edmx:DataServices/schema:Schema/schema:EntityContainer/schema:EntitySet') as $entitySet) {
+                $entityName = (string) $entitySet['Name'];
+                $services[$entityName] = $entityName;
+            }
+    
+        } catch (Exception $e) {
+            error_log('Error parsing XML: ' . $e->getMessage());
+        }
+    } else {
+        error_log('Failed to retrieve metadata');
+    }
+*/    
     return $services;
 }
 

@@ -228,9 +228,56 @@ function get_business_central_data($service_name='Chart_of_Accounts', $company_n
 }
 
 function display_business_central_data() {
+    // Define available services
+    $services = [
+        'Chart_of_Accounts' => 'Chart of Accounts',
+        'ItemSalesAndProfit' => 'Item Sales and Profit',
+        'FixedAssets' => 'Fixed Assets',
+        'ItemCards' => 'Item Cards',
+        'Projects' => 'Projects'
+    ];
+
+    // Environment and company name configuration
+    $environment = 'Sandbox';
+    $company_name = 'CRONUS USA, Inc.';
+
+    // Display list of clickable links for each service
+    echo '<ul>';
+    foreach ($services as $key => $label) {
+        echo '<li><a href="?service=' . urlencode($key) . '">' . esc_html($label) . '</a></li>';
+    }
+    echo '</ul>';
+
+    // Check if a service name is provided in the URL
+    if (isset($_GET['service']) && array_key_exists($_GET['service'], $services)) {
+        $service_name = sanitize_text_field($_GET['service']);
+
+        // Retrieve data for the selected service
+        $data = get_business_central_data($service_name, $company_name, $environment);
+
+        // Display the retrieved data
+        if ($data) {
+            echo '<h3>Data for ' . esc_html($services[$service_name]) . '</h3>';
+            echo '<pre>' . print_r($data, true) . '</pre>';
+        } else {
+            echo '<p>No data available or failed to retrieve data.</p>';
+        }
+    } else {
+        echo '<p>Please select a service to view its data.</p>';
+    }
+}
+
+// Register the shortcode to display Business Central data
+add_shortcode('business_central_data', 'display_business_central_data');
+/*
+function display_business_central_data() {
 
     $service_name='Chart_of_Accounts';
     $service_name='ItemSalesAndProfit';
+    $service_name='FixedAssets';
+    $service_name='ItemCards';
+    $service_name='Projects';
+
     $environment = 'Sandbox';
     $company_name = 'CRONUS USA, Inc.';  // Original company name
     $data = get_business_central_data($service_name, $company_name, $environment);
@@ -243,3 +290,4 @@ function display_business_central_data() {
     }
 }
 add_shortcode('business_central_data', 'display_business_central_data');
+*/

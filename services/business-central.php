@@ -314,6 +314,7 @@ function get_available_services($environment='Sandbox') {
     } else {
         error_log('Failed to retrieve metadata body.');
     }
+*/        
     return $services;
 }
 

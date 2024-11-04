@@ -267,6 +267,37 @@ function get_available_services($environment='Sandbox') {
     // Parse the XML to extract service names
     $services = [];
     if ($body) {
+        // Try to parse XML
+        $xml = simplexml_load_string($body);
+    
+        if ($xml === false) {
+            error_log('Failed to parse XML response.');
+            foreach (libxml_get_errors() as $error) {
+                error_log($error->message); // Log XML parsing errors
+            }
+        } else {
+            // Get namespaces to use them in the XPath query
+            $namespaces = $xml->getNamespaces(true);
+    
+            if (isset($namespaces['edmx']) && isset($namespaces['schema'])) {
+                // Use namespaces in XPath query
+                $xml->registerXPathNamespace('edmx', $namespaces['edmx']);
+                $xml->registerXPathNamespace('schema', $namespaces['schema']);
+    
+                // Run the XPath query to get EntitySets
+                foreach ($xml->xpath('//edmx:Edmx/edmx:DataServices/schema:Schema/schema:EntityContainer/schema:EntitySet') as $entitySet) {
+                    $entityName = (string) $entitySet['Name'];
+                    $services[$entityName] = $entityName;
+                }
+            } else {
+                error_log('Required namespaces not found in XML.');
+            }
+        }
+    } else {
+        error_log('Failed to retrieve metadata body.');
+    }
+/*    
+    if ($body) {
         $xml = simplexml_load_string($body);
         //$namespaces = $xml->getNamespaces(true);
 

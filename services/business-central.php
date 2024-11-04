@@ -228,6 +228,8 @@ function get_business_central_data($service_name='Chart_of_Accounts', $company_n
 }
 
 function display_business_central_data() {
+    // Start output buffering
+    ob_start();
     // Define available services
     $services = [
         'Chart_of_Accounts' => 'Chart of Accounts',
@@ -265,6 +267,8 @@ function display_business_central_data() {
     } else {
         echo '<p>Please select a service to view its data.</p>';
     }
+    // Get the buffer contents and clean the buffer
+    return ob_get_clean();
 }
 
 // Register the shortcode to display Business Central data

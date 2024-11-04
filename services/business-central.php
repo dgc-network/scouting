@@ -267,7 +267,8 @@ function get_available_services($environment='Sandbox') {
     // Parse the XML to extract service names
     $services = [];
     if ($body) {
-        $xml = simplexml_load_string($body);
+        //$xml = simplexml_load_string($body);
+        $xml = new SimpleXMLElement($body);
         $namespaces = $xml->getNamespaces(true);
 
         // Look for EntitySets within the metadata (adjust if needed based on response format)

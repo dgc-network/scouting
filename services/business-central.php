@@ -230,19 +230,14 @@ function get_business_central_data($service_name='Chart_of_Accounts', $company_n
 function get_available_services($environment='Sandbox') {
     // Retrieve the stored access token, if any
     $access_token = get_option('business_central_access_token');
-    //error_log('Access token: ' . print_r($access_token, true));
-
     // Check if the access token exists and is valid
     if (!$access_token || token_is_expired($access_token)) {
         // No valid access token, redirect to Microsoft authorization
         redirect_to_authorization_url();
         exit; // Stop further execution until authorization completes
     }
-    $tenant_id = get_option('tenant_id');
-    //$encoded_company_name = rawurlencode($company_name);
 
-    // Define the URL to the metadata endpoint (you may need to adjust this based on your setup)
-    //$url = "https://api.businesscentral.dynamics.com/v2.0/8fd48cfd-1156-4b3a-bc21-32e0e891eda9/Sandbox/ODataV4/$metadata";
+    $tenant_id = get_option('tenant_id');
     $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/$metadata";
 
     // Set up the headers with the access token
@@ -283,38 +278,6 @@ function get_available_services($environment='Sandbox') {
     } else {
         error_log('Failed to retrieve metadata body.');
     }
-/*    
-    if ($body) {
-        // Try to parse XML
-        $xml = simplexml_load_string($body);
-    
-        if ($xml === false) {
-            error_log('Failed to parse XML response.');
-            foreach (libxml_get_errors() as $error) {
-                error_log($error->message); // Log XML parsing errors
-            }
-        } else {
-            // Get namespaces to use them in the XPath query
-            $namespaces = $xml->getNamespaces(true);
-    
-            if (isset($namespaces['edmx']) && isset($namespaces['schema'])) {
-                // Use namespaces in XPath query
-                $xml->registerXPathNamespace('edmx', $namespaces['edmx']);
-                $xml->registerXPathNamespace('schema', $namespaces['schema']);
-    
-                // Run the XPath query to get EntitySets
-                foreach ($xml->xpath('//edmx:Edmx/edmx:DataServices/schema:Schema/schema:EntityContainer/schema:EntitySet') as $entitySet) {
-                    $entityName = (string) $entitySet['Name'];
-                    $services[$entityName] = $entityName;
-                }
-            } else {
-                error_log('Required namespaces not found in XML.');
-            }
-        }
-    } else {
-        error_log('Failed to retrieve metadata body.');
-    }
-*/        
     return $services;
 }
 
@@ -364,28 +327,5 @@ function display_business_central_data() {
     // Get the buffer contents and clean the buffer
     return ob_get_clean();
 }
-
 // Register the shortcode to display Business Central data
 add_shortcode('business_central_data', 'display_business_central_data');
-/*
-function display_business_central_data() {
-
-    $service_name='Chart_of_Accounts';
-    $service_name='ItemSalesAndProfit';
-    $service_name='FixedAssets';
-    $service_name='ItemCards';
-    $service_name='Projects';
-
-    $environment = 'Sandbox';
-    $company_name = 'CRONUS USA, Inc.';  // Original company name
-    $data = get_business_central_data($service_name, $company_name, $environment);
-    
-    if ($data) {
-        // Display the data (or handle it as needed)
-        echo '<pre>' . print_r($data, true) . '</pre>';
-    } else {
-        echo 'No data available or failed to retrieve data.';
-    }
-}
-add_shortcode('business_central_data', 'display_business_central_data');
-*/

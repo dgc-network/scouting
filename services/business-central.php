@@ -227,6 +227,59 @@ function get_business_central_data($service_name='Chart_of_Accounts', $company_n
     return $data;
 }
 
+function get_available_services($environment='Sandbox') {
+    // Retrieve the stored access token, if any
+    $access_token = get_option('business_central_access_token');
+    //error_log('Access token: ' . print_r($access_token, true));
+
+    // Check if the access token exists and is valid
+    if (!$access_token || token_is_expired($access_token)) {
+        // No valid access token, redirect to Microsoft authorization
+        redirect_to_authorization_url();
+        exit; // Stop further execution until authorization completes
+    }
+    $tenant_id = get_option('tenant_id');
+    //$encoded_company_name = rawurlencode($company_name);
+
+    // Define the URL to the metadata endpoint (you may need to adjust this based on your setup)
+    //$url = "https://api.businesscentral.dynamics.com/v2.0/8fd48cfd-1156-4b3a-bc21-32e0e891eda9/Sandbox/ODataV4/$metadata";
+    $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/$metadata";
+
+    // Set up the headers with the access token
+    $args = [
+        'headers' => [
+            'Authorization' => 'Bearer ' . $access_token,
+            'Accept' => 'application/xml'
+        ]
+    ];
+
+    // Perform the request
+    $response = wp_remote_get($url, $args);
+
+    // Check for errors
+    if (is_wp_error($response)) {
+        error_log("Failed to retrieve metadata: " . $response->get_error_message());
+        return [];
+    }
+
+    $body = wp_remote_retrieve_body($response);
+
+    // Parse the XML to extract service names
+    $services = [];
+    if ($body) {
+        $xml = simplexml_load_string($body);
+        $namespaces = $xml->getNamespaces(true);
+
+        // Look for EntitySets within the metadata (adjust if needed based on response format)
+        foreach ($xml->xpath('//edmx:Edmx/edmx:DataServices/schema:Schema/schema:EntityContainer/schema:EntitySet') as $entitySet) {
+            $entityName = (string) $entitySet['Name'];
+            $services[$entityName] = $entityName;
+        }
+    }
+
+    return $services;
+}
+
 function display_business_central_data() {
     // Start output buffering
     ob_start();
@@ -242,6 +295,9 @@ function display_business_central_data() {
     // Environment and company name configuration
     $environment = 'Sandbox';
     $company_name = 'CRONUS USA, Inc.';
+
+    // Fetch the list of available services
+    $services = get_available_services($environment);
 
     // Display list of clickable links for each service
     echo '<ul>';

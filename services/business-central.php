@@ -199,34 +199,6 @@ function handle_authorization_redirect() {
 }
 add_action('template_redirect', 'handle_authorization_redirect');
 
-function get_business_central_data($service_name='Chart_of_Accounts', $company_name='CRONUS USA, Inc.', $environment='Sandbox') {
-
-    // Retrieve the stored access token, if any
-    $access_token = get_option('business_central_access_token');
-    //error_log('Access token: ' . print_r($access_token, true));
-
-    // Check if the access token exists and is valid
-    if (!$access_token || token_is_expired($access_token)) {
-        // No valid access token, redirect to Microsoft authorization
-        redirect_to_authorization_url();
-        exit; // Stop further execution until authorization completes
-    }
-    $tenant_id = get_option('tenant_id');
-    $encoded_company_name = rawurlencode($company_name);
-    $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/Company('{$encoded_company_name}')/{$service_name}";
-
-    $headers = [
-        'Authorization' => 'Bearer ' . $access_token,
-        'Content-Type' => 'application/json'
-    ];
-
-    $response = wp_remote_get($url, ['headers' => $headers]);
-    $data = json_decode(wp_remote_retrieve_body($response), true);
-    //error_log('Business Central Data: ' . print_r($data, true));
-
-    return $data;
-}
-
 function get_available_services($environment='Sandbox') {
     // Retrieve the stored access token, if any
     $access_token = get_option('business_central_access_token');
@@ -281,18 +253,37 @@ function get_available_services($environment='Sandbox') {
     return $services;
 }
 
+function get_business_central_data($service_name='Chart_of_Accounts', $company_name='CRONUS USA, Inc.', $environment='Sandbox') {
+
+    // Retrieve the stored access token, if any
+    $access_token = get_option('business_central_access_token');
+    //error_log('Access token: ' . print_r($access_token, true));
+
+    // Check if the access token exists and is valid
+    if (!$access_token || token_is_expired($access_token)) {
+        // No valid access token, redirect to Microsoft authorization
+        redirect_to_authorization_url();
+        exit; // Stop further execution until authorization completes
+    }
+    $tenant_id = get_option('tenant_id');
+    $encoded_company_name = rawurlencode($company_name);
+    $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/Company('{$encoded_company_name}')/{$service_name}";
+
+    $headers = [
+        'Authorization' => 'Bearer ' . $access_token,
+        'Content-Type' => 'application/json'
+    ];
+
+    $response = wp_remote_get($url, ['headers' => $headers]);
+    $data = json_decode(wp_remote_retrieve_body($response), true);
+    //error_log('Business Central Data: ' . print_r($data, true));
+
+    return $data;
+}
+/*
 function display_business_central_data() {
     // Start output buffering
     ob_start();
-    // Define available services
-    $services = [
-        'Chart_of_Accounts' => 'Chart of Accounts',
-        'ItemSalesAndProfit' => 'Item Sales and Profit',
-        'FixedAssets' => 'Fixed Assets',
-        'ItemCards' => 'Item Cards',
-        'Projects' => 'Projects'
-    ];
-
     // Environment and company name configuration
     $environment = 'Sandbox';
     $company_name = 'CRONUS USA, Inc.';
@@ -328,4 +319,131 @@ function display_business_central_data() {
     return ob_get_clean();
 }
 // Register the shortcode to display Business Central data
+add_shortcode('business_central_data', 'display_business_central_data');
+*/
+function create_business_central_data($service_name, $company_name, $environment, $data) {
+    $access_token = get_option('business_central_access_token');
+    if (!$access_token || token_is_expired($access_token)) {
+        redirect_to_authorization_url();
+        exit;
+    }
+    
+    $tenant_id = get_option('tenant_id');
+    $encoded_company_name = rawurlencode($company_name);
+    $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/Company('{$encoded_company_name}')/{$service_name}";
+
+    $headers = [
+        'Authorization' => 'Bearer ' . $access_token,
+        'Content-Type' => 'application/json'
+    ];
+
+    $response = wp_remote_post($url, [
+        'headers' => $headers,
+        'body' => json_encode($data)
+    ]);
+
+    return json_decode(wp_remote_retrieve_body($response), true);
+}
+
+function update_business_central_data($service_name, $company_name, $environment, $record_id, $data) {
+    $access_token = get_option('business_central_access_token');
+    if (!$access_token || token_is_expired($access_token)) {
+        redirect_to_authorization_url();
+        exit;
+    }
+    
+    $tenant_id = get_option('tenant_id');
+    $encoded_company_name = rawurlencode($company_name);
+    $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/Company('{$encoded_company_name}')/{$service_name}({$record_id})";
+
+    $headers = [
+        'Authorization' => 'Bearer ' . $access_token,
+        'Content-Type' => 'application/json'
+    ];
+
+    $response = wp_remote_request($url, [
+        'method' => 'PATCH',
+        'headers' => $headers,
+        'body' => json_encode($data)
+    ]);
+
+    return json_decode(wp_remote_retrieve_body($response), true);
+}
+
+function delete_business_central_data($service_name, $company_name, $environment, $record_id) {
+    $access_token = get_option('business_central_access_token');
+    if (!$access_token || token_is_expired($access_token)) {
+        redirect_to_authorization_url();
+        exit;
+    }
+    
+    $tenant_id = get_option('tenant_id');
+    $encoded_company_name = rawurlencode($company_name);
+    $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/Company('{$encoded_company_name}')/{$service_name}({$record_id})";
+
+    $headers = [
+        'Authorization' => 'Bearer ' . $access_token
+    ];
+
+    $response = wp_remote_request($url, [
+        'method' => 'DELETE',
+        'headers' => $headers
+    ]);
+
+    return json_decode(wp_remote_retrieve_body($response), true);
+}
+
+function display_business_central_data() {
+    ob_start();
+    $environment = 'Sandbox';
+    $company_name = 'CRONUS USA, Inc.';
+    $services = get_available_services($environment);
+
+    echo '<ul>';
+    foreach ($services as $key => $label) {
+        echo '<li><a href="?service=' . urlencode($key) . '">' . esc_html($label) . '</a></li>';
+    }
+    echo '</ul>';
+
+    if (isset($_GET['service']) && array_key_exists($_GET['service'], $services)) {
+        $service_name = sanitize_text_field($_GET['service']);
+        $data = get_business_central_data($service_name, $company_name, $environment);
+
+        if ($data && isset($data['value']) && is_array($data['value'])) {
+            echo '<h3>Data for ' . esc_html($services[$service_name]) . '</h3>';
+            echo '<table border="1">';
+            echo '<tr><th>ID</th><th>Data</th><th>Actions</th></tr>';
+
+            foreach ($data['value'] as $record) {
+                // Try to find the ID field in the record
+                $record_id = isset($record['ID']) ? $record['ID'] : (isset($record['No']) ? $record['No'] : (isset($record['id']) ? $record['id'] : null));
+
+                echo '<tr>';
+                echo '<td>' . esc_html($record_id) . '</td>';
+                echo '<td><pre>' . print_r($record, true) . '</pre></td>';
+                echo '<td>';
+                
+                if ($record_id) {
+                    // CRUD Links with actual ID for Update and Delete
+                    echo '<a href="?service=' . urlencode($service_name) . '&action=create">Create</a> | ';
+                    echo '<a href="?service=' . urlencode($service_name) . '&action=update&id=' . urlencode($record_id) . '">Update</a> | ';
+                    echo '<a href="?service=' . urlencode($service_name) . '&action=delete&id=' . urlencode($record_id) . '">Delete</a>';
+                } else {
+                    echo 'No ID found';
+                }
+
+                echo '</td>';
+                echo '</tr>';
+            }
+
+            echo '</table>';
+        } else {
+            echo '<p>No data available or failed to retrieve data.</p>';
+        }
+    } else {
+        echo '<p>Please select a service to view its data.</p>';
+    }
+
+    return ob_get_clean();
+}
 add_shortcode('business_central_data', 'display_business_central_data');

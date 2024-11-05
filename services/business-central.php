@@ -407,6 +407,40 @@ function display_business_central_data() {
 
     if (isset($_GET['service']) && array_key_exists($_GET['service'], $services)) {
         $service_name = sanitize_text_field($_GET['service']);
+
+        // Handle create action
+        if (isset($_GET['action']) && $_GET['action'] === 'create') {
+            $new_data = [
+                // Add your data here; example:
+                'Description' => 'New Item Description',
+                'No' => 'NEWITEM001'
+            ];
+            $created_data = create_business_central_data($service_name, $company_name, $environment, $new_data);
+            echo '<p>New item created: <pre>' . print_r($created_data, true) . '</pre></p>';
+        }
+
+        // Handle update action
+        if (isset($_GET['action'], $_GET['id']) && $_GET['action'] === 'update') {
+            $id = sanitize_text_field($_GET['id']);
+            $update_data = [
+                // Define fields to update; example:
+                'Description' => 'Updated Item Description'
+            ];
+            $updated_data = update_business_central_data($service_name, $company_name, $environment, $id, $update_data);
+            echo '<p>Item updated: <pre>' . print_r($updated_data, true) . '</pre></p>';
+        }
+
+        // Handle delete action
+        if (isset($_GET['action'], $_GET['id']) && $_GET['action'] === 'delete') {
+            $id = sanitize_text_field($_GET['id']);
+            $deleted = delete_business_central_data($service_name, $company_name, $environment, $id);
+            if ($deleted) {
+                echo '<p>Item deleted successfully.</p>';
+            } else {
+                echo '<p>Failed to delete item.</p>';
+            }
+        }
+        
         $data = get_business_central_data($service_name, $company_name, $environment);
 
         if ($data && isset($data['value']) && is_array($data['value'])) {
@@ -425,7 +459,6 @@ function display_business_central_data() {
                 
                 if ($record_id) {
                     // CRUD Links with actual ID for Update and Delete
-                    echo '<a href="?service=' . urlencode($service_name) . '&action=create">Create</a> | ';
                     echo '<a href="?service=' . urlencode($service_name) . '&action=update&id=' . urlencode($record_id) . '">Update</a> | ';
                     echo '<a href="?service=' . urlencode($service_name) . '&action=delete&id=' . urlencode($record_id) . '">Delete</a>';
                 } else {
@@ -435,8 +468,9 @@ function display_business_central_data() {
                 echo '</td>';
                 echo '</tr>';
             }
-
             echo '</table>';
+            echo '<a href="?service=' . urlencode($service_name) . '&action=create">Create</a> | ';
+
         } else {
             echo '<p>No data available or failed to retrieve data.</p>';
         }

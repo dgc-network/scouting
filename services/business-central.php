@@ -358,32 +358,7 @@ function update_business_central_data($service_name, $company_name, $environment
         return json_decode($response_body, true);
     }
 }
-/*
-function update_business_central_data($service_name, $company_name, $environment, $record_id, $data) {
-    $access_token = get_option('business_central_access_token');
-    if (!$access_token || token_is_expired($access_token)) {
-        redirect_to_authorization_url();
-        exit;
-    }
-    
-    $tenant_id = get_option('tenant_id');
-    $encoded_company_name = rawurlencode($company_name);
-    $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/Company('{$encoded_company_name}')/{$service_name}({$record_id})";
 
-    $headers = [
-        'Authorization' => 'Bearer ' . $access_token,
-        'Content-Type' => 'application/json'
-    ];
-
-    $response = wp_remote_request($url, [
-        'method' => 'PATCH',
-        'headers' => $headers,
-        'body' => json_encode($data)
-    ]);
-
-    return json_decode(wp_remote_retrieve_body($response), true);
-}
-*/
 function delete_business_central_data($service_name, $company_name, $environment, $record_id) {
     $access_token = get_option('business_central_access_token');
     if (!$access_token || token_is_expired($access_token)) {
@@ -440,30 +415,7 @@ function delete_business_central_data($service_name, $company_name, $environment
         return json_decode(wp_remote_retrieve_body($response), true);
     }
 }
-/*
-function delete_business_central_data($service_name, $company_name, $environment, $record_id) {
-    $access_token = get_option('business_central_access_token');
-    if (!$access_token || token_is_expired($access_token)) {
-        redirect_to_authorization_url();
-        exit;
-    }
-    
-    $tenant_id = get_option('tenant_id');
-    $encoded_company_name = rawurlencode($company_name);
-    $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/Company('{$encoded_company_name}')/{$service_name}({$record_id})";
 
-    $headers = [
-        'Authorization' => 'Bearer ' . $access_token
-    ];
-
-    $response = wp_remote_request($url, [
-        'method' => 'DELETE',
-        'headers' => $headers
-    ]);
-
-    return json_decode(wp_remote_retrieve_body($response), true);
-}
-*/
 function display_business_central_data() {
     ob_start();
     $environment = 'Sandbox';

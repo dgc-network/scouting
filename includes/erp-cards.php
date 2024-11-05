@@ -8,6 +8,7 @@ if (!class_exists('erp_cards')) {
         // Class constructor
         public function __construct() {
             add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_erp_cards_scripts' ) );
+            add_shortcode('business_central_customers', array( $this, 'display_customer_card_list'));
             //add_action( 'init', array( $this, 'register_customer_card_post_type' ) );
             //add_action( 'init', array( $this, 'register_vendor_card_post_type' ) );
             //add_action( 'init', array( $this, 'register_product_card_post_type' ) );

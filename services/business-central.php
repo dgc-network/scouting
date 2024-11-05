@@ -305,6 +305,60 @@ function create_business_central_data($service_name, $company_name, $environment
     return json_decode(wp_remote_retrieve_body($response), true);
 }
 
+function update_business_central_data($service_name, $company_name, $environment, $id, $data) {
+    $tenant_id = get_option('tenant_id');
+    $access_token = get_option('business_central_access_token');
+    $encoded_company_name = rawurlencode($company_name);
+    $encoded_id = rawurlencode($id);
+
+    // Construct the base URL for the entity
+    $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/Company('{$encoded_company_name}')/{$service_name}('{$encoded_id}')";
+
+    // Step 1: Get the record to retrieve the etag
+    $headers = [
+        'Authorization' => 'Bearer ' . $access_token,
+        'Content-Type' => 'application/json'
+    ];
+    $get_response = wp_remote_get($url, ['headers' => $headers]);
+
+    if (wp_remote_retrieve_response_code($get_response) !== 200) {
+        error_log('Failed to retrieve record for etag: ' . print_r(wp_remote_retrieve_body($get_response), true));
+        return json_decode(wp_remote_retrieve_body($get_response), true);
+    }
+
+    // Step 2: Extract the etag from the GET response
+    $get_data = json_decode(wp_remote_retrieve_body($get_response), true);
+    $etag = isset($get_data['@odata.etag']) ? $get_data['@odata.etag'] : null;
+
+    if (!$etag) {
+        error_log('No etag found in the GET response.');
+        return ['error' => 'Etag not found.'];
+    }
+
+    // Remove escape characters from the etag
+    $etag = str_replace('\"', '"', $etag);
+
+    // Step 3: Perform the PUT request with the If-Match header
+    $headers['If-Match'] = $etag;
+    $put_response = wp_remote_request($url, [
+        'method' => 'PUT',
+        'headers' => $headers,
+        'body' => json_encode($data)
+    ]);
+
+    $response_code = wp_remote_retrieve_response_code($put_response);
+    $response_body = wp_remote_retrieve_body($put_response);
+
+    if ($response_code === 204) {
+        // Successful update
+        return "Item successfully updated.";
+    } else {
+        // Log or return error details
+        error_log('Error updating item: ' . print_r($response_body, true));
+        return json_decode($response_body, true);
+    }
+}
+/*
 function update_business_central_data($service_name, $company_name, $environment, $record_id, $data) {
     $access_token = get_option('business_central_access_token');
     if (!$access_token || token_is_expired($access_token)) {
@@ -329,7 +383,64 @@ function update_business_central_data($service_name, $company_name, $environment
 
     return json_decode(wp_remote_retrieve_body($response), true);
 }
+*/
+function delete_business_central_data($service_name, $company_name, $environment, $record_id) {
+    $access_token = get_option('business_central_access_token');
+    if (!$access_token || token_is_expired($access_token)) {
+        redirect_to_authorization_url();
+        exit;
+    }
 
+    $tenant_id = get_option('tenant_id');
+    $encoded_company_name = rawurlencode($company_name);
+    $encoded_record_id = rawurlencode($record_id);
+
+    // Construct the URL for the specific record
+    $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/Company('{$encoded_company_name}')/{$service_name}('{$encoded_record_id}')";
+
+    // Step 1: Retrieve the etag by making a GET request
+    $headers = [
+        'Authorization' => 'Bearer ' . $access_token,
+        'Content-Type' => 'application/json'
+    ];
+    $get_response = wp_remote_get($url, ['headers' => $headers]);
+
+    if (wp_remote_retrieve_response_code($get_response) !== 200) {
+        error_log('Failed to retrieve record for etag: ' . print_r(wp_remote_retrieve_body($get_response), true));
+        return json_decode(wp_remote_retrieve_body($get_response), true);
+    }
+
+    // Step 2: Extract and format the etag from the GET response
+    $get_data = json_decode(wp_remote_retrieve_body($get_response), true);
+    $etag = isset($get_data['@odata.etag']) ? $get_data['@odata.etag'] : null;
+
+    if (!$etag) {
+        error_log('No etag found in the GET response.');
+        return ['error' => 'Etag not found.'];
+    }
+
+    // Remove escape characters from the etag
+    $etag = str_replace('\"', '"', $etag);
+
+    // Step 3: Perform the DELETE request with the If-Match header
+    $headers['If-Match'] = $etag;
+    $response = wp_remote_request($url, [
+        'method' => 'DELETE',
+        'headers' => $headers
+    ]);
+
+    $response_code = wp_remote_retrieve_response_code($response);
+
+    if ($response_code === 204) {
+        // Successful deletion
+        return "Item successfully deleted.";
+    } else {
+        // Log or return error details
+        error_log('Error deleting item: ' . print_r(wp_remote_retrieve_body($response), true));
+        return json_decode(wp_remote_retrieve_body($response), true);
+    }
+}
+/*
 function delete_business_central_data($service_name, $company_name, $environment, $record_id) {
     $access_token = get_option('business_central_access_token');
     if (!$access_token || token_is_expired($access_token)) {
@@ -352,7 +463,7 @@ function delete_business_central_data($service_name, $company_name, $environment
 
     return json_decode(wp_remote_retrieve_body($response), true);
 }
-
+*/
 function display_business_central_data() {
     ob_start();
     $environment = 'Sandbox';

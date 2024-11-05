@@ -280,47 +280,7 @@ function get_business_central_data($service_name='Chart_of_Accounts', $company_n
 
     return $data;
 }
-/*
-function display_business_central_data() {
-    // Start output buffering
-    ob_start();
-    // Environment and company name configuration
-    $environment = 'Sandbox';
-    $company_name = 'CRONUS USA, Inc.';
 
-    // Fetch the list of available services
-    $services = get_available_services($environment);
-
-    // Display list of clickable links for each service
-    echo '<ul>';
-    foreach ($services as $key => $label) {
-        echo '<li><a href="?service=' . urlencode($key) . '">' . esc_html($label) . '</a></li>';
-    }
-    echo '</ul>';
-
-    // Check if a service name is provided in the URL
-    if (isset($_GET['service']) && array_key_exists($_GET['service'], $services)) {
-        $service_name = sanitize_text_field($_GET['service']);
-
-        // Retrieve data for the selected service
-        $data = get_business_central_data($service_name, $company_name, $environment);
-
-        // Display the retrieved data
-        if ($data) {
-            echo '<h3>Data for ' . esc_html($services[$service_name]) . '</h3>';
-            echo '<pre>' . print_r($data, true) . '</pre>';
-        } else {
-            echo '<p>No data available or failed to retrieve data.</p>';
-        }
-    } else {
-        echo '<p>Please select a service to view its data.</p>';
-    }
-    // Get the buffer contents and clean the buffer
-    return ob_get_clean();
-}
-// Register the shortcode to display Business Central data
-add_shortcode('business_central_data', 'display_business_central_data');
-*/
 function create_business_central_data($service_name, $company_name, $environment, $data) {
     $access_token = get_option('business_central_access_token');
     if (!$access_token || token_is_expired($access_token)) {
@@ -440,7 +400,7 @@ function display_business_central_data() {
                 echo '<p>Failed to delete item.</p>';
             }
         }
-        
+
         $data = get_business_central_data($service_name, $company_name, $environment);
 
         if ($data && isset($data['value']) && is_array($data['value'])) {
@@ -469,7 +429,7 @@ function display_business_central_data() {
                 echo '</tr>';
             }
             echo '</table>';
-            echo '<a href="?service=' . urlencode($service_name) . '&action=create">Create</a> | ';
+            echo '<a href="?service=' . urlencode($service_name) . '&action=create">Create</a>';
 
         } else {
             echo '<p>No data available or failed to retrieve data.</p>';

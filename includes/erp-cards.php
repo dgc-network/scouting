@@ -80,6 +80,11 @@ if (!class_exists('erp_cards')) {
         // customer-card
         function display_customer_card_list() {
             ob_start();
+            $data = get_business_central_data($service_name, $company_name, $environment);
+
+            if ($data && isset($data['value']) && is_array($data['value'])) {
+            }
+                
             //$profiles_class = new display_profiles();
             ?>
             <?php //echo display_iso_helper_logo(); ?>

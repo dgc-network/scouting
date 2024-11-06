@@ -531,13 +531,12 @@ function display_business_central_data() {
         if ($data && isset($data['value']) && is_array($data['value'])) {
             echo '<h3>Data for ' . esc_html($services[$service_name]) . '</h3>';
             echo '<table border="1">';
-            echo '<tr><th>ID</th><th>Data</th><th>Actions</th></tr>';
+            echo '<tr><th>Actions</th><th>Data</th></tr>';
 
             foreach ($data['value'] as $record) {
                 $etag = isset($record['@odata.etag']) ? str_replace('\"', '"', $record['@odata.etag']) : null;
 
                 echo '<tr>';
-                echo '<td><pre>' . print_r($record, true) . '</pre></td>';
                 echo '<td>';
                 
                 if ($etag) {
@@ -548,6 +547,7 @@ function display_business_central_data() {
                 }
 
                 echo '</td>';
+                echo '<td><pre>' . print_r($record, true) . '</pre></td>';
                 echo '</tr>';
             }
             echo '</table>';

@@ -111,10 +111,13 @@ if (!class_exists('erp_cards')) {
                         <?php
                     foreach ($data['value'] as $record) {
                         $etag = isset($record['@odata.etag']) ? str_replace('\"', '"', $record['@odata.etag']) : null;
+                        $customer_code = $etag;
+                        $company_phon = $etag;
+                        $company_address = $etag;
                         ?>
                         <tr id="edit-customer-card-<?php echo $etag; ?>">
                             <td style="text-align:center;"><?php echo esc_html($customer_code);?></td>
-                            <td><pre><?php print_r($record, true); ?></pre></td>
+                            <td><pre><?php echo print_r($record, true); ?></pre></td>
                             <td style="text-align:center;"><?php echo esc_html($company_phone);?></td>
                             <td><?php echo esc_html($company_address);; ?></td>
                         </tr>

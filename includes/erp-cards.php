@@ -80,6 +80,7 @@ if (!class_exists('erp_cards')) {
         // customer-card
         function display_customer_card_list() {
             ob_start();
+            $service_name = 'ProjectCards';
             $data = get_business_central_data($service_name, $company_name, $environment);
 
             if ($data && isset($data['value']) && is_array($data['value'])) {

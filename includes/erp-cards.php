@@ -109,6 +109,32 @@ if (!class_exists('erp_cards')) {
                         </thead>
                         <tbody>
                         <?php
+                    foreach ($data['value'] as $record) {
+                        $etag = isset($record['@odata.etag']) ? str_replace('\"', '"', $record['@odata.etag']) : null;
+                        ?>
+                        <tr id="edit-customer-card-<?php echo $etag; ?>">
+                            <td style="text-align:center;"><?php echo esc_html($customer_code);?></td>
+                            <td><pre><?php print_r($record, true); ?></pre></td>
+                            <td style="text-align:center;"><?php echo esc_html($company_phone);?></td>
+                            <td><?php echo esc_html($company_address);; ?></td>
+                        </tr>
+                        <?php
+/*
+                        echo '<tr>';
+                        echo '<td>';
+                        
+                        if ($etag) {
+                            echo '<a href="?service=' . urlencode($service_name) . '&action=update&etag=' . urlencode($etag) . '">Update</a> | ';
+                            echo '<a href="?service=' . urlencode($service_name) . '&action=delete&etag=' . urlencode($etag) . '">Delete</a>';
+                        } else {
+                            echo 'No etag found';
+                        }
+        
+                        echo '</td>';
+                        echo '<td><pre>' . print_r($record, true) . '</pre></td>';
+                        echo '</tr>';
+*/
+                    }
                         $paged = max(1, get_query_var('paged')); // Get the current page number
                         ?>
                         </tbody>

@@ -71,7 +71,7 @@ jQuery(document).ready(function($) {
                 success: function (response) {
                     $("#customer-card-dialog").html(response.html_contain);
 
-                    if ($("#is-site-admin").val() === "1") {
+                    //if ($("#is-site-admin").val() === "1") {
                         $("#customer-card-dialog").dialog("option", "buttons", {
                             "Save": function () {
                                 $.ajax({
@@ -80,7 +80,7 @@ jQuery(document).ready(function($) {
                                     dataType: "json",
                                     data: {
                                         'action': 'set_customer_card_dialog_data',
-                                        '_customer_id': $("#customer-id").val(),
+                                        '_record_id': $("#record-id").val(),
                                         '_customer_code': $("#customer-code").val(),
                                         '_customer_title': $("#customer-title").val(),
                                         '_company_phone': $("#company-phone").val(),
@@ -106,7 +106,7 @@ jQuery(document).ready(function($) {
                                         dataType: "json",
                                         data: {
                                             'action': 'del_customer_card_dialog_data',
-                                            '_customer_id': $("#customer-id").val(),
+                                            '_record_id': $("#record-id").val(),
                                         },
                                         success: function (response) {
                                             $("#customer-card-dialog").dialog('close');
@@ -121,7 +121,7 @@ jQuery(document).ready(function($) {
                                 }
                             },
                         });
-                    }
+                    //}
                     $("#customer-card-dialog").dialog('open');
                 },
                 error: function (error) {

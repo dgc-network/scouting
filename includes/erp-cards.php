@@ -83,7 +83,49 @@ if (!class_exists('erp_cards')) {
             $data = get_business_central_data($service_name, $company_name, $environment);
 
             if ($data && isset($data['value']) && is_array($data['value'])) {
+                ?>
+                <?php //echo display_iso_helper_logo(); ?>
+                <h2 style="display:inline;"><?php echo __( '客戶列表', 'your-text-domain' ); ?></h2>
+    
+                <div style="display:flex; justify-content:space-between; margin:5px;">
+                    <div><?php //$profiles_class->display_select_profile('customer-card'); ?></div>
+                    <div style="text-align:right; display:flex;">
+                        <input type="text" id="search-customer" style="display:inline" placeholder="Search..." />
+                    </div>
+                </div>
+    
+                <fieldset>
+                    <table class="ui-widget" style="width:100%;">
+                        <thead>
+                            <tr>
+                                <th><?php echo __( 'Number', 'your-text-domain' ); ?></th>
+                                <th><?php echo __( 'Title', 'your-text-domain' ); ?></th>
+                                <th><?php echo __( 'Phone', 'your-text-domain' ); ?></th>
+                                <th><?php echo __( 'Address', 'your-text-domain' ); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        $paged = max(1, get_query_var('paged')); // Get the current page number
+                        ?>
+                        </tbody>
+                    </table>
+                    <?php //if (is_site_admin()) {?>
+                        <div id="new-customer-card" class="button" style="border:solid; margin:3px; text-align:center; border-radius:5px; font-size:small;">+</div>
+                    <?php //}?>
+                    <div class="pagination">
+                        <?php
+                        // Display pagination links
+                        if ($paged > 1) echo '<span class="button"><a href="' . esc_url(get_pagenum_link($paged - 1)) . '"> < </a></span>';
+                        echo '<span class="page-numbers">' . sprintf(__('Page %d of %d', 'your-text-domain'), $paged, $total_pages) . '</span>';
+                        if ($paged < $total_pages) echo '<span class="button"><a href="' . esc_url(get_pagenum_link($paged + 1)) . '"> > </a></span>';
+                        ?>
+                    </div>
+                </fieldset>
+                <div id="customer-card-dialog" title="Customer dialog"></div>
+                <?php        
             }
+            return ob_get_clean();
                 
             //$profiles_class = new display_profiles();
             ?>
@@ -110,6 +152,33 @@ if (!class_exists('erp_cards')) {
                     <tbody>
                     <?php
                     $paged = max(1, get_query_var('paged')); // Get the current page number
+                    foreach ($data['value'] as $record) {
+                        $etag = isset($record['@odata.etag']) ? str_replace('\"', '"', $record['@odata.etag']) : null;
+                        ?>
+                        <tr id="edit-customer-card-<?php echo $etag; ?>">
+                            <td style="text-align:center;"><?php echo esc_html($customer_code);?></td>
+                            <td><pre><?php print_r($record, true); ?></pre></td>
+                            <td style="text-align:center;"><?php echo esc_html($company_phone);?></td>
+                            <td><?php echo esc_html($company_address);; ?></td>
+                        </tr>
+                        <?php
+/*
+                        echo '<tr>';
+                        echo '<td>';
+                        
+                        if ($etag) {
+                            echo '<a href="?service=' . urlencode($service_name) . '&action=update&etag=' . urlencode($etag) . '">Update</a> | ';
+                            echo '<a href="?service=' . urlencode($service_name) . '&action=delete&etag=' . urlencode($etag) . '">Delete</a>';
+                        } else {
+                            echo 'No etag found';
+                        }
+        
+                        echo '</td>';
+                        echo '<td><pre>' . print_r($record, true) . '</pre></td>';
+                        echo '</tr>';
+*/
+                    }
+        
 /*                    
                     $query = $this->retrieve_customer_card_data($paged);
                     $total_posts = $query->found_posts;

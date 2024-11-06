@@ -111,15 +111,16 @@ if (!class_exists('erp_cards')) {
                         <?php
                     foreach ($data['value'] as $record) {
                         $etag = isset($record['@odata.etag']) ? str_replace('\"', '"', $record['@odata.etag']) : null;
-                        $customer_code = $etag;
-                        $company_phon = $etag;
-                        $company_address = $etag;
+                        $No = isset($record['No']) ? $record['No'] : null;
+                        $Description = isset($record['Description']) ? $record['Description'] : null;
+                        $Sell_to_Customer_Name = isset($record['Sell_to_Customer_Name']) ? $record['Sell_to_Customer_Name'] : null;
+                        $Sell_to_Address = isset($record['Sell_to_Address']) ? $record['Sell_to_Address'] : null;
                         ?>
                         <tr id="edit-customer-card-<?php echo $etag; ?>">
-                            <td style="text-align:center;"><?php echo esc_html($customer_code);?></td>
-                            <td><pre><?php echo print_r($record, true); ?></pre></td>
-                            <td style="text-align:center;"><?php echo esc_html($company_phone);?></td>
-                            <td><?php echo esc_html($company_address);; ?></td>
+                            <td style="text-align:center;"><?php echo esc_html($No);?></td>
+                            <td><?php echo $Description;?></td>
+                            <td style="text-align:center;"><?php echo esc_html($Sell_to_Customer_Name);?></td>
+                            <td><?php echo esc_html($Sell_to_Address);; ?></td>
                         </tr>
                         <?php
 /*

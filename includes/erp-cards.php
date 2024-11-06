@@ -112,12 +112,13 @@ if (!class_exists('erp_cards')) {
                         <?php
                     foreach ($data['value'] as $record) {
                         $etag = isset($record['@odata.etag']) ? str_replace('\"', '"', $record['@odata.etag']) : null;
+                        $record_id = isset($record['No']) ? $record['No'] : null;
                         $No = isset($record['No']) ? $record['No'] : null;
                         $Description = isset($record['Description']) ? $record['Description'] : null;
                         $Sell_to_Customer_Name = isset($record['Sell_to_Customer_Name']) ? $record['Sell_to_Customer_Name'] : null;
                         $Sell_to_Address = isset($record['Sell_to_Address']) ? $record['Sell_to_Address'] : null;
                         ?>
-                        <tr id="edit-customer-card-<?php echo $etag; ?>">
+                        <tr id="edit-customer-card-<?php echo esc_attr($record_id);?>">
                             <td style="text-align:center;"><?php echo esc_html($No);?></td>
                             <td><?php echo $Description;?></td>
                             <td style="text-align:center;"><?php echo esc_html($Sell_to_Customer_Name);?></td>
@@ -160,110 +161,85 @@ if (!class_exists('erp_cards')) {
                 <?php        
             }
             return ob_get_clean();
-                
-            //$profiles_class = new display_profiles();
+        }
+
+        function get_customer_card_dialog_data() {
+            $record_id = sanitize_text_field($_POST['_record_id']);
+            $response = array('html_contain' => $this->display_customer_card_dialog($record_id));
+            wp_send_json($response);
+        }
+
+        function display_customer_card_dialog($record_id = false) {
+            ob_start();
+            $service_name = 'ProjectCards';
+            $company_name = 'CRONUS USA, Inc.';
+            $environment = 'Sandbox';
+            $data = get_business_central_data($service_name, $company_name, $environment, $record_id);
+
+            //if ($data && isset($data['value']) && is_array($data['value'])) {
+                $unified_number = get_post_meta($customer_id, 'unified_number', true);
+                ?>
+                <fieldset>
+                    <input type="hidden" id="customer-id" value="<?php echo esc_attr($data['No']);?>" />
+                    <label for="customer-code"><?php echo __( 'Number: ', 'your-text-domain' );?></label>
+                    <input type="text" id="customer-code" value="<?php echo esc_attr($data['No']);?>" class="text ui-widget-content ui-corner-all" />
+                    <label for="customer-title"><?php echo __( 'Title: ', 'your-text-domain' );?></label>
+                    <input type="text" id="customer-title" value="<?php echo esc_attr($data['Description']);?>" class="text ui-widget-content ui-corner-all" />
+                    <label for="company-phone"><?php echo __( 'Phone: ', 'your-text-domain' );?></label>
+                    <input type="text" id="company-phone" value="<?php echo esc_attr($data['Description']);?>" class="text ui-widget-content ui-corner-all" />
+                    <label for="company-address"><?php echo __( 'Address: ', 'your-text-domain' );?></label>
+                    <textarea id="company-address" rows="2" style="width:100%;"><?php echo esc_html($data['Description']); ?></textarea>
+                    <label for="unified-number"><?php echo __( '統一編號: ', 'your-text-domain' );?></label>
+                    <input type="text" id="unified-number" value="<?php echo esc_attr($data['Description']);?>" class="text ui-widget-content ui-corner-all" />
+                </fieldset>
+                <?php
+    
+            //}
+            return ob_get_clean();
+
+            // Get the current user's site ID
+            $current_user_id = get_current_user_id();
+            $site_id = get_user_meta($current_user_id, 'site_id', true);
+
+            // Retrieve the site_customer_data meta field
+            $site_customer_data = get_post_meta($customer_id, 'site_customer_data', true);
+            // Check if site_customer_data is an array and contains the site_id key
+            if (is_array($site_customer_data) && isset($site_customer_data[$site_id])) {
+                $customer_code = $site_customer_data[$site_id];
+            } else {
+                // Handle the case where customer_code doesn't exist or site_customer_data is not an array
+                $customer_code = ''; // Default value if the customer code is not found
+            }
+
+            // Retrieve other post data and meta fields
+            $customer_title = get_the_title($customer_id);
+            $customer_content = get_post_field('post_content', $customer_id);
+            $company_phone = get_post_meta($customer_id, 'company_phone', true);
+            $company_address = get_post_meta($customer_id, 'company_address', true);
+            $unified_number = get_post_meta($customer_id, 'unified_number', true);
             ?>
-            <?php //echo display_iso_helper_logo(); ?>
-            <h2 style="display:inline;"><?php echo __( '客戶列表', 'your-text-domain' ); ?></h2>
-
-            <div style="display:flex; justify-content:space-between; margin:5px;">
-                <div><?php //$profiles_class->display_select_profile('customer-card'); ?></div>
-                <div style="text-align:right; display:flex;">
-                    <input type="text" id="search-customer" style="display:inline" placeholder="Search..." />
-                </div>
-            </div>
-
             <fieldset>
-                <table class="ui-widget" style="width:100%;">
-                    <thead>
-                        <tr>
-                            <th><?php echo __( 'Number', 'your-text-domain' ); ?></th>
-                            <th><?php echo __( 'Title', 'your-text-domain' ); ?></th>
-                            <th><?php echo __( 'Phone', 'your-text-domain' ); ?></th>
-                            <th><?php echo __( 'Address', 'your-text-domain' ); ?></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <?php
-                    $paged = max(1, get_query_var('paged')); // Get the current page number
-                    foreach ($data['value'] as $record) {
-                        $etag = isset($record['@odata.etag']) ? str_replace('\"', '"', $record['@odata.etag']) : null;
-                        ?>
-                        <tr id="edit-customer-card-<?php echo $etag; ?>">
-                            <td style="text-align:center;"><?php echo esc_html($customer_code);?></td>
-                            <td><pre><?php print_r($record, true); ?></pre></td>
-                            <td style="text-align:center;"><?php echo esc_html($company_phone);?></td>
-                            <td><?php echo esc_html($company_address);; ?></td>
-                        </tr>
-                        <?php
-/*
-                        echo '<tr>';
-                        echo '<td>';
-                        
-                        if ($etag) {
-                            echo '<a href="?service=' . urlencode($service_name) . '&action=update&etag=' . urlencode($etag) . '">Update</a> | ';
-                            echo '<a href="?service=' . urlencode($service_name) . '&action=delete&etag=' . urlencode($etag) . '">Delete</a>';
-                        } else {
-                            echo 'No etag found';
-                        }
-        
-                        echo '</td>';
-                        echo '<td><pre>' . print_r($record, true) . '</pre></td>';
-                        echo '</tr>';
-*/
-                    }
-        
-/*                    
-                    $query = $this->retrieve_customer_card_data($paged);
-                    $total_posts = $query->found_posts;
-                    $total_pages = ceil($total_posts / get_option('operation_row_counts')); // Calculate the total number of pages
-                    
-                    if ($query->have_posts()) :
-                        while ($query->have_posts()) : $query->the_post();
-    
-                            $site_customer_data = get_post_meta(get_the_ID(), 'site_customer_data', true);
-                            $company_phone = get_post_meta(get_the_ID(), 'company_phone', true);
-                            $company_address = get_post_meta(get_the_ID(), 'company_address', true);
-
-                            // Assuming site_customer_data is an associative array with site_id as a key
-                            $current_user_id = get_current_user_id();
-                            $site_id = get_user_meta($current_user_id, 'site_id', true);
-    
-                            if (is_array($site_customer_data) && isset($site_customer_data[$site_id])) {
-                                $customer_code = $site_customer_data[$site_id];
-                            } else {
-                                // Handle the case where customer_code doesn't exist or site_customer_data is not an array
-                                $customer_code = ''; // or any default value you prefer
-                            }
-    
-                            ?>
-                            <tr id="edit-customer-card-<?php the_ID(); ?>">
-                                <td style="text-align:center;"><?php echo esc_html($customer_code);?></td>
-                                <td><?php the_title(); ?></td>
-                                <td style="text-align:center;"><?php echo esc_html($company_phone);?></td>
-                                <td><?php echo esc_html($company_address);; ?></td>
-                            </tr>
-                            <?php 
-                        endwhile;
-                        wp_reset_postdata();
-                    endif;
-*/                    
-                    ?>
-                    </tbody>
-                </table>
-                <?php //if (is_site_admin()) {?>
-                    <div id="new-customer-card" class="button" style="border:solid; margin:3px; text-align:center; border-radius:5px; font-size:small;">+</div>
-                <?php //}?>
-                <div class="pagination">
-                    <?php
-                    // Display pagination links
-                    if ($paged > 1) echo '<span class="button"><a href="' . esc_url(get_pagenum_link($paged - 1)) . '"> < </a></span>';
-                    echo '<span class="page-numbers">' . sprintf(__('Page %d of %d', 'your-text-domain'), $paged, $total_pages) . '</span>';
-                    if ($paged < $total_pages) echo '<span class="button"><a href="' . esc_url(get_pagenum_link($paged + 1)) . '"> > </a></span>';
-                    ?>
-                </div>
+                <input type="hidden" id="customer-id" value="<?php echo esc_attr($customer_id);?>" />
+                <input type="hidden" id="is-site-admin" value="<?php echo esc_attr(is_site_admin());?>" />
+                <label for="customer-code"><?php echo __( 'Number: ', 'your-text-domain' );?></label>
+                <input type="text" id="customer-code" value="<?php echo esc_attr($customer_code);?>" class="text ui-widget-content ui-corner-all" />
+                <label for="customer-title"><?php echo __( 'Title: ', 'your-text-domain' );?></label>
+                <input type="text" id="customer-title" value="<?php echo esc_attr($customer_title);?>" class="text ui-widget-content ui-corner-all" />
+                <?php
+                // transaction data vs card key/value
+                $key_value_pair = array(
+                    '_customer'   => $customer_id,
+                );
+                $documents_class = new display_documents();
+                $documents_class->get_transactions_by_key_value_pair($key_value_pair);
+                ?>
+                <label for="company-phone"><?php echo __( 'Phone: ', 'your-text-domain' );?></label>
+                <input type="text" id="company-phone" value="<?php echo esc_attr($company_phone);?>" class="text ui-widget-content ui-corner-all" />
+                <label for="company-address"><?php echo __( 'Address: ', 'your-text-domain' );?></label>
+                <textarea id="company-address" rows="2" style="width:100%;"><?php echo esc_html($company_address); ?></textarea>
+                <label for="unified-number"><?php echo __( '統一編號: ', 'your-text-domain' );?></label>
+                <input type="text" id="unified-number" value="<?php echo esc_attr($unified_number);?>" class="text ui-widget-content ui-corner-all" />
             </fieldset>
-            <div id="customer-card-dialog" title="Customer dialog"></div>
             <?php
             return ob_get_clean();
         }
@@ -346,61 +322,6 @@ if (!class_exists('erp_cards')) {
             $filtered_query->post_count = count($filtered_posts);
         
             return $filtered_query;
-        }
-
-        function display_customer_card_dialog($customer_id = false) {
-            ob_start();
-            // Get the current user's site ID
-            $current_user_id = get_current_user_id();
-            $site_id = get_user_meta($current_user_id, 'site_id', true);
-
-            // Retrieve the site_customer_data meta field
-            $site_customer_data = get_post_meta($customer_id, 'site_customer_data', true);
-            // Check if site_customer_data is an array and contains the site_id key
-            if (is_array($site_customer_data) && isset($site_customer_data[$site_id])) {
-                $customer_code = $site_customer_data[$site_id];
-            } else {
-                // Handle the case where customer_code doesn't exist or site_customer_data is not an array
-                $customer_code = ''; // Default value if the customer code is not found
-            }
-
-            // Retrieve other post data and meta fields
-            $customer_title = get_the_title($customer_id);
-            $customer_content = get_post_field('post_content', $customer_id);
-            $company_phone = get_post_meta($customer_id, 'company_phone', true);
-            $company_address = get_post_meta($customer_id, 'company_address', true);
-            $unified_number = get_post_meta($customer_id, 'unified_number', true);
-            ?>
-            <fieldset>
-                <input type="hidden" id="customer-id" value="<?php echo esc_attr($customer_id);?>" />
-                <input type="hidden" id="is-site-admin" value="<?php echo esc_attr(is_site_admin());?>" />
-                <label for="customer-code"><?php echo __( 'Number: ', 'your-text-domain' );?></label>
-                <input type="text" id="customer-code" value="<?php echo esc_attr($customer_code);?>" class="text ui-widget-content ui-corner-all" />
-                <label for="customer-title"><?php echo __( 'Title: ', 'your-text-domain' );?></label>
-                <input type="text" id="customer-title" value="<?php echo esc_attr($customer_title);?>" class="text ui-widget-content ui-corner-all" />
-                <?php
-                // transaction data vs card key/value
-                $key_value_pair = array(
-                    '_customer'   => $customer_id,
-                );
-                $documents_class = new display_documents();
-                $documents_class->get_transactions_by_key_value_pair($key_value_pair);
-                ?>
-                <label for="company-phone"><?php echo __( 'Phone: ', 'your-text-domain' );?></label>
-                <input type="text" id="company-phone" value="<?php echo esc_attr($company_phone);?>" class="text ui-widget-content ui-corner-all" />
-                <label for="company-address"><?php echo __( 'Address: ', 'your-text-domain' );?></label>
-                <textarea id="company-address" rows="2" style="width:100%;"><?php echo esc_html($company_address); ?></textarea>
-                <label for="unified-number"><?php echo __( '統一編號: ', 'your-text-domain' );?></label>
-                <input type="text" id="unified-number" value="<?php echo esc_attr($unified_number);?>" class="text ui-widget-content ui-corner-all" />
-            </fieldset>
-            <?php
-            return ob_get_clean();
-        }
-
-        function get_customer_card_dialog_data() {
-            $customer_id = sanitize_text_field($_POST['_customer_id']);
-            $response = array('html_contain' => $this->display_customer_card_dialog($customer_id));
-            wp_send_json($response);
         }
 
         function set_customer_card_dialog_data() {

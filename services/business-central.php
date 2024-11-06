@@ -253,7 +253,7 @@ function get_available_services($environment='Sandbox') {
     return $services;
 }
 
-function get_business_central_data($service_name='Chart_of_Accounts', $company_name='CRONUS USA, Inc.', $environment='Sandbox') {
+function get_business_central_data($service_name='Chart_of_Accounts', $company_name='CRONUS USA, Inc.', $environment='Sandbox', $record_id=false) {
 
     // Retrieve the stored access token, if any
     $access_token = get_option('business_central_access_token');
@@ -267,7 +267,11 @@ function get_business_central_data($service_name='Chart_of_Accounts', $company_n
     }
     $tenant_id = get_option('tenant_id');
     $encoded_company_name = rawurlencode($company_name);
-    $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/Company('{$encoded_company_name}')/{$service_name}";
+    if ($record_id) {
+        $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/Company('{$encoded_company_name}')/{$service_name}('{$record_id}')";
+    } else {
+        $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/Company('{$encoded_company_name}')/{$service_name}";
+    }
 
     $headers = [
         'Authorization' => 'Bearer ' . $access_token,

@@ -58,17 +58,19 @@ jQuery(document).ready(function($) {
         });
 
         $('[id^="edit-customer-card-"]').on("click", function () {
-            const customer_id = this.id.substring(19);
+            const record_id = this.id.substring(19);
+            console.log('record_id: '+record_id);
             $.ajax({
                 type: 'POST',
                 url: ajax_object.ajax_url,
                 dataType: "json",
                 data: {
                     'action': 'get_customer_card_dialog_data',
-                    '_customer_id': customer_id,
+                    '_record_id': record_id,
                 },
                 success: function (response) {
                     $("#customer-card-dialog").html(response.html_contain);
+
                     if ($("#is-site-admin").val() === "1") {
                         $("#customer-card-dialog").dialog("option", "buttons", {
                             "Save": function () {

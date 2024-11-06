@@ -1,0 +1,101 @@
+/*
+Theme Name: Your Theme Name
+Text Domain: your-text-domain
+*/
+
+.page .entry-title {display: none;}
+.wp-block-post-title {display: none;}
+.wp-block-button__link {margin: 2px; display: inline-block;}
+.ui-widget .ui-widget-content {width: -webkit-fill-available;}
+
+thead{background-color:#d6d8d9;}
+tbody{
+    list-style:none;
+    padding:0;
+    min-height:12em;
+}
+tr:nth-child(2n){
+    background-color:#d6d8d9;
+}
+
+tbody tr:hover {
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+}
+
+iframe {
+    width: 130%;
+    height: 580px; /* Adjust the height as needed */
+    border: none; /* Removes the default iframe border */
+}
+  
+/* Apply styles to the button when hovering */
+input[type="button"]:hover {
+    color: red;
+    cursor: pointer;
+}
+
+.button:hover {
+    color: red;
+    cursor: pointer;
+}
+
+.custom-alert {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffcc00; /* Yellow background */
+    color: #333; /* Dark text color */
+    padding: 15px 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Shadow effect */
+    z-index: 9999; /* Ensure the box is above other content */
+}
+
+.separator {
+    margin: 5px;
+    /* Add more styles as needed */
+}
+
+ol {
+    margin-left: 20px; /* Adjust the margin as needed */
+}
+  
+ol ol {
+    list-style-type: lower-alpha; /* Use lower-alpha for second-level list items (1.1, 1.2, etc.) */
+    margin-left: 20px; /* Adjust the margin as needed */
+}
+  
+.prev,
+.next {
+    position: absolute;
+    top: 50%;
+    font-size: 25px;
+    color: #fff;
+    cursor: pointer;
+    transform: translateY(-50%);
+}
+
+.prev {
+    left: 15px;
+}
+
+.next {
+    right: 15px;
+}
+
+@media (max-width: 600px) {
+    .ui-dialog {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}
+
+@media (min-width: 601px) {
+    .ui-dialog {
+        width: 80% !important;
+        max-width: 800px !important; /* Set a maximum width for desktop */
+    }
+}

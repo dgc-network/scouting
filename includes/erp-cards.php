@@ -69,6 +69,7 @@ if (!class_exists('erp_cards')) {
         function enqueue_erp_cards_scripts() {
             wp_enqueue_style('jquery-ui-style', 'https://code.jquery.com/ui/1.13.2/themes/smoothness/jquery-ui.css', '', '1.13.2');
             wp_enqueue_script('jquery-ui', 'https://code.jquery.com/ui/1.13.2/jquery-ui.js', array('jquery'), null, true);
+            wp_enqueue_style('wp-enqueue-css', plugins_url('/assets/css/wp-enqueue.css', __DIR__), '', time());
 
             wp_enqueue_script('erp-cards', plugins_url('js/erp-cards.js', __FILE__), array('jquery'), time());
             wp_localize_script('erp-cards', 'ajax_object', array(

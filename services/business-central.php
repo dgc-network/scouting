@@ -305,6 +305,70 @@ function create_business_central_data($service_name, $company_name, $environment
     return json_decode(wp_remote_retrieve_body($response), true);
 }
 
+function update_business_central_data($service_name, $company_name, $environment, $etag, $data) {
+    $tenant_id = get_option('tenant_id');
+    $access_token = get_option('business_central_access_token');
+    $encoded_company_name = rawurlencode($company_name);
+
+    // Construct the base URL for the entity
+    $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/Company('{$encoded_company_name}')/{$service_name}";
+
+    // Configure headers including the If-Match header for the etag
+    $headers = [
+        'Authorization' => 'Bearer ' . $access_token,
+        'Content-Type' => 'application/json',
+        'If-Match' => str_replace('\"', '"', $etag)  // Removes escape characters if any
+    ];
+
+    // Send the PUT request with the JSON data
+    $put_response = wp_remote_request($url, [
+        'method' => 'PUT',
+        'headers' => $headers,
+        'body' => json_encode($data)
+    ]);
+
+    $response_code = wp_remote_retrieve_response_code($put_response);
+    $response_body = wp_remote_retrieve_body($put_response);
+
+    if ($response_code === 204) {
+        return "Item successfully updated.";
+    } else {
+        error_log('Error updating item: ' . print_r($response_body, true));
+        return json_decode($response_body, true);
+    }
+}
+
+function delete_business_central_data($service_name, $company_name, $environment, $etag) {
+    $tenant_id = get_option('tenant_id');
+    $access_token = get_option('business_central_access_token');
+    $encoded_company_name = rawurlencode($company_name);
+
+    // Construct the URL for the specific record
+    $url = "https://api.businesscentral.dynamics.com/v2.0/{$tenant_id}/{$environment}/ODataV4/Company('{$encoded_company_name}')/{$service_name}";
+
+    // Set up headers with If-Match header for the etag
+    $headers = [
+        'Authorization' => 'Bearer ' . $access_token,
+        'Content-Type' => 'application/json',
+        'If-Match' => str_replace('\"', '"', $etag)
+    ];
+
+    // Send the DELETE request
+    $response = wp_remote_request($url, [
+        'method' => 'DELETE',
+        'headers' => $headers
+    ]);
+
+    $response_code = wp_remote_retrieve_response_code($response);
+
+    if ($response_code === 204) {
+        return "Item successfully deleted.";
+    } else {
+        error_log('Error deleting item: ' . print_r(wp_remote_retrieve_body($response), true));
+        return json_decode(wp_remote_retrieve_body($response), true);
+    }
+}
+/*
 function update_business_central_data($service_name, $company_name, $environment, $id, $data) {
     $tenant_id = get_option('tenant_id');
     $access_token = get_option('business_central_access_token');
@@ -415,7 +479,184 @@ function delete_business_central_data($service_name, $company_name, $environment
         return json_decode(wp_remote_retrieve_body($response), true);
     }
 }
+*/
+function display_business_central_data() {
+    ob_start();
+    $environment = 'Sandbox';
+    $company_name = 'CRONUS USA, Inc.';
+    $services = get_available_services($environment);
 
+    echo '<ul>';
+    foreach ($services as $key => $label) {
+        echo '<li><a href="?service=' . urlencode($key) . '">' . esc_html($label) . '</a></li>';
+    }
+    echo '</ul>';
+
+    if (isset($_GET['service']) && array_key_exists($_GET['service'], $services)) {
+        $service_name = sanitize_text_field($_GET['service']);
+
+        // Handle create action
+        if (isset($_GET['action']) && $_GET['action'] === 'create') {
+            $new_data = [
+                'Description' => 'New Item Description',
+                'No' => 'NEWITEM001'
+            ];
+            $created_data = create_business_central_data($service_name, $company_name, $environment, $new_data);
+            echo '<p>New item created: <pre>' . print_r($created_data, true) . '</pre></p>';
+        }
+
+        // Handle update action
+        if (isset($_GET['action'], $_GET['etag']) && $_GET['action'] === 'update') {
+            $etag = sanitize_text_field($_GET['etag']);
+            $update_data = [
+                'Description' => 'Updated Item Description'
+            ];
+            $updated_data = update_business_central_data($service_name, $company_name, $environment, $etag, $update_data);
+            echo '<p>Item updated: <pre>' . print_r($updated_data, true) . '</pre></p>';
+        }
+
+        // Handle delete action
+        if (isset($_GET['action'], $_GET['etag']) && $_GET['action'] === 'delete') {
+            $etag = sanitize_text_field($_GET['etag']);
+            $deleted = delete_business_central_data($service_name, $company_name, $environment, $etag);
+            if ($deleted) {
+                echo '<p>Item deleted successfully.</p>';
+            } else {
+                echo '<p>Failed to delete item.</p>';
+            }
+        }
+
+        $data = get_business_central_data($service_name, $company_name, $environment);
+
+        if ($data && isset($data['value']) && is_array($data['value'])) {
+            echo '<h3>Data for ' . esc_html($services[$service_name]) . '</h3>';
+            echo '<table border="1">';
+            echo '<tr><th>ID</th><th>Data</th><th>Actions</th></tr>';
+
+            foreach ($data['value'] as $record) {
+                $etag = isset($record['@odata.etag']) ? str_replace('\"', '"', $record['@odata.etag']) : null;
+
+                echo '<tr>';
+                echo '<td><pre>' . print_r($record, true) . '</pre></td>';
+                echo '<td>';
+                
+                if ($etag) {
+                    echo '<a href="?service=' . urlencode($service_name) . '&action=update&etag=' . urlencode($etag) . '">Update</a> | ';
+                    echo '<a href="?service=' . urlencode($service_name) . '&action=delete&etag=' . urlencode($etag) . '">Delete</a>';
+                } else {
+                    echo 'No etag found';
+                }
+
+                echo '</td>';
+                echo '</tr>';
+            }
+            echo '</table>';
+            echo '<a href="?service=' . urlencode($service_name) . '&action=create">Create</a>';
+
+        } else {
+            echo '<p>No data available or failed to retrieve data.</p>';
+        }
+    } else {
+        echo '<p>Please select a service to view its data.</p>';
+    }
+
+    return ob_get_clean();
+}
+add_shortcode('business_central_data', 'display_business_central_data');
+/*
+function display_business_central_data() {
+    ob_start();
+    $environment = 'Sandbox';
+    $company_name = 'CRONUS USA, Inc.';
+    $services = get_available_services($environment);
+
+    echo '<ul>';
+    foreach ($services as $key => $label) {
+        echo '<li><a href="?service=' . urlencode($key) . '">' . esc_html($label) . '</a></li>';
+    }
+    echo '</ul>';
+
+    if (isset($_GET['service']) && array_key_exists($_GET['service'], $services)) {
+        $service_name = sanitize_text_field($_GET['service']);
+
+        // Handle create action
+        if (isset($_GET['action']) && $_GET['action'] === 'create') {
+            $new_data = [
+                // Add your data here; example:
+                'Description' => 'New Item Description',
+                'No' => 'NEWITEM001'
+            ];
+            $created_data = create_business_central_data($service_name, $company_name, $environment, $new_data);
+            echo '<p>New item created: <pre>' . print_r($created_data, true) . '</pre></p>';
+        }
+
+        // Handle update action
+        if (isset($_GET['action'], $_GET['id'], $_GET['etag']) && $_GET['action'] === 'update') {
+            $id = sanitize_text_field($_GET['id']);
+            $etag = sanitize_text_field($_GET['etag']);
+            $update_data = [
+                // Define fields to update; example:
+                'Description' => 'Updated Item Description'
+            ];
+            $updated_data = update_business_central_data($service_name, $company_name, $environment, $etag, $update_data);
+            echo '<p>Item updated: <pre>' . print_r($updated_data, true) . '</pre></p>';
+        }
+
+        // Handle delete action
+        if (isset($_GET['action'], $_GET['id'], $_GET['etag']) && $_GET['action'] === 'delete') {
+            $id = sanitize_text_field($_GET['id']);
+            $etag = sanitize_text_field($_GET['etag']);
+            $deleted = delete_business_central_data($service_name, $company_name, $environment, $etag);
+            if ($deleted) {
+                echo '<p>Item deleted successfully.</p>';
+            } else {
+                echo '<p>Failed to delete item.</p>';
+            }
+        }
+
+        $data = get_business_central_data($service_name, $company_name, $environment);
+
+        if ($data && isset($data['value']) && is_array($data['value'])) {
+            echo '<h3>Data for ' . esc_html($services[$service_name]) . '</h3>';
+            echo '<table border="1">';
+            echo '<tr><th>ID</th><th>Data</th><th>Actions</th></tr>';
+
+            foreach ($data['value'] as $record) {
+                // Try to find the ID field in the record
+                $record_id = isset($record['ID']) ? $record['ID'] : (isset($record['No']) ? $record['No'] : (isset($record['id']) ? $record['id'] : null));
+                $etag = isset($record['@odata.etag']) ? $record['@odata.etag'] : null;
+
+                echo '<tr>';
+                echo '<td>' . esc_html($record_id) . '</td>';
+                echo '<td><pre>' . print_r($record, true) . '</pre></td>';
+                echo '<td>';
+                
+                if ($record_id && $etag) {
+                    // Encode etag for URL and add CRUD links with both ID and ETag for Update and Delete
+                    $encoded_etag = urlencode($etag);
+                    echo '<a href="?service=' . urlencode($service_name) . '&action=update&id=' . urlencode($record_id) . '&etag=' . $encoded_etag . '">Update</a> | ';
+                    echo '<a href="?service=' . urlencode($service_name) . '&action=delete&id=' . urlencode($record_id) . '&etag=' . $encoded_etag . '">Delete</a>';
+                } else {
+                    echo 'No ID or ETag found';
+                }
+
+                echo '</td>';
+                echo '</tr>';
+            }
+            echo '</table>';
+            echo '<a href="?service=' . urlencode($service_name) . '&action=create">Create</a>';
+
+        } else {
+            echo '<p>No data available or failed to retrieve data.</p>';
+        }
+    } else {
+        echo '<p>Please select a service to view its data.</p>';
+    }
+
+    return ob_get_clean();
+}
+add_shortcode('business_central_data', 'display_business_central_data');
+/*
 function display_business_central_data() {
     ob_start();
     $environment = 'Sandbox';
@@ -504,3 +745,4 @@ function display_business_central_data() {
     return ob_get_clean();
 }
 add_shortcode('business_central_data', 'display_business_central_data');
+*/

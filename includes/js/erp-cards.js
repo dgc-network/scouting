@@ -7,9 +7,9 @@ jQuery(document).ready(function($) {
             // Initialize an empty array to store query parameters
             var queryParams = [];
             // Check the selected value for each select element and add it to the queryParams array
-            var profileValue = $("#select-profile").val();
-            if (profileValue) {
-                queryParams.push("_select_profile=" + profileValue);
+            var selectValue = $("#select-profile").val();
+            if (selectValue) {
+                queryParams.push("_select_profile=" + selectValue);
             }
             // Combine all query parameters into a single string
             var queryString = queryParams.join("&");
@@ -21,9 +21,9 @@ jQuery(document).ready(function($) {
             // Initialize an empty array to store query parameters
             var queryParams = [];
             // Check the selected value for each select element and add it to the queryParams array
-            var profileValue = $("#select-profile").val();
-            if (profileValue) {
-                queryParams.push("_select_profile=" + profileValue);
+            var selectValue = $("#select-profile").val();
+            if (selectValue) {
+                queryParams.push("_select_profile=" + selectValue);
             }
 
             var searchValue = $("#search-customer").val();
@@ -146,9 +146,9 @@ jQuery(document).ready(function($) {
             // Initialize an empty array to store query parameters
             var queryParams = [];
             // Check the selected value for each select element and add it to the queryParams array
-            var profileValue = $("#select-profile").val();
-            if (profileValue) {
-                queryParams.push("_select_profile=" + profileValue);
+            var selectValue = $("#select-profile").val();
+            if (selectValue) {
+                queryParams.push("_select_profile=" + selectValue);
             }
             // Combine all query parameters into a single string
             var queryString = queryParams.join("&");
@@ -160,9 +160,9 @@ jQuery(document).ready(function($) {
             // Initialize an empty array to store query parameters
             var queryParams = [];
             // Check the selected value for each select element and add it to the queryParams array
-            var profileValue = $("#select-profile").val();
-            if (profileValue) {
-                queryParams.push("_select_profile=" + profileValue);
+            var selectValue = $("#select-profile").val();
+            if (selectValue) {
+                queryParams.push("_select_profile=" + selectValue);
             }
 
             var searchValue = $("#search-vendor").val();
@@ -283,9 +283,9 @@ jQuery(document).ready(function($) {
             // Initialize an empty array to store query parameters
             var queryParams = [];
             // Check the selected value for each select element and add it to the queryParams array
-            var profileValue = $("#select-profile").val();
-            if (profileValue) {
-                queryParams.push("_select_profile=" + profileValue);
+            var selectValue = $("#select-profile").val();
+            if (selectValue) {
+                queryParams.push("_select_profile=" + selectValue);
             }
             // Combine all query parameters into a single string
             var queryString = queryParams.join("&");
@@ -297,9 +297,9 @@ jQuery(document).ready(function($) {
             // Initialize an empty array to store query parameters
             var queryParams = [];
             // Check the selected value for each select element and add it to the queryParams array
-            var profileValue = $("#select-profile").val();
-            if (profileValue) {
-                queryParams.push("_select_profile=" + profileValue);
+            var selectValue = $("#select-profile").val();
+            if (selectValue) {
+                queryParams.push("_select_profile=" + selectValue);
             }
 
             var searchValue = $("#search-product").val();
@@ -418,9 +418,9 @@ jQuery(document).ready(function($) {
             // Initialize an empty array to store query parameters
             var queryParams = [];
             // Check the selected value for each select element and add it to the queryParams array
-            var profileValue = $("#select-profile").val();
-            if (profileValue) {
-                queryParams.push("_select_profile=" + profileValue);
+            var selectValue = $("#select-profile").val();
+            if (selectValue) {
+                queryParams.push("_select_profile=" + selectValue);
             }
             // Combine all query parameters into a single string
             var queryString = queryParams.join("&");
@@ -432,9 +432,9 @@ jQuery(document).ready(function($) {
             // Initialize an empty array to store query parameters
             var queryParams = [];
             // Check the selected value for each select element and add it to the queryParams array
-            var profileValue = $("#select-profile").val();
-            if (profileValue) {
-                queryParams.push("_select_profile=" + profileValue);
+            var selectValue = $("#select-profile").val();
+            if (selectValue) {
+                queryParams.push("_select_profile=" + selectValue);
             }
 
             var searchValue = $("#search-equipment").val();
@@ -553,9 +553,9 @@ jQuery(document).ready(function($) {
             // Initialize an empty array to store query parameters
             var queryParams = [];
             // Check the selected value for each select element and add it to the queryParams array
-            var profileValue = $("#select-profile").val();
-            if (profileValue) {
-                queryParams.push("_select_profile=" + profileValue);
+            var selectValue = $("#select-profile").val();
+            if (selectValue) {
+                queryParams.push("_select_profile=" + selectValue);
             }
             // Combine all query parameters into a single string
             var queryString = queryParams.join("&");
@@ -567,9 +567,9 @@ jQuery(document).ready(function($) {
             // Initialize an empty array to store query parameters
             var queryParams = [];
             // Check the selected value for each select element and add it to the queryParams array
-            var profileValue = $("#select-profile").val();
-            if (profileValue) {
-                queryParams.push("_select_profile=" + profileValue);
+            var selectValue = $("#select-profile").val();
+            if (selectValue) {
+                queryParams.push("_select_profile=" + selectValue);
             }
         
             var searchValue = $("#search-instrument").val();
@@ -688,9 +688,9 @@ jQuery(document).ready(function($) {
             // Initialize an empty array to store query parameters
             var queryParams = [];
             // Check the selected value for each select element and add it to the queryParams array
-            var profileValue = $("#select-profile").val();
-            if (profileValue) {
-                queryParams.push("_select_profile=" + profileValue);
+            var selectValue = $("#select-profile").val();
+            if (selectValue) {
+                queryParams.push("_select_profile=" + selectValue);
             }
             // Combine all query parameters into a single string
             var queryString = queryParams.join("&");
@@ -702,9 +702,9 @@ jQuery(document).ready(function($) {
             // Initialize an empty array to store query parameters
             var queryParams = [];
             // Check the selected value for each select element and add it to the queryParams array
-            var profileValue = $("#select-profile").val();
-            if (profileValue) {
-                queryParams.push("_select_profile=" + profileValue);
+            var selectValue = $("#select-profile").val();
+            if (selectValue) {
+                queryParams.push("_select_profile=" + selectValue);
             }
             var searchValue = $("#search-department").val();
             if (searchValue) {

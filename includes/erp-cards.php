@@ -1443,10 +1443,10 @@ if (!class_exists('erp_cards')) {
                     $total_pages = ceil($total_posts / get_option('operation_row_counts')); // Calculate the total number of pages
                     if ($query->have_posts()) :
                         while ($query->have_posts()) : $query->the_post();
-                            $department_code = get_post_meta(get_the_ID(), 'department_code', true);
+                            $department_number = get_post_meta(get_the_ID(), 'department_number', true);
                             ?>
                             <tr id="edit-department-card-<?php the_ID();?>">
-                                <td style="text-align:center;"><?php echo $department_code;?></td>
+                                <td style="text-align:center;"><?php echo $department_number;?></td>
                                 <td><?php the_title();?></td>
                                 <td><?php the_content();?></td>
                             </tr>
@@ -1489,7 +1489,7 @@ if (!class_exists('erp_cards')) {
                         'value' => $site_id,
                     ),
                 ),
-                'meta_key'       => 'department_code', // Meta key for sorting
+                'meta_key'       => 'department_number', // Meta key for sorting
                 'orderby'        => 'meta_value', // Sort by meta value
                 'order'          => 'ASC', // Sorting order (ascending)
             );
@@ -1531,15 +1531,15 @@ if (!class_exists('erp_cards')) {
 
         function display_department_card_dialog($department_id=false) {
             ob_start();
-            $department_code = get_post_meta($department_id, 'department_code', true);
+            $department_number = get_post_meta($department_id, 'department_number', true);
             $department_title = get_the_title($department_id);
             $department_content = get_post_field('post_content', $department_id);
             ?>
             <fieldset>
                 <input type="hidden" id="department-id" value="<?php echo esc_attr($department_id);?>" />
                 <input type="hidden" id="is-site-admin" value="<?php echo esc_attr(is_site_admin());?>" />
-                <label for="department-code"><?php echo __( 'Number: ', 'your-text-domain' );?></label>
-                <input type="text" id="department-code" value="<?php echo esc_attr($department_code);?>" class="text ui-widget-content ui-corner-all" />
+                <label for="department-number"><?php echo __( 'Number: ', 'your-text-domain' );?></label>
+                <input type="text" id="department-number" value="<?php echo esc_attr($department_number);?>" class="text ui-widget-content ui-corner-all" />
                 <label for="department-title"><?php echo __( 'Title: ', 'your-text-domain' );?></label>
                 <input type="text" id="department-title" value="<?php echo esc_attr($department_title);?>" class="text ui-widget-content ui-corner-all" />
                 <label for="department-content"><?php echo __( 'Description: ', 'your-text-domain' );?></label>
@@ -1568,14 +1568,14 @@ if (!class_exists('erp_cards')) {
         function set_department_card_dialog_data() {
             if( isset($_POST['_department_id']) ) {
                 $department_id = sanitize_text_field($_POST['_department_id']);
-                $department_code = sanitize_text_field($_POST['_department_code']);
+                $department_number = sanitize_text_field($_POST['_department_number']);
                 $data = array(
                     'ID'           => $department_id,
                     'post_title'   => sanitize_text_field($_POST['_department_title']),
                     'post_content' => $_POST['_department_content'],
                 );
                 wp_update_post( $data );
-                update_post_meta($department_id, 'department_code', $department_code);
+                update_post_meta($department_id, 'department_number', $department_number);
             } else {
                 $current_user_id = get_current_user_id();
                 $site_id = get_user_meta($current_user_id, 'site_id', true);
@@ -1588,7 +1588,7 @@ if (!class_exists('erp_cards')) {
                 );    
                 $post_id = wp_insert_post($new_post);
                 update_post_meta($post_id, 'site_id', $site_id);
-                update_post_meta($post_id, 'department_code', time());
+                update_post_meta($post_id, 'department_number', time());
             }
             $response = array('html_contain' => $this->display_department_card_list());
             wp_send_json($response);

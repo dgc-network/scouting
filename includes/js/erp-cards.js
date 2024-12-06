@@ -759,7 +759,7 @@ jQuery(document).ready(function($) {
                                     data: {
                                         'action': 'set_department_card_dialog_data',
                                         '_department_id': $("#department-id").val(),
-                                        '_department_code': $("#department-code").val(),
+                                        '_department_number': $("#department-number").val(),
                                         '_department_title': $("#department-title").val(),
                                         '_department_content': $("#department-content").val(),
                                     },

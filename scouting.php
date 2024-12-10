@@ -23,7 +23,7 @@ error_reporting(E_ALL);
 
 function register_session() {
     if ( ! session_id() ) {
-        session_start();
+        //session_start();
     }
 }
 add_action( 'init', 'register_session', 1 );

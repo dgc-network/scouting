@@ -89,7 +89,7 @@ if (!class_exists('erp_cards')) {
             if ($data && isset($data['value']) && is_array($data['value'])) {
                 ?>
                 <?php //echo display_iso_helper_logo(); ?>
-                <h2 style="display:inline;"><?php echo __( '客戶列表', 'text-domain' ); ?></h2>
+                <h2 style="display:inline;"><?php echo __( '客戶列表', 'textdomain' ); ?></h2>
     
                 <div style="display:flex; justify-content:space-between; margin:5px;">
                     <div><?php //$profiles_class->display_select_profile('customer-card'); ?></div>
@@ -102,10 +102,10 @@ if (!class_exists('erp_cards')) {
                     <table class="ui-widget" style="width:100%;">
                         <thead>
                             <tr>
-                                <th><?php echo __( 'Number', 'text-domain' ); ?></th>
-                                <th><?php echo __( 'Title', 'text-domain' ); ?></th>
-                                <th><?php echo __( 'Phone', 'text-domain' ); ?></th>
-                                <th><?php echo __( 'Address', 'text-domain' ); ?></th>
+                                <th><?php echo __( 'Number', 'textdomain' ); ?></th>
+                                <th><?php echo __( 'Title', 'textdomain' ); ?></th>
+                                <th><?php echo __( 'Phone', 'textdomain' ); ?></th>
+                                <th><?php echo __( 'Address', 'textdomain' ); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -152,7 +152,7 @@ if (!class_exists('erp_cards')) {
                         <?php
                         // Display pagination links
                         if ($paged > 1) echo '<span class="button"><a href="' . esc_url(get_pagenum_link($paged - 1)) . '"> < </a></span>';
-                        echo '<span class="page-numbers">' . sprintf(__('Page %d of %d', 'text-domain'), $paged, $total_pages) . '</span>';
+                        echo '<span class="page-numbers">' . sprintf(__('Page %d of %d', 'textdomain'), $paged, $total_pages) . '</span>';
                         if ($paged < $total_pages) echo '<span class="button"><a href="' . esc_url(get_pagenum_link($paged + 1)) . '"> > </a></span>';
                         ?>
                     </div>
@@ -181,15 +181,15 @@ if (!class_exists('erp_cards')) {
                 ?>
                 <fieldset>
                     <input type="hidden" id="record-id" value="<?php echo esc_attr($data['No']);?>" />
-                    <label for="customer-code"><?php echo __( 'Number: ', 'text-domain' );?></label>
+                    <label for="customer-code"><?php echo __( 'Number: ', 'textdomain' );?></label>
                     <input type="text" id="customer-code" value="<?php echo esc_attr($data['No']);?>" class="text ui-widget-content ui-corner-all" />
-                    <label for="customer-title"><?php echo __( 'Title: ', 'text-domain' );?></label>
+                    <label for="customer-title"><?php echo __( 'Title: ', 'textdomain' );?></label>
                     <input type="text" id="customer-title" value="<?php echo esc_attr($data['Description']);?>" class="text ui-widget-content ui-corner-all" />
-                    <label for="company-phone"><?php echo __( 'Phone: ', 'text-domain' );?></label>
+                    <label for="company-phone"><?php echo __( 'Phone: ', 'textdomain' );?></label>
                     <input type="text" id="company-phone" value="<?php echo esc_attr($data['Description']);?>" class="text ui-widget-content ui-corner-all" />
-                    <label for="company-address"><?php echo __( 'Address: ', 'text-domain' );?></label>
+                    <label for="company-address"><?php echo __( 'Address: ', 'textdomain' );?></label>
                     <textarea id="company-address" rows="2" style="width:100%;"><?php echo esc_html($data['Description']); ?></textarea>
-                    <label for="unified-number"><?php echo __( '統一編號: ', 'text-domain' );?></label>
+                    <label for="unified-number"><?php echo __( '統一編號: ', 'textdomain' );?></label>
                     <input type="text" id="unified-number" value="<?php echo esc_attr($data['Description']);?>" class="text ui-widget-content ui-corner-all" />
                 </fieldset>
                 <?php
@@ -221,9 +221,9 @@ if (!class_exists('erp_cards')) {
             <fieldset>
                 <input type="hidden" id="customer-id" value="<?php echo esc_attr($customer_id);?>" />
                 <input type="hidden" id="is-site-admin" value="<?php echo esc_attr(is_site_admin());?>" />
-                <label for="customer-code"><?php echo __( 'Number: ', 'text-domain' );?></label>
+                <label for="customer-code"><?php echo __( 'Number: ', 'textdomain' );?></label>
                 <input type="text" id="customer-code" value="<?php echo esc_attr($customer_code);?>" class="text ui-widget-content ui-corner-all" />
-                <label for="customer-title"><?php echo __( 'Title: ', 'text-domain' );?></label>
+                <label for="customer-title"><?php echo __( 'Title: ', 'textdomain' );?></label>
                 <input type="text" id="customer-title" value="<?php echo esc_attr($customer_title);?>" class="text ui-widget-content ui-corner-all" />
                 <?php
                 // transaction data vs card key/value
@@ -233,11 +233,11 @@ if (!class_exists('erp_cards')) {
                 $documents_class = new display_documents();
                 $documents_class->get_transactions_by_key_value_pair($key_value_pair);
                 ?>
-                <label for="company-phone"><?php echo __( 'Phone: ', 'text-domain' );?></label>
+                <label for="company-phone"><?php echo __( 'Phone: ', 'textdomain' );?></label>
                 <input type="text" id="company-phone" value="<?php echo esc_attr($company_phone);?>" class="text ui-widget-content ui-corner-all" />
-                <label for="company-address"><?php echo __( 'Address: ', 'text-domain' );?></label>
+                <label for="company-address"><?php echo __( 'Address: ', 'textdomain' );?></label>
                 <textarea id="company-address" rows="2" style="width:100%;"><?php echo esc_html($company_address); ?></textarea>
-                <label for="unified-number"><?php echo __( '統一編號: ', 'text-domain' );?></label>
+                <label for="unified-number"><?php echo __( '統一編號: ', 'textdomain' );?></label>
                 <input type="text" id="unified-number" value="<?php echo esc_attr($unified_number);?>" class="text ui-widget-content ui-corner-all" />
             </fieldset>
             <?php
@@ -460,7 +460,7 @@ if (!class_exists('erp_cards')) {
             $profiles_class = new display_profiles();
             ?>
             <?php echo display_iso_helper_logo(); ?>
-            <h2 style="display:inline;"><?php echo __( '廠商列表', 'text-domain' ); ?></h2>
+            <h2 style="display:inline;"><?php echo __( '廠商列表', 'textdomain' ); ?></h2>
     
             <div style="display:flex; justify-content:space-between; margin:5px;">
                 <div><?php $profiles_class->display_select_profile('vendor-card'); ?></div>
@@ -473,10 +473,10 @@ if (!class_exists('erp_cards')) {
                 <table class="ui-widget" style="width:100%;">
                     <thead>
                         <tr>
-                            <th><?php echo __( 'Number', 'text-domain' ); ?></th>
-                            <th><?php echo __( 'Title', 'text-domain' ); ?></th>
-                            <th><?php echo __( 'Phone', 'text-domain' ); ?></th>
-                            <th><?php echo __( 'Address', 'text-domain' ); ?></th>
+                            <th><?php echo __( 'Number', 'textdomain' ); ?></th>
+                            <th><?php echo __( 'Title', 'textdomain' ); ?></th>
+                            <th><?php echo __( 'Phone', 'textdomain' ); ?></th>
+                            <th><?php echo __( 'Address', 'textdomain' ); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -525,7 +525,7 @@ if (!class_exists('erp_cards')) {
                     <?php
                     // Display pagination links
                     if ($paged > 1) echo '<span class="button"><a href="' . esc_url(get_pagenum_link($paged - 1)) . '"> < </a></span>';
-                    echo '<span class="page-numbers">' . sprintf(__('Page %d of %d', 'text-domain'), $paged, $total_pages) . '</span>';
+                    echo '<span class="page-numbers">' . sprintf(__('Page %d of %d', 'textdomain'), $paged, $total_pages) . '</span>';
                     if ($paged < $total_pages) echo '<span class="button"><a href="' . esc_url(get_pagenum_link($paged + 1)) . '"> > </a></span>';
                     ?>
                 </div>
@@ -643,9 +643,9 @@ if (!class_exists('erp_cards')) {
             <fieldset>
                 <input type="hidden" id="vendor-id" value="<?php echo esc_attr($vendor_id);?>" />
                 <input type="hidden" id="is-site-admin" value="<?php echo esc_attr(is_site_admin());?>" />
-                <label for="vendor-code"><?php echo __( 'Number: ', 'text-domain' );?></label>
+                <label for="vendor-code"><?php echo __( 'Number: ', 'textdomain' );?></label>
                 <input type="text" id="vendor-code" value="<?php echo esc_attr($vendor_code);?>" class="text ui-widget-content ui-corner-all" />
-                <label for="vendor-title"><?php echo __( 'Title: ', 'text-domain' );?></label>
+                <label for="vendor-title"><?php echo __( 'Title: ', 'textdomain' );?></label>
                 <input type="text" id="vendor-title" value="<?php echo esc_attr($vendor_title);?>" class="text ui-widget-content ui-corner-all" />
                 <?php
                 // transaction data vs card key/value
@@ -655,11 +655,11 @@ if (!class_exists('erp_cards')) {
                 $documents_class = new display_documents();
                 $documents_class->get_transactions_by_key_value_pair($key_value_pair);
                 ?>
-                <label for="company-phone"><?php echo __( 'Phone: ', 'text-domain' );?></label>
+                <label for="company-phone"><?php echo __( 'Phone: ', 'textdomain' );?></label>
                 <input type="text" id="company-phone" value="<?php echo esc_attr($company_phone);?>" class="text ui-widget-content ui-corner-all" />
-                <label for="company-address"><?php echo __( 'Address: ', 'text-domain' );?></label>
+                <label for="company-address"><?php echo __( 'Address: ', 'textdomain' );?></label>
                 <textarea id="company-address" rows="2" style="width:100%;"><?php echo esc_html($company_address); ?></textarea>
-                <label for="unified-number"><?php echo __( '統一編號: ', 'text-domain' );?></label>
+                <label for="unified-number"><?php echo __( '統一編號: ', 'textdomain' );?></label>
                 <input type="text" id="unified-number" value="<?php echo esc_attr($unified_number); ?>" class="text ui-widget-content ui-corner-all" />
             </fieldset>
             <?php
@@ -797,7 +797,7 @@ if (!class_exists('erp_cards')) {
             $profiles_class = new display_profiles();
             ?>
             <?php echo display_iso_helper_logo();?>
-            <h2 style="display:inline;"><?php echo __( '產品列表', 'text-domain' );?></h2>
+            <h2 style="display:inline;"><?php echo __( '產品列表', 'textdomain' );?></h2>
 
             <div style="display:flex; justify-content:space-between; margin:5px;">
                 <div><?php $profiles_class->display_select_profile('product-card');?></div>
@@ -809,9 +809,9 @@ if (!class_exists('erp_cards')) {
             <fieldset>
                 <table class="ui-widget" style="width:100%;">
                     <thead>
-                        <th><?php echo __( 'Number', 'text-domain' );?></th>
-                        <th><?php echo __( 'Title', 'text-domain' );?></th>
-                        <th><?php echo __( 'Description', 'text-domain' );?></th>
+                        <th><?php echo __( 'Number', 'textdomain' );?></th>
+                        <th><?php echo __( 'Title', 'textdomain' );?></th>
+                        <th><?php echo __( 'Description', 'textdomain' );?></th>
                     </thead>
                     <tbody>
                     <?php
@@ -916,11 +916,11 @@ if (!class_exists('erp_cards')) {
             <fieldset>
                 <input type="hidden" id="product-id" value="<?php echo esc_attr($product_id);?>" />
                 <input type="hidden" id="is-site-admin" value="<?php echo esc_attr(is_site_admin());?>" />
-                <label for="product-code"><?php echo __( 'Number: ', 'text-domain' );?></label>
+                <label for="product-code"><?php echo __( 'Number: ', 'textdomain' );?></label>
                 <input type="text" id="product-code" value="<?php echo esc_attr($product_code);?>" <?php echo $disabled;?> class="text ui-widget-content ui-corner-all" />
-                <label for="product-title"><?php echo __( 'Title: ', 'text-domain' );?></label>
+                <label for="product-title"><?php echo __( 'Title: ', 'textdomain' );?></label>
                 <input type="text" id="product-title" value="<?php echo esc_attr($product_title);?>" <?php echo $disabled;?> class="text ui-widget-content ui-corner-all" />
-                <label for="product-content"><?php echo __( 'Description: ', 'text-domain' );?></label>
+                <label for="product-content"><?php echo __( 'Description: ', 'textdomain' );?></label>
                 <textarea id="product-content" rows="3" <?php echo $disabled;?> style="width:100%;"><?php echo esc_html($product_content);?></textarea>
                 <?php
                 // transaction data vs card key/value
@@ -1005,7 +1005,7 @@ if (!class_exists('erp_cards')) {
             $profiles_class = new display_profiles();
             ?>
             <?php echo display_iso_helper_logo();?>
-            <h2 style="display:inline;"><?php echo __( '設備列表', 'text-domain' );?></h2>
+            <h2 style="display:inline;"><?php echo __( '設備列表', 'textdomain' );?></h2>
 
             <div style="display:flex; justify-content:space-between; margin:5px;">
                 <div><?php $profiles_class->display_select_profile('equipment-card');?></div>
@@ -1017,9 +1017,9 @@ if (!class_exists('erp_cards')) {
             <fieldset>
                 <table class="ui-widget" style="width:100%;">
                     <thead>
-                        <th><?php echo __( 'Number', 'text-domain' );?></th>
-                        <th><?php echo __( 'Title', 'text-domain' );?></th>
-                        <th><?php echo __( 'Description', 'text-domain' );?></th>
+                        <th><?php echo __( 'Number', 'textdomain' );?></th>
+                        <th><?php echo __( 'Title', 'textdomain' );?></th>
+                        <th><?php echo __( 'Description', 'textdomain' );?></th>
                     </thead>
                     <tbody>
                     <?php
@@ -1124,11 +1124,11 @@ if (!class_exists('erp_cards')) {
             <fieldset>
                 <input type="hidden" id="equipment-id" value="<?php echo esc_attr($equipment_id);?>" />
                 <input type="hidden" id="is-site-admin" value="<?php echo esc_attr(is_site_admin());?>" />
-                <label for="equipment-code"><?php echo __( 'Number: ', 'text-domain' );?></label>
+                <label for="equipment-code"><?php echo __( 'Number: ', 'textdomain' );?></label>
                 <input type="text" id="equipment-code" value="<?php echo esc_attr($equipment_code);?>" class="text ui-widget-content ui-corner-all" />
-                <label for="equipment-title"><?php echo __( 'Title: ', 'text-domain' );?></label>
+                <label for="equipment-title"><?php echo __( 'Title: ', 'textdomain' );?></label>
                 <input type="text" id="equipment-title" value="<?php echo esc_attr($equipment_title);?>" class="text ui-widget-content ui-corner-all" />
-                <label for="equipment-content"><?php echo __( 'Description: ', 'text-domain' );?></label>
+                <label for="equipment-content"><?php echo __( 'Description: ', 'textdomain' );?></label>
                 <textarea id="equipment-content" rows="3" style="width:100%;"><?php echo esc_html($equipment_content);?></textarea>
                 <?php
                 // transaction data vs card key/value
@@ -1212,7 +1212,7 @@ if (!class_exists('erp_cards')) {
             $profiles_class = new display_profiles();
             ?>
             <?php echo display_iso_helper_logo();?>
-            <h2 style="display:inline;"><?php echo __( '儀器列表', 'text-domain' );?></h2>
+            <h2 style="display:inline;"><?php echo __( '儀器列表', 'textdomain' );?></h2>
 
             <div style="display:flex; justify-content:space-between; margin:5px;">
                 <div><?php $profiles_class->display_select_profile('instrument-card');?></div>
@@ -1224,9 +1224,9 @@ if (!class_exists('erp_cards')) {
             <fieldset>
                 <table class="ui-widget" style="width:100%;">
                     <thead>
-                        <th><?php echo __( 'Number', 'text-domain' );?></th>
-                        <th><?php echo __( 'Title', 'text-domain' );?></th>
-                        <th><?php echo __( 'Description', 'text-domain' );?></th>
+                        <th><?php echo __( 'Number', 'textdomain' );?></th>
+                        <th><?php echo __( 'Title', 'textdomain' );?></th>
+                        <th><?php echo __( 'Description', 'textdomain' );?></th>
                     </thead>
                     <tbody>
                     <?php
@@ -1331,11 +1331,11 @@ if (!class_exists('erp_cards')) {
             <fieldset>
                 <input type="hidden" id="instrument-id" value="<?php echo esc_attr($instrument_id);?>" />
                 <input type="hidden" id="is-site-admin" value="<?php echo esc_attr(is_site_admin());?>" />
-                <label for="instrument-code"><?php echo __( 'Number: ', 'text-domain' );?></label>
+                <label for="instrument-code"><?php echo __( 'Number: ', 'textdomain' );?></label>
                 <input type="text" id="instrument-code" value="<?php echo esc_attr($instrument_code);?>" class="text ui-widget-content ui-corner-all" />
-                <label for="instrument-title"><?php echo __( 'Title: ', 'text-domain' );?></label>
+                <label for="instrument-title"><?php echo __( 'Title: ', 'textdomain' );?></label>
                 <input type="text" id="instrument-title" value="<?php echo esc_attr($instrument_title);?>" class="text ui-widget-content ui-corner-all" />
-                <label for="instrument-content"><?php echo __( 'Description: ', 'text-domain' );?></label>
+                <label for="instrument-content"><?php echo __( 'Description: ', 'textdomain' );?></label>
                 <textarea id="instrument-content" rows="3" style="width:100%;"><?php echo esc_html($instrument_content);?></textarea>
                 <?php
                 // transaction data vs card key/value
@@ -1419,7 +1419,7 @@ if (!class_exists('erp_cards')) {
             $profiles_class = new display_profiles();
             ?>
             <?php echo display_iso_helper_logo();?>
-            <h2 style="display:inline;"><?php echo __( '部門列表', 'text-domain' );?></h2>
+            <h2 style="display:inline;"><?php echo __( '部門列表', 'textdomain' );?></h2>
 
             <div style="display:flex; justify-content:space-between; margin:5px;">
                 <div><?php $profiles_class->display_select_profile('department-card');?></div>
@@ -1431,9 +1431,9 @@ if (!class_exists('erp_cards')) {
             <fieldset>
                 <table class="ui-widget" style="width:100%;">
                     <thead>
-                        <th><?php echo __( 'Number', 'text-domain' );?></th>
-                        <th><?php echo __( 'Title', 'text-domain' );?></th>
-                        <th><?php echo __( 'Description', 'text-domain' );?></th>
+                        <th><?php echo __( 'Number', 'textdomain' );?></th>
+                        <th><?php echo __( 'Title', 'textdomain' );?></th>
+                        <th><?php echo __( 'Description', 'textdomain' );?></th>
                     </thead>
                     <tbody>
                     <?php
@@ -1538,13 +1538,13 @@ if (!class_exists('erp_cards')) {
             <fieldset>
                 <input type="hidden" id="department-id" value="<?php echo esc_attr($department_id);?>" />
                 <input type="hidden" id="is-site-admin" value="<?php echo esc_attr(is_site_admin());?>" />
-                <label for="department-number"><?php echo __( 'Number: ', 'text-domain' );?></label>
+                <label for="department-number"><?php echo __( 'Number: ', 'textdomain' );?></label>
                 <input type="text" id="department-number" value="<?php echo esc_attr($department_number);?>" class="text ui-widget-content ui-corner-all" />
-                <label for="department-title"><?php echo __( 'Title: ', 'text-domain' );?></label>
+                <label for="department-title"><?php echo __( 'Title: ', 'textdomain' );?></label>
                 <input type="text" id="department-title" value="<?php echo esc_attr($department_title);?>" class="text ui-widget-content ui-corner-all" />
-                <label for="department-content"><?php echo __( 'Description: ', 'text-domain' );?></label>
+                <label for="department-content"><?php echo __( 'Description: ', 'textdomain' );?></label>
                 <textarea id="department-content" rows="3" style="width:100%;"><?php echo esc_html($department_content);?></textarea>
-                <label for="department-members"><?php echo __( '部門成員：', 'text-domain' );?></label>
+                <label for="department-members"><?php echo __( '部門成員：', 'textdomain' );?></label>
                 <?php echo $this->display_department_user_list($department_id);?>
                 <?php
                 // transaction data vs card key/value
@@ -1636,8 +1636,8 @@ if (!class_exists('erp_cards')) {
                 <fieldset style="margin-top:5px;">
                     <table class="ui-widget" style="width:100%;">
                         <thead>
-                            <th><?php echo __( 'Name', 'text-domain' );?></th>
-                            <th><?php echo __( 'Email', 'text-domain' );?></th>
+                            <th><?php echo __( 'Name', 'textdomain' );?></th>
+                            <th><?php echo __( 'Email', 'textdomain' );?></th>
                         </thead>
                         <tbody>
                         <?php

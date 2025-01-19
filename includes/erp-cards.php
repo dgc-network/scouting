@@ -1419,7 +1419,7 @@ if (!class_exists('erp_cards')) {
             $profiles_class = new display_profiles();
             ?>
             <?php echo display_iso_helper_logo();?>
-            <h2 style="display:inline;"><?php echo __( '部門列表', 'textdomain' );?></h2>
+            <h2 style="display:inline;"><?php echo __( '部門資料', 'textdomain' );?></h2>
 
             <div style="display:flex; justify-content:space-between; margin:5px;">
                 <div><?php $profiles_class->display_select_profile('department-card');?></div>

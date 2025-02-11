@@ -1621,7 +1621,7 @@ if (!class_exists('erp_cards')) {
                     array(
                         'key'     => 'site_id',
                         'value'   => $site_id,
-                        'compare' => '=',
+                        //'compare' => '=',
                     ),
                 );
                 $users = get_users(array('meta_query' => $meta_query_args));
@@ -1761,7 +1761,7 @@ if (!class_exists('erp_cards')) {
                 array(
                     'key'     => 'site_id',
                     'value'   => $site_id,
-                    'compare' => '=',
+                    //'compare' => '=',
                 ),
             );
             $users = get_users(array('meta_query' => $meta_query_args));

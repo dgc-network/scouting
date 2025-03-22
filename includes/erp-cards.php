@@ -226,12 +226,12 @@ if (!class_exists('erp_cards')) {
                 <label for="customer-title"><?php echo __( 'Title: ', 'textdomain' );?></label>
                 <input type="text" id="customer-title" value="<?php echo esc_attr($customer_title);?>" class="text ui-widget-content ui-corner-all" />
                 <?php
-                // transaction data vs card key/value
+                // transaction data vs key/value
                 $key_value_pair = array(
                     '_customer'   => $customer_id,
                 );
                 $documents_class = new display_documents();
-                $documents_class->display_transactions_by_key_value_pair($key_value_pair);
+                $documents_class->display_transaction_report_for_master($key_value_pair);
                 ?>
                 <label for="company-phone"><?php echo __( 'Phone: ', 'textdomain' );?></label>
                 <input type="text" id="company-phone" value="<?php echo esc_attr($company_phone);?>" class="text ui-widget-content ui-corner-all" />
@@ -648,12 +648,12 @@ if (!class_exists('erp_cards')) {
                 <label for="vendor-title"><?php echo __( 'Title: ', 'textdomain' );?></label>
                 <input type="text" id="vendor-title" value="<?php echo esc_attr($vendor_title);?>" class="text ui-widget-content ui-corner-all" />
                 <?php
-                // transaction data vs card key/value
+                // transaction data vs key/value
                 $key_value_pair = array(
                     '_vendor'   => $vendor_id,
                 );
                 $documents_class = new display_documents();
-                $documents_class->display_transactions_by_key_value_pair($key_value_pair);
+                $documents_class->display_transaction_report_for_master($key_value_pair);
                 ?>
                 <label for="company-phone"><?php echo __( 'Phone: ', 'textdomain' );?></label>
                 <input type="text" id="company-phone" value="<?php echo esc_attr($company_phone);?>" class="text ui-widget-content ui-corner-all" />
@@ -923,12 +923,12 @@ if (!class_exists('erp_cards')) {
                 <label for="product-content"><?php echo __( 'Description: ', 'textdomain' );?></label>
                 <textarea id="product-content" rows="3" <?php echo $disabled;?> style="width:100%;"><?php echo esc_html($product_content);?></textarea>
                 <?php
-                // transaction data vs card key/value
+                // transaction data vs key/value
                 $key_value_pair = array(
                     '_product'   => $product_id,
                 );
                 $documents_class = new display_documents();
-                $documents_class->display_transactions_by_key_value_pair($key_value_pair);
+                $documents_class->display_transaction_report_for_master($key_value_pair);
                 ?>
             </fieldset>
             <?php
@@ -1131,12 +1131,12 @@ if (!class_exists('erp_cards')) {
                 <label for="equipment-content"><?php echo __( 'Description: ', 'textdomain' );?></label>
                 <textarea id="equipment-content" rows="3" style="width:100%;"><?php echo esc_html($equipment_content);?></textarea>
                 <?php
-                // transaction data vs card key/value
+                // transaction data vs key/value
                 $key_value_pair = array(
                     '_equipment'   => $equipment_id,
                 );
                 $documents_class = new display_documents();
-                $documents_class->display_transactions_by_key_value_pair($key_value_pair);
+                $documents_class->display_transaction_report_for_master($key_value_pair);
                 ?>
             </fieldset>
             <?php
@@ -1338,12 +1338,12 @@ if (!class_exists('erp_cards')) {
                 <label for="instrument-content"><?php echo __( 'Description: ', 'textdomain' );?></label>
                 <textarea id="instrument-content" rows="3" style="width:100%;"><?php echo esc_html($instrument_content);?></textarea>
                 <?php
-                // transaction data vs card key/value
+                // transaction data vs key/value
                 $key_value_pair = array(
                     '_instrument'   => $instrument_id,
                 );
                 $documents_class = new display_documents();
-                $documents_class->display_transactions_by_key_value_pair($key_value_pair);
+                $documents_class->display_transaction_report_for_master($key_value_pair);
                 ?>
             </fieldset>
             <?php
@@ -1547,12 +1547,12 @@ if (!class_exists('erp_cards')) {
                 <label for="department-members"><?php echo __( '部門成員：', 'textdomain' );?></label>
                 <?php echo $this->display_department_user_list($department_id);?>
                 <?php
-                // transaction data vs card key/value
+                // transaction data vs key/value
                 $key_value_pair = array(
                     '_department'   => $department_id,
                 );
                 $documents_class = new display_documents();
-                $documents_class->display_transactions_by_key_value_pair($key_value_pair);
+                $documents_class->display_transaction_report_for_master($key_value_pair);
                 ?>
             </fieldset>
             <?php

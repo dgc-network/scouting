@@ -47,24 +47,30 @@ if (!class_exists('itinerary')) {
         function display_itinerary_contains($atts) {
             ob_start();
             // Extract and sanitize the shortcode attributes
-            $atts = shortcode_atts(array(
-                'itinerary_id' => false,
-                'itinerary_category' => false,
-            ), $atts);
+            $atts = shortcode_atts(
+                array(
+                    'itinerary_id' => false,
+                    'itinerary_category' => false,
+                ), $atts
+            );
         
+            $itinerary_id = $atts['itinerary_id'];
             $itinerary_category = $atts['itinerary_category'];
         
+            if (!$itinerary_category && !$itinerary_id) {
+                echo $this->display_itinerary_list();
+                return ob_get_clean();
+            }
+
             $meta_query = array(
                 'relation' => 'OR',
             );
-        
+
             if ($itinerary_category) {
                 $meta_query[] = array(
                     'key'   => 'itinerary_category',
                     'value' => $itinerary_category,
                 );
-            } else {
-                echo $this->display_itinerary_list();
             }
         
             $args = array(

@@ -48,19 +48,20 @@ if (!class_exists('itinerary')) {
             ob_start();
             // Extract and sanitize the shortcode attributes
             $atts = shortcode_atts(array(
-                'parent_category' => false,
+                'itinerary_id' => false,
+                'itinerary_category' => false,
             ), $atts);
         
-            $parent_category = $atts['parent_category'];
+            $itinerary_category = $atts['itinerary_category'];
         
             $meta_query = array(
                 'relation' => 'OR',
             );
         
-            if ($parent_category) {
+            if ($itinerary_category) {
                 $meta_query[] = array(
-                    'key'   => 'parent_category',
-                    'value' => $parent_category,
+                    'key'   => 'itinerary_category',
+                    'value' => $itinerary_category,
                 );
             } else {
                 echo $this->display_itinerary_list();
@@ -75,12 +76,11 @@ if (!class_exists('itinerary')) {
             $query = new WP_Query($args);
         
             while ($query->have_posts()) : $query->the_post();
-                $category_id = get_the_ID();
-                $category_url = get_post_meta($category_id, 'category_url', true);
-                $embedded = get_post_meta($category_id, 'embedded', true);
-                $start_ai_url = '/display-documents/?_start_ai=' . $category_id;
+                $itinerary_id = get_the_ID();
+                $itinerary_url = get_post_meta($itinerary_id, 'itinerary_url', true);
+                $itinerary_url = '/display-itinerary/?_itinerary=' . $itinerary_id;
                 ?>
-                <div class="iso-standard-content">
+                <div class="itinerary-content">
                     <?php the_content(); ?>
                     <div class="wp-block-buttons">
                         <div class="wp-block-button">
@@ -98,7 +98,7 @@ if (!class_exists('itinerary')) {
                 
         function display_itinerary_list() {
             ob_start();
-            $profiles_class = new display_profiles();
+            //$profiles_class = new display_profiles();
             if (current_user_can('administrator')) {
                 ?>
                 <?php //echo display_iso_helper_logo();?>

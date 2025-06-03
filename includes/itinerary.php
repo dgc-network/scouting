@@ -9,6 +9,7 @@ if (!class_exists('itinerary')) {
         public function __construct() {
             add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_itinerary_scripts' ) );
             add_action( 'init', array( $this, 'register_itinerary_post_type' ) );
+            add_shortcode('display-itinerary-contains', array( $this, 'display_itinerary_contains' ) );
 
             add_action( 'wp_ajax_get_itinerary_dialog_data', array( $this, 'get_itinerary_dialog_data' ) );
             add_action( 'wp_ajax_nopriv_get_itinerary_dialog_data', array( $this, 'get_itinerary_dialog_data' ) );
@@ -17,7 +18,6 @@ if (!class_exists('itinerary')) {
             add_action( 'wp_ajax_del_itinerary_dialog_data', array( $this, 'del_itinerary_dialog_data' ) );
             add_action( 'wp_ajax_nopriv_del_itinerary_dialog_data', array( $this, 'del_itinerary_dialog_data' ) );
             
-            add_shortcode('display-itinerary-contains', array( $this, 'display_itinerary_contains' ) );
 
         }
 
@@ -62,6 +62,8 @@ if (!class_exists('itinerary')) {
                     'key'   => 'parent_category',
                     'value' => $parent_category,
                 );
+            } else {
+                echo $this->display_itinerary_list();
             }
         
             $args = array(
@@ -99,35 +101,35 @@ if (!class_exists('itinerary')) {
             $profiles_class = new display_profiles();
             if (current_user_can('administrator')) {
                 ?>
-                <?php echo display_iso_helper_logo();?>
-                <h2 style="display:inline;"><?php echo __( 'ISO standard', 'textdomain' );?></h2>
+                <?php //echo display_iso_helper_logo();?>
+                <h2 style="display:inline;"><?php echo __( 'Itinerary', 'textdomain' );?></h2>
 
                 <div style="display:flex; justify-content:space-between; margin:5px;">
-                    <div><?php $profiles_class->display_select_profile('iso-standard');?></div>
+                    <div><?php //$profiles_class->display_select_profile('iso-standard');?></div>
                     <div style="text-align:right"></div>                        
                 </div>
 
                 <fieldset>
                     <table class="ui-widget" style="width:100%;">
                         <thead>
-                            <th><?php echo __( 'ISO', 'textdomain' );?></th>
+                            <th><?php echo __( 'Itinerary', 'textdomain' );?></th>
                             <th><?php echo __( 'Description', 'textdomain' );?></th>
                             <th><?php echo __( 'Parent', 'textdomain' );?></th>
                         </thead>
                         <tbody>
                         <?php
-                        $query = $this->retrieve_iso_standard_data();
+                        $query = $this->retrieve_itinerary_data();
                         if ($query->have_posts()) :
                             while ($query->have_posts()) : $query->the_post();
-                                $category_id = get_the_ID();
-                                $category_title = get_the_title();
-                                $category_content = get_the_content();
-                                $parent_category = get_post_meta($category_id, 'parent_category', true);
+                                $itinerary_id = get_the_ID();
+                                $itinerary_title = get_the_title();
+                                $itinerary_content = get_the_content();
+                                $itinerary_category = get_post_meta($itinerary_id, 'itinerary_category', true);
                                 ?>
-                                <tr id="edit-iso-standard-<?php echo $category_id;?>">
-                                    <td style="text-align:center;"><?php echo $category_title;?></td>
-                                    <td><?php echo $category_content;?></td>
-                                    <td style="text-align:center;"><?php echo $parent_category;?></td>
+                                <tr id="edit-itinerary-<?php echo $itinerary_id;?>">
+                                    <td style="text-align:center;"><?php echo $itinerary_title;?></td>
+                                    <td><?php echo $itinerary_content;?></td>
+                                    <td style="text-align:center;"><?php echo $itinerary_category;?></td>
                                 </tr>
                                 <?php 
                             endwhile;
@@ -136,9 +138,9 @@ if (!class_exists('itinerary')) {
                         ?>
                         </tbody>
                     </table>
-                    <div id="new-iso-standard" class="button" style="border:solid; margin:3px; text-align:center; border-radius:5px; font-size:small;">+</div>
+                    <div id="new-itinerary" class="button" style="border:solid; margin:3px; text-align:center; border-radius:5px; font-size:small;">+</div>
                 </fieldset>
-                <div id="iso-standard-dialog" title="Category dialog"></div>
+                <div id="itinerary-dialog" title="Itinerary dialog"></div>
                 <?php
             } else {
                 ?>
@@ -152,8 +154,8 @@ if (!class_exists('itinerary')) {
             $args = array(
                 'post_type'      => 'itinerary',
                 'posts_per_page' => -1,        
-                'orderby'        => 'title',  // Order by post title
-                'order'          => 'ASC',    // Order in ascending order (or use 'DESC' for descending)
+                //'orderby'        => 'title',  // Order by post title
+                //'order'          => 'ASC',    // Order in ascending order (or use 'DESC' for descending)
             );
             $query = new WP_Query($args);
             return $query;
@@ -162,8 +164,8 @@ if (!class_exists('itinerary')) {
         function display_itinerary_dialog($itinerary_id=false) {
             $itinerary_title = get_the_title($itinerary_id);
             $itinerary_content = get_post_field('post_content', $itinerary_id);
-            $category_url = get_post_meta($itinerary_id, 'category_url', true);
-            $parent_category = get_post_meta($itinerary_id, 'parent_category', true);
+            $itinerary_url = get_post_meta($itinerary_id, 'itinerary_url', true);
+            $itinerary_category = get_post_meta($itinerary_id, 'itinerary_category', true);
             ob_start();
             ?>
             <fieldset>
@@ -173,11 +175,11 @@ if (!class_exists('itinerary')) {
                 <label for="itinerary-content"><?php echo __( 'Content', 'textdomain' );?></label>
                 <textarea id="itinerary-content" rows="5" style="width:100%;"><?php echo esc_html($itinerary_content);?></textarea>
 <?php /*                
-                <label for="category-url"><?php echo __( 'URL', 'textdomain' );?></label>
-                <input type="text" id="category-url" value="<?php echo esc_attr($category_url);?>" class="text ui-widget-content ui-corner-all" />
+                <label for="itinerary-url"><?php echo __( 'URL', 'textdomain' );?></label>
+                <input type="text" id="itinerary-url" value="<?php echo esc_attr($itinerary_url);?>" class="text ui-widget-content ui-corner-all" />
 */ ?>
-                <label for="parent-category"><?php echo __( 'Parent', 'textdomain' );?></label>
-                <select id="parent-category" class="select ui-widget-content ui-corner-all"><?php echo $this->select_parent_category_options($parent_category);?></select>
+                <label for="itinerary-category"><?php echo __( 'Category', 'textdomain' );?></label>
+                <select id="itinerary-category" class="select ui-widget-content ui-corner-all"><?php echo $this->select_itinerary_category_options($parent_category);?></select>
             </fieldset>
             <?php
             return ob_get_clean();
@@ -194,16 +196,16 @@ if (!class_exists('itinerary')) {
             if( isset($_POST['_itinerary_id']) ) {
                 $itinerary_id = sanitize_text_field($_POST['_itinerary_id']);
                 $itinerary_title = isset($_POST['_itinerary_title']) ? sanitize_text_field($_POST['_itinerary_title']) : '';
-                //$category_url = isset($_POST['_category_url']) ? sanitize_text_field($_POST['_category_url']) : '';
-                $parent_category = isset($_POST['_parent_category']) ? sanitize_text_field($_POST['_parent_category']) : '';
+                $itinerary_url = isset($_POST['_itinerary_url']) ? sanitize_text_field($_POST['_itinerary_url']) : '';
+                $itinerary_category = isset($_POST['_itinerary_category']) ? sanitize_text_field($_POST['_itinerary_category']) : '';
                 $data = array(
                     'ID'           => $itinerary_id,
                     'post_title'   => $itinerary_title,
                     'post_content' => $_POST['_itinerary_content'],
                 );
                 wp_update_post( $data );
-                //update_post_meta($category_id, 'category_url', $category_url);
-                update_post_meta($itinerary_id, 'parent_category', $parent_category);
+                update_post_meta($itinerary_id, 'itinerary_url', $itinerary_url);
+                update_post_meta($itinerary_id, 'itinerary_category', $itinerary_category);
             } else {
                 $current_user_id = get_current_user_id();
                 $new_post = array(
@@ -238,7 +240,7 @@ if (!class_exists('itinerary')) {
             return $options;
         }
 
-        function select_parent_category_options($selected_option=0) {
+        function select_itinerary_category_options($selected_option=0) {
             $options = '<option value="">'.__( 'Select Option', 'textdomain' ).'</option>';
             $economic_selected = ($selected_option == 'economic-growth') ? 'selected' : '';
             $environmental_selected = ($selected_option == 'environmental-protection') ? 'selected' : '';

@@ -57,7 +57,7 @@ jQuery(document).ready(function($) {
                 success: function (response) {
                     $("#result-container").html(response.html_contain);
                     activate_itinerary_list_data();
-                    },
+                },
                 error: function(error){
                     console.error(error);
                     alert(error);

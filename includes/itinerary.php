@@ -105,9 +105,13 @@ if (!class_exists('itinerary')) {
                 
         function display_itinerary_list() {
             ob_start();
+            ?>
+            <div class="ui-widget" id="result-container">
+            <?php
             //$profiles_class = new display_profiles();
             if (current_user_can('administrator')) {
                 ?>
+                <div class="ui-widget" id="result-container">
                 <?php //echo display_iso_helper_logo();?>
                 <h2 style="display:inline;"><?php echo __( 'Itinerary', 'textdomain' );?></h2>
 
@@ -154,6 +158,9 @@ if (!class_exists('itinerary')) {
                 <p><?php echo __( 'You do not have permission to access this page.', 'textdomain' );?></p>
                 <?php
             }
+            ?>
+            </div>
+            <?php
             return ob_get_clean();
         }
 

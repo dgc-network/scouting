@@ -21,7 +21,7 @@ if (!class_exists('itinerary')) {
 
         }
 
-        function enqueue_embedded_items_scripts() {
+        function enqueue_itinerary_scripts() {
             wp_enqueue_style('jquery-ui-style', 'https://code.jquery.com/ui/1.13.2/themes/smoothness/jquery-ui.css', '', '1.13.2');
             wp_enqueue_script('jquery-ui', 'https://code.jquery.com/ui/1.13.2/jquery-ui.js', array('jquery'), null, true);
 

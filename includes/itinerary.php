@@ -57,11 +57,23 @@ if (!class_exists('itinerary')) {
         
             $itinerary_id = $atts['itinerary_id'];
             $itinerary_category = $atts['itinerary_category'];
-        
-            if (!$itinerary_category && !$itinerary_id) {
+            $itinerary_title = isset($_GET['_itinerary_title']) ? sanitize_text_field($_GET['_itinerary_title']) : '';
+
+            if (!$itinerary_category && !$itinerary_id && !$itinerary_title) {
                 echo $this->display_itinerary_list();
                 return ob_get_clean();
             }
+
+            if ($itinerary_title) {
+                ?>
+                <div class="itinerary-content">
+                    <?php echo $this->get_itinerary_content_by_title($itinerary_title); ?>
+                </div>
+                <?php
+                return ob_get_clean();
+            }
+
+
 
             $meta_query = array(
                 'relation' => 'OR',
@@ -103,6 +115,21 @@ if (!class_exists('itinerary')) {
             return ob_get_clean();
         }
                 
+        function get_itinerary_content_by_title($post_title) {
+            $posts = get_posts(array(
+                'post_type'   => 'itinerary',
+                'title'       => $post_title,
+                'post_status' => 'publish',
+                'numberposts' => 1,
+            ));
+        
+            if (!empty($posts)) {
+                return $posts[0]->post_content;
+            }
+        
+            return '';
+        }
+        
         function display_itinerary_list() {
             ob_start();
             ?>

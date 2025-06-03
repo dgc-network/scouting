@@ -23,7 +23,7 @@ error_reporting(E_ALL);
 
 function register_session() {
     if ( ! session_id() ) {
-        //session_start();
+        session_start();
     }
 }
 add_action( 'init', 'register_session', 1 );
@@ -66,6 +66,6 @@ function isURL($str) {
 }
 
 require_once plugin_dir_path( __FILE__ ) . 'services/services.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/erp-cards.php';
-//require_once plugin_dir_path( __FILE__ ) . 'includes/customers-list.php';
+//require_once plugin_dir_path( __FILE__ ) . 'includes/erp-cards.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/itinerary.php';
 

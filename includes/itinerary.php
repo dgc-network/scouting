@@ -151,8 +151,7 @@ if (!class_exists('itinerary')) {
                     <table class="ui-widget" style="width:100%;">
                         <thead>
                             <th><?php echo __( 'Itinerary', 'textdomain' );?></th>
-                            <th><?php echo __( 'Description', 'textdomain' );?></th>
-                            <th><?php echo __( 'Parent', 'textdomain' );?></th>
+                            <th><?php echo __( 'Category', 'textdomain' );?></th>
                         </thead>
                         <tbody>
                         <?php
@@ -165,8 +164,7 @@ if (!class_exists('itinerary')) {
                                 $itinerary_category = get_post_meta($itinerary_id, 'itinerary_category', true);
                                 ?>
                                 <tr id="edit-itinerary-<?php echo $itinerary_id;?>">
-                                    <td style="text-align:center;"><?php echo $itinerary_title;?></td>
-                                    <td><?php echo $itinerary_content;?></td>
+                                    <td><?php echo $itinerary_title;?></td>
                                     <td style="text-align:center;"><?php echo $itinerary_category;?></td>
                                 </tr>
                                 <?php 

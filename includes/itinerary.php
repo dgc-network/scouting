@@ -61,7 +61,6 @@ if (!class_exists('itinerary')) {
 
             if (!$itinerary_category && !$itinerary_id && !$itinerary_title) {
                 echo $this->display_itinerary_list();
-                return ob_get_clean();
             }
 
             if ($itinerary_title) {
@@ -70,48 +69,7 @@ if (!class_exists('itinerary')) {
                     <?php echo $this->get_itinerary_content_by_title($itinerary_title); ?>
                 </div>
                 <?php
-                return ob_get_clean();
             }
-
-
-
-            $meta_query = array(
-                'relation' => 'OR',
-            );
-
-            if ($itinerary_category) {
-                $meta_query[] = array(
-                    'key'   => 'itinerary_category',
-                    'value' => $itinerary_category,
-                );
-            }
-        
-            $args = array(
-                'post_type'      => 'itinerary',
-                'posts_per_page' => -1,
-                'meta_query'     => $meta_query,
-            );
-        
-            $query = new WP_Query($args);
-        
-            while ($query->have_posts()) : $query->the_post();
-                $itinerary_id = get_the_ID();
-                $itinerary_url = get_post_meta($itinerary_id, 'itinerary_url', true);
-                $itinerary_url = '/display-itinerary/?_itinerary=' . $itinerary_id;
-                ?>
-                <div class="itinerary-content">
-                    <?php the_content(); ?>
-                    <div class="wp-block-buttons">
-                        <div class="wp-block-button">
-                            <a class="wp-block-button__link wp-element-button" href="<?php echo esc_url($start_ai_url); ?>"><?php echo sprintf(__( 'Launch %s AI Coaching', 'textdomain' ), get_the_title()); ?></a>
-                        </div>
-                    </div>
-                    <!-- Spacer -->
-                    <div style="height: 20px;"></div> <!-- Adjust the height as needed -->
-                </div>
-                <?php
-            endwhile;
-            wp_reset_postdata();
             return ob_get_clean();
         }
                 

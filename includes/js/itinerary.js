@@ -76,7 +76,7 @@ jQuery(document).ready(function($) {
                     '_itinerary_id': itinerary_id,
                 },
                 success: function (response) {
-                    if (response.html_contain === "") {
+                    if (!response.html_contain) {
                         //alert("Itinerary not found.");
                         const currentUrl = new URL(window.location.href);
                         currentUrl.searchParams.set("_itinerary_title", response.title);

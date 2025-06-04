@@ -196,7 +196,6 @@ if (!class_exists('itinerary')) {
             $itinerary_url = get_post_meta($itinerary_id, 'itinerary_url', true);
             $itinerary_category = get_post_meta($itinerary_id, 'itinerary_category', true);
             ob_start();
-            if (current_user_can('administrator')) {
             ?>
             <fieldset>
                 <input type="hidden" id="itinerary-id" value="<?php echo esc_attr($itinerary_id);?>" />
@@ -211,22 +210,16 @@ if (!class_exists('itinerary')) {
                 <select id="itinerary-category" class="select ui-widget-content ui-corner-all"><?php echo $this->select_itinerary_category_options($parent_category);?></select>
             </fieldset>
             <?php
-            } else {
-                wp_redirect(home_url('/itinerary/?_itinerary_title='.$itinerary_title));
-                exit;
-                ?>
-                <div class="itinerary-content">
-                    <?php echo $this->get_itinerary_content_by_title($itinerary_title); ?>
-                </div>
-                <?php
-            }
             return ob_get_clean();
         }
 
         function get_itinerary_dialog_data() {
             $response = array();
             $itinerary_id = sanitize_text_field($_POST['_itinerary_id']);
-            $response['html_contain'] = $this->display_itinerary_dialog($itinerary_id);
+            $response['title'] = get_the_title($itinerary_id);
+            if (current_user_can('administrator')) {
+                $response['html_contain'] = $this->display_itinerary_dialog($itinerary_id);
+            }
             wp_send_json($response);
         }
 

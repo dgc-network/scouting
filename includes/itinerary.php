@@ -210,13 +210,12 @@ if (!class_exists('itinerary')) {
             <fieldset>
                 <input type="hidden" id="itinerary-id" value="<?php echo esc_attr($itinerary_id);?>" />
                 <label for="itinerary-title"><?php echo __( 'Title', 'textdomain' );?></label>
+                <input type="button" id="itinerary-preview" value="Preview" class="button" style="" />
                 <input type="text" id="itinerary-title" value="<?php echo esc_attr($itinerary_title);?>" class="text ui-widget-content ui-corner-all" />
                 <label for="itinerary-content"><?php echo __( 'Content', 'textdomain' );?></label>
-                <textarea id="itinerary-content" rows="5" style="width:100%;"><?php echo esc_html($itinerary_content);?></textarea>
-<?php /*                
+                <textarea id="itinerary-content" rows="10" style="width:100%;"><?php echo esc_html($itinerary_content);?></textarea>
                 <label for="itinerary-url"><?php echo __( 'URL', 'textdomain' );?></label>
                 <input type="text" id="itinerary-url" value="<?php echo esc_attr($itinerary_url);?>" class="text ui-widget-content ui-corner-all" />
-*/ ?>
                 <label for="itinerary-category"><?php echo __( 'Category', 'textdomain' );?></label>
                 <select id="itinerary-category" class="select ui-widget-content ui-corner-all"><?php echo $this->select_itinerary_category_options($parent_category);?></select>
             </fieldset>

@@ -212,6 +212,8 @@ if (!class_exists('itinerary')) {
             </fieldset>
             <?php
             } else {
+                wp_redirect(home_url('/itinerary/?_itinerary_title='.$itinerary_title));
+                exit;
                 ?>
                 <div class="itinerary-content">
                     <?php echo $this->get_itinerary_content_by_title($itinerary_title); ?>

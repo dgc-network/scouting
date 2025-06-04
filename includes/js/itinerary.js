@@ -81,44 +81,23 @@ jQuery(document).ready(function($) {
                         const currentUrl = new URL(window.location.href);
                         currentUrl.searchParams.set("_itinerary_title", response.title);
                         window.location.href = currentUrl.toString();
-                        return;
-                    }
-                    $("#itinerary-dialog").html(response.html_contain);
-                    //if ($("#is-site-admin").val() === "1") {
-                        $("#itinerary-dialog").dialog("option", "buttons", {
-                            "Save": function () {
-                                $.ajax({
-                                    type: 'POST',
-                                    url: ajax_object.ajax_url,
-                                    dataType: "json",
-                                    data: {
-                                        'action': 'set_itinerary_dialog_data',
-                                        '_itinerary_id': $("#itinerary-id").val(),
-                                        '_itinerary_title': $("#itinerary-title").val(),
-                                        '_itinerary_content': $("#itinerary-content").val(),
-                                        '_itinerary_url': $("#itinerary-url").val(),
-                                        '_itinerary_category': $("#itinerary-category").val(),
-                                    },
-                                    success: function (response) {
-                                        $("#itinerary-dialog").dialog('close');
-                                        $("#result-container").html(response.html_contain);
-                                        activate_itinerary_list_data();
-                                    },
-                                    error: function (error) {
-                                        console.error(error);
-                                        alert(error);
-                                    }
-                                });
-                            },
-                            "Delete": function () {
-                                if (window.confirm("Are you sure you want to delete this itinerary?")) {
+                        //return;
+                    } else {
+                        $("#itinerary-dialog").html(response.html_contain);
+                        //if ($("#is-site-admin").val() === "1") {
+                            $("#itinerary-dialog").dialog("option", "buttons", {
+                                "Save": function () {
                                     $.ajax({
                                         type: 'POST',
                                         url: ajax_object.ajax_url,
                                         dataType: "json",
                                         data: {
-                                            'action': 'del_itinerary_dialog_data',
+                                            'action': 'set_itinerary_dialog_data',
                                             '_itinerary_id': $("#itinerary-id").val(),
+                                            '_itinerary_title': $("#itinerary-title").val(),
+                                            '_itinerary_content': $("#itinerary-content").val(),
+                                            '_itinerary_url': $("#itinerary-url").val(),
+                                            '_itinerary_category': $("#itinerary-category").val(),
                                         },
                                         success: function (response) {
                                             $("#itinerary-dialog").dialog('close');
@@ -130,16 +109,39 @@ jQuery(document).ready(function($) {
                                             alert(error);
                                         }
                                     });
-                                }
-                            },
-                        });
+                                },
+                                "Delete": function () {
+                                    if (window.confirm("Are you sure you want to delete this itinerary?")) {
+                                        $.ajax({
+                                            type: 'POST',
+                                            url: ajax_object.ajax_url,
+                                            dataType: "json",
+                                            data: {
+                                                'action': 'del_itinerary_dialog_data',
+                                                '_itinerary_id': $("#itinerary-id").val(),
+                                            },
+                                            success: function (response) {
+                                                $("#itinerary-dialog").dialog('close');
+                                                $("#result-container").html(response.html_contain);
+                                                activate_itinerary_list_data();
+                                            },
+                                            error: function (error) {
+                                                console.error(error);
+                                                alert(error);
+                                            }
+                                        });
+                                    }
+                                },
+                            });
+                            $("#itinerary-dialog").dialog('open');
+                            $("#itinerary-preview").on("click", function() {
+                                const currentUrl = new URL(window.location.href);
+                                currentUrl.searchParams.set("_itinerary_title", $("#itinerary-title").val());
+                                window.location.href = currentUrl.toString();
+                            });
+            
+                    }
                     //}
-                    $("#itinerary-dialog").dialog('open');
-                    $("#itinerary-preview").on("click", function() {
-                        const currentUrl = new URL(window.location.href);
-                        currentUrl.searchParams.set("_itinerary_title", $("#itinerary-title").val());
-                        window.location.href = currentUrl.toString();
-                    });
                 },
                 error: function (error) {
                     console.error(error);

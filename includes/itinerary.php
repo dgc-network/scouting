@@ -134,11 +134,6 @@ if (!class_exists('itinerary')) {
             ob_start();
             ?>
             <div class="ui-widget" id="result-container">
-            <?php
-            //$profiles_class = new display_profiles();
-            if (current_user_can('administrator')) {
-                ?>
-                <div class="ui-widget" id="result-container">
                 <?php //echo display_iso_helper_logo();?>
                 <h2 style="display:inline;"><?php echo __( 'Itinerary', 'textdomain' );?></h2>
 
@@ -174,16 +169,11 @@ if (!class_exists('itinerary')) {
                         ?>
                         </tbody>
                     </table>
-                    <div id="new-itinerary" class="button" style="border:solid; margin:3px; text-align:center; border-radius:5px; font-size:small;">+</div>
+                    <?php if (current_user_can('administrator')) {?>
+                        <div id="new-itinerary" class="button" style="border:solid; margin:3px; text-align:center; border-radius:5px; font-size:small;">+</div>
+                    <?php }?>
                 </fieldset>
                 <div id="itinerary-dialog" title="Itinerary dialog"></div>
-                <?php
-            } else {
-                ?>
-                <p><?php echo __( 'You do not have permission to access this page.', 'textdomain' );?></p>
-                <?php
-            }
-            ?>
             </div>
             <?php
             return ob_get_clean();
@@ -206,11 +196,12 @@ if (!class_exists('itinerary')) {
             $itinerary_url = get_post_meta($itinerary_id, 'itinerary_url', true);
             $itinerary_category = get_post_meta($itinerary_id, 'itinerary_category', true);
             ob_start();
+            if (current_user_can('administrator')) {
             ?>
             <fieldset>
                 <input type="hidden" id="itinerary-id" value="<?php echo esc_attr($itinerary_id);?>" />
                 <label for="itinerary-title"><?php echo __( 'Title', 'textdomain' );?></label>
-                <input type="button" id="itinerary-preview" value="Preview" class="button" style="" />
+                <input type="button" id="itinerary-preview" value="Preview" class="button" style="font-size:xx-small" />
                 <input type="text" id="itinerary-title" value="<?php echo esc_attr($itinerary_title);?>" class="text ui-widget-content ui-corner-all" />
                 <label for="itinerary-content"><?php echo __( 'Content', 'textdomain' );?></label>
                 <textarea id="itinerary-content" rows="10" style="width:100%;"><?php echo esc_html($itinerary_content);?></textarea>
@@ -220,6 +211,13 @@ if (!class_exists('itinerary')) {
                 <select id="itinerary-category" class="select ui-widget-content ui-corner-all"><?php echo $this->select_itinerary_category_options($parent_category);?></select>
             </fieldset>
             <?php
+            } else {
+                ?>
+                <div class="itinerary-content">
+                    <?php echo $this->get_itinerary_content_by_title($itinerary_title); ?>
+                </div>
+                <?php
+            }
             return ob_get_clean();
         }
 

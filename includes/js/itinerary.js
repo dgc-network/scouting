@@ -132,8 +132,6 @@ jQuery(document).ready(function($) {
                         const currentUrl = new URL(window.location.href);
                         currentUrl.searchParams.set("_itinerary_title", $("#itinerary-title").val());
                         window.location.href = currentUrl.toString();
-
-                        //alert("This feature is not available yet. Please check back later.");
                     });
                 },
                 error: function (error) {

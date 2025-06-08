@@ -199,7 +199,7 @@ if (!class_exists('itinerary')) {
                 $current_user_id = get_current_user_id();
                 $new_post = array(
                     'post_type'     => 'itinerary',
-                    'post_title'    => '-',
+                    'post_title'    => 'new itinerary',
                     'post_content'  => __( 'Your post content goes here.', 'textdomain' ),
                     'post_status'   => 'publish',
                     'post_author'   => $current_user_id,

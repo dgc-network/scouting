@@ -103,7 +103,7 @@ if (!class_exists('courses')) {
                 <fieldset>
                     <table class="ui-widget" style="width:100%;">
                         <thead>
-                            <th><?php echo __( 'course', 'textdomain' );?></th>
+                            <th><?php echo __( 'Course', 'textdomain' );?></th>
                             <th><?php echo __( 'Category', 'textdomain' );?></th>
                         </thead>
                         <tbody>
@@ -199,7 +199,7 @@ if (!class_exists('courses')) {
                 $current_user_id = get_current_user_id();
                 $new_post = array(
                     'post_type'     => 'course',
-                    'post_title'    => '-',
+                    'post_title'    => 'new course',
                     'post_content'  => __( 'Your post content goes here.', 'textdomain' ),
                     'post_status'   => 'publish',
                     'post_author'   => $current_user_id,

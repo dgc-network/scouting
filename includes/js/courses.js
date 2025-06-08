@@ -66,7 +66,7 @@ jQuery(document).ready(function($) {
         });
     
         $('[id^="edit-course-"]').on("click", function () {
-            const course_id = this.id.substring(15);
+            const course_id = this.id.substring(12);
             $.ajax({
                 type: 'POST',
                 url: ajax_object.ajax_url,

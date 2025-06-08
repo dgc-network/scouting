@@ -68,4 +68,5 @@ function isURL($str) {
 require_once plugin_dir_path( __FILE__ ) . 'services/services.php';
 //require_once plugin_dir_path( __FILE__ ) . 'includes/erp-cards.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/itinerary.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/courses.php';
 

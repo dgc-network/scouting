@@ -117,7 +117,7 @@ if (!class_exists('courses')) {
                                 $course_content = get_the_content();
                                 $course_category = get_post_meta($course_id, 'course_category', true);
                                 ?>
-                                <tr id="edit-course-<?php echo $course_id;?>">
+                                <tr id="edit-course-<?php echo $course_id;?>" data-field-id="<?php echo $course_id;?>">
                                     <td><?php echo $course_title;?></td>
                                     <td style="text-align:center;"><?php echo $course_category;?></td>
                                 </tr>
@@ -142,9 +142,9 @@ if (!class_exists('courses')) {
             $args = array(
                 'post_type'      => 'course',
                 'posts_per_page' => -1,        
-                'meta_key'       => 'sorting_key',
-                'orderby'        => 'meta_value_num', // Specify meta value as numeric
-                'order'          => 'ASC',
+                //'meta_key'       => 'sorting_key',
+                //'orderby'        => 'meta_value_num', // Specify meta value as numeric
+                //'order'          => 'ASC',
             );
             $query = new WP_Query($args);
             return $query;

@@ -8,7 +8,7 @@ if (!class_exists('courses')) {
         // Class constructor
         public function __construct() {
             add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_course_scripts' ) );
-            add_action( 'init', array( $this, 'register_course_post_type' ) );
+            //add_action( 'init', array( $this, 'register_course_post_type' ) );
             add_shortcode('display-course-contains', array( $this, 'display_course_contains' ) );
 
             add_action( 'wp_ajax_get_course_dialog_data', array( $this, 'get_course_dialog_data' ) );
@@ -224,7 +224,9 @@ if (!class_exists('courses')) {
             if (isset($_POST['_field_id_array']) && is_array($_POST['_field_id_array'])) {
                 $field_id_array = array_map('absint', $_POST['_field_id_array']);        
                 foreach ($field_id_array as $index => $field_id) {
-                    update_post_meta($field_id, 'sorting_key', $index);
+                    if (current_user_can('administrator')) {
+                        update_post_meta($field_id, 'sorting_key', $index);
+                    }
                 }
                 $response = array('success' => true);
             }

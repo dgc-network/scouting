@@ -8,7 +8,7 @@ if (!class_exists('itinerary')) {
         // Class constructor
         public function __construct() {
             add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_itinerary_scripts' ) );
-            add_action( 'init', array( $this, 'register_itinerary_post_type' ) );
+            //add_action( 'init', array( $this, 'register_itinerary_post_type' ) );
             add_shortcode('display-itinerary-contains', array( $this, 'display_itinerary_contains' ) );
 
             add_action( 'wp_ajax_get_itinerary_dialog_data', array( $this, 'get_itinerary_dialog_data' ) );
@@ -18,6 +18,8 @@ if (!class_exists('itinerary')) {
             add_action( 'wp_ajax_del_itinerary_dialog_data', array( $this, 'del_itinerary_dialog_data' ) );
             add_action( 'wp_ajax_nopriv_del_itinerary_dialog_data', array( $this, 'del_itinerary_dialog_data' ) );
             
+            add_action( 'wp_ajax_sort_itinerary_list_data', array( $this, 'sort_itinerary_list_data' ) );
+            add_action( 'wp_ajax_nopriv_sort_itinerary_list_data', array( $this, 'sort_itinerary_list_data' ) );
 
         }
 
@@ -104,9 +106,9 @@ if (!class_exists('itinerary')) {
                     <table class="ui-widget" style="width:100%;">
                         <thead>
                             <th><?php echo __( 'Itinerary', 'textdomain' );?></th>
-                            <th><?php echo __( 'Category', 'textdomain' );?></th>
+                            <th><?php echo __( 'No.', 'textdomain' );?></th>
                         </thead>
-                        <tbody>
+                        <tbody id="sortable-itinerary-list">
                         <?php
                         $query = $this->retrieve_itinerary_data();
                         if ($query->have_posts()) :
@@ -116,7 +118,7 @@ if (!class_exists('itinerary')) {
                                 $itinerary_content = get_the_content();
                                 $itinerary_category = get_post_meta($itinerary_id, 'itinerary_category', true);
                                 ?>
-                                <tr id="edit-itinerary-<?php echo $itinerary_id;?>">
+                                <tr id="edit-itinerary-<?php echo $itinerary_id;?>" data-field-id="<?php echo $itinerary_id;?>">
                                     <td><?php echo $itinerary_title;?></td>
                                     <td style="text-align:center;"><?php echo $itinerary_category;?></td>
                                 </tr>
@@ -141,8 +143,9 @@ if (!class_exists('itinerary')) {
             $args = array(
                 'post_type'      => 'itinerary',
                 'posts_per_page' => -1,        
-                //'orderby'        => 'title',  // Order by post title
-                //'order'          => 'ASC',    // Order in ascending order (or use 'DESC' for descending)
+                //'meta_key'       => 'sorting_key',
+                //'orderby'        => 'meta_value_num', // Specify meta value as numeric
+                //'order'          => 'ASC',
             );
             $query = new WP_Query($args);
             return $query;
@@ -206,6 +209,7 @@ if (!class_exists('itinerary')) {
                 );    
                 $post_id = wp_insert_post($new_post);
             }
+            update_post_meta($post_id, 'sorting_key', 999);
             $response = array('html_contain' => $this->display_itinerary_list());
             wp_send_json($response);
         }
@@ -213,6 +217,20 @@ if (!class_exists('itinerary')) {
         function del_itinerary_dialog_data() {
             wp_delete_post($_POST['_itinerary_id'], true);
             $response = array('html_contain' => $this->display_itinerary_list());
+            wp_send_json($response);
+        }
+
+        function sort_itinerary_list_data() {
+            $response = array('success' => false, 'error' => 'Invalid data format');
+            if (isset($_POST['_field_id_array']) && is_array($_POST['_field_id_array'])) {
+                $field_id_array = array_map('absint', $_POST['_field_id_array']);        
+                foreach ($field_id_array as $index => $field_id) {
+                    if (current_user_can('administrator')) {
+                        update_post_meta($field_id, 'sorting_key', $index);
+                    }
+                }
+                $response = array('success' => true);
+            }
             wp_send_json($response);
         }
 

@@ -142,8 +142,9 @@ if (!class_exists('courses')) {
             $args = array(
                 'post_type'      => 'course',
                 'posts_per_page' => -1,        
-                //'orderby'        => 'title',  // Order by post title
-                //'order'          => 'ASC',    // Order in ascending order (or use 'DESC' for descending)
+                'meta_key'       => 'sorting_key',
+                'orderby'        => 'meta_value_num', // Specify meta value as numeric
+                'order'          => 'ASC',
             );
             $query = new WP_Query($args);
             return $query;

@@ -110,7 +110,7 @@ jQuery(document).ready(function($) {
                                         '_itinerary_id': $("#itinerary-id").val(),
                                         '_itinerary_title': $("#itinerary-title").val(),
                                         '_itinerary_content': $("#itinerary-content").val(),
-                                        '_itinerary_url': $("#itinerary-url").val(),
+                                        '_itinerary_number': $("#itinerary-number").val(),
                                         '_itinerary_category': $("#itinerary-category").val(),
                                     },
                                     success: function (response) {

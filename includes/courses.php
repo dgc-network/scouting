@@ -115,11 +115,12 @@ if (!class_exists('courses')) {
                                 $course_id = get_the_ID();
                                 $course_title = get_the_title();
                                 $course_content = get_the_content();
+                                $course_number = get_post_meta($course_id, 'course_number', true);
                                 $course_category = get_post_meta($course_id, 'course_category', true);
                                 ?>
                                 <tr id="edit-course-<?php echo $course_id;?>" data-field-id="<?php echo $course_id;?>">
                                     <td><?php echo $course_title;?></td>
-                                    <td style="text-align:center;"><?php echo $course_category;?></td>
+                                    <td style="text-align:center;"><?php echo $course_number;?></td>
                                 </tr>
                                 <?php 
                             endwhile;
@@ -153,7 +154,7 @@ if (!class_exists('courses')) {
         function display_course_dialog($course_id=false) {
             $course_title = get_the_title($course_id);
             $course_content = get_post_field('post_content', $course_id);
-            $course_url = get_post_meta($course_id, 'course_url', true);
+            $course_number = get_post_meta($course_id, 'course_number', true);
             $course_category = get_post_meta($course_id, 'course_category', true);
             ob_start();
             ?>
@@ -164,8 +165,8 @@ if (!class_exists('courses')) {
                 <input type="text" id="course-title" value="<?php echo esc_attr($course_title);?>" class="text ui-widget-content ui-corner-all" />
                 <label for="course-content"><?php echo __( 'Content', 'textdomain' );?></label>
                 <textarea id="course-content" rows="10" style="width:100%;"><?php echo esc_html($course_content);?></textarea>
-                <label for="course-url"><?php echo __( 'URL', 'textdomain' );?></label>
-                <input type="text" id="course-url" value="<?php echo esc_attr($course_url);?>" class="text ui-widget-content ui-corner-all" />
+                <label for="course-number"><?php echo __( 'URL', 'textdomain' );?></label>
+                <input type="text" id="course-number" value="<?php echo esc_attr($course_number);?>" class="text ui-widget-content ui-corner-all" />
                 <label for="course-category"><?php echo __( 'Category', 'textdomain' );?></label>
                 <select id="course-category" class="select ui-widget-content ui-corner-all"><?php echo $this->select_course_category_options($parent_category);?></select>
             </fieldset>
@@ -187,7 +188,7 @@ if (!class_exists('courses')) {
             if( isset($_POST['_course_id']) ) {
                 $course_id = sanitize_text_field($_POST['_course_id']);
                 $course_title = isset($_POST['_course_title']) ? sanitize_text_field($_POST['_course_title']) : '';
-                $course_url = isset($_POST['_course_url']) ? sanitize_text_field($_POST['_course_url']) : '';
+                $course_number = isset($_POST['_course_number']) ? sanitize_text_field($_POST['_course_number']) : '';
                 $course_category = isset($_POST['_course_category']) ? sanitize_text_field($_POST['_course_category']) : '';
                 $data = array(
                     'ID'           => $course_id,
@@ -195,7 +196,7 @@ if (!class_exists('courses')) {
                     'post_content' => $_POST['_course_content'],
                 );
                 wp_update_post( $data );
-                update_post_meta($course_id, 'course_url', $course_url);
+                update_post_meta($course_id, 'course_number', $course_number);
                 update_post_meta($course_id, 'course_category', $course_category);
             } else {
                 $current_user_id = get_current_user_id();

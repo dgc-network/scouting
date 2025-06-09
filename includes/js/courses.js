@@ -110,7 +110,7 @@ jQuery(document).ready(function($) {
                                         '_course_id': $("#course-id").val(),
                                         '_course_title': $("#course-title").val(),
                                         '_course_content': $("#course-content").val(),
-                                        '_course_url': $("#course-url").val(),
+                                        '_course_number': $("#course-number").val(),
                                         '_course_category': $("#course-category").val(),
                                     },
                                     success: function (response) {

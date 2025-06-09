@@ -116,11 +116,12 @@ if (!class_exists('itinerary')) {
                                 $itinerary_id = get_the_ID();
                                 $itinerary_title = get_the_title();
                                 $itinerary_content = get_the_content();
+                                $itinerary_number = get_post_meta($itinerary_id, 'itinerary_number', true);
                                 $itinerary_category = get_post_meta($itinerary_id, 'itinerary_category', true);
                                 ?>
                                 <tr id="edit-itinerary-<?php echo $itinerary_id;?>" data-field-id="<?php echo $itinerary_id;?>">
                                     <td><?php echo $itinerary_title;?></td>
-                                    <td style="text-align:center;"><?php echo $itinerary_category;?></td>
+                                    <td style="text-align:center;"><?php echo $itinerary_number;?></td>
                                 </tr>
                                 <?php 
                             endwhile;
@@ -143,9 +144,9 @@ if (!class_exists('itinerary')) {
             $args = array(
                 'post_type'      => 'itinerary',
                 'posts_per_page' => -1,        
-                //'meta_key'       => 'sorting_key',
-                //'orderby'        => 'meta_value_num', // Specify meta value as numeric
-                //'order'          => 'ASC',
+                'meta_key'       => 'sorting_key',
+                'orderby'        => 'meta_value_num', // Specify meta value as numeric
+                'order'          => 'ASC',
             );
             $query = new WP_Query($args);
             return $query;
@@ -154,7 +155,7 @@ if (!class_exists('itinerary')) {
         function display_itinerary_dialog($itinerary_id=false) {
             $itinerary_title = get_the_title($itinerary_id);
             $itinerary_content = get_post_field('post_content', $itinerary_id);
-            $itinerary_url = get_post_meta($itinerary_id, 'itinerary_url', true);
+            $itinerary_number = get_post_meta($itinerary_id, 'itinerary_number', true);
             $itinerary_category = get_post_meta($itinerary_id, 'itinerary_category', true);
             ob_start();
             ?>
@@ -165,8 +166,8 @@ if (!class_exists('itinerary')) {
                 <input type="text" id="itinerary-title" value="<?php echo esc_attr($itinerary_title);?>" class="text ui-widget-content ui-corner-all" />
                 <label for="itinerary-content"><?php echo __( 'Content', 'textdomain' );?></label>
                 <textarea id="itinerary-content" rows="10" style="width:100%;"><?php echo esc_html($itinerary_content);?></textarea>
-                <label for="itinerary-url"><?php echo __( 'URL', 'textdomain' );?></label>
-                <input type="text" id="itinerary-url" value="<?php echo esc_attr($itinerary_url);?>" class="text ui-widget-content ui-corner-all" />
+                <label for="itinerary-number"><?php echo __( 'URL', 'textdomain' );?></label>
+                <input type="text" id="itinerary-number" value="<?php echo esc_attr($itinerary_number);?>" class="text ui-widget-content ui-corner-all" />
                 <label for="itinerary-category"><?php echo __( 'Category', 'textdomain' );?></label>
                 <select id="itinerary-category" class="select ui-widget-content ui-corner-all"><?php echo $this->select_itinerary_category_options($parent_category);?></select>
             </fieldset>
@@ -188,7 +189,7 @@ if (!class_exists('itinerary')) {
             if( isset($_POST['_itinerary_id']) ) {
                 $itinerary_id = sanitize_text_field($_POST['_itinerary_id']);
                 $itinerary_title = isset($_POST['_itinerary_title']) ? sanitize_text_field($_POST['_itinerary_title']) : '';
-                $itinerary_url = isset($_POST['_itinerary_url']) ? sanitize_text_field($_POST['_itinerary_url']) : '';
+                $itinerary_number = isset($_POST['_itinerary_number']) ? sanitize_text_field($_POST['_itinerary_number']) : '';
                 $itinerary_category = isset($_POST['_itinerary_category']) ? sanitize_text_field($_POST['_itinerary_category']) : '';
                 $data = array(
                     'ID'           => $itinerary_id,
@@ -196,7 +197,7 @@ if (!class_exists('itinerary')) {
                     'post_content' => $_POST['_itinerary_content'],
                 );
                 wp_update_post( $data );
-                update_post_meta($itinerary_id, 'itinerary_url', $itinerary_url);
+                update_post_meta($itinerary_id, 'itinerary_number', $itinerary_number);
                 update_post_meta($itinerary_id, 'itinerary_category', $itinerary_category);
             } else {
                 $current_user_id = get_current_user_id();

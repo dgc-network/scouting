@@ -18,7 +18,8 @@ if (!class_exists('courses')) {
             add_action( 'wp_ajax_del_course_dialog_data', array( $this, 'del_course_dialog_data' ) );
             add_action( 'wp_ajax_nopriv_del_course_dialog_data', array( $this, 'del_course_dialog_data' ) );
             
-
+            add_action( 'wp_ajax_sort_course_list_data', array( $this, 'sort_course_list_data' ) );
+            add_action( 'wp_ajax_nopriv_sort_course_list_data', array( $this, 'sort_course_list_data' ) );
         }
 
         function enqueue_course_scripts() {
@@ -104,9 +105,9 @@ if (!class_exists('courses')) {
                     <table class="ui-widget" style="width:100%;">
                         <thead>
                             <th><?php echo __( 'Course', 'textdomain' );?></th>
-                            <th><?php echo __( 'Category', 'textdomain' );?></th>
+                            <th><?php echo __( 'No.', 'textdomain' );?></th>
                         </thead>
-                        <tbody>
+                        <tbody id="sortable-course-list">
                         <?php
                         $query = $this->retrieve_course_data();
                         if ($query->have_posts()) :
@@ -206,6 +207,7 @@ if (!class_exists('courses')) {
                 );    
                 $post_id = wp_insert_post($new_post);
             }
+            update_post_meta($post_id, 'sorting_key', 999);
             $response = array('html_contain' => $this->display_course_list());
             wp_send_json($response);
         }
@@ -213,6 +215,18 @@ if (!class_exists('courses')) {
         function del_course_dialog_data() {
             wp_delete_post($_POST['_course_id'], true);
             $response = array('html_contain' => $this->display_course_list());
+            wp_send_json($response);
+        }
+
+        function sort_course_list_data() {
+            $response = array('success' => false, 'error' => 'Invalid data format');
+            if (isset($_POST['_field_id_array']) && is_array($_POST['_field_id_array'])) {
+                $field_id_array = array_map('absint', $_POST['_field_id_array']);        
+                foreach ($field_id_array as $index => $field_id) {
+                    update_post_meta($field_id, 'sorting_key', $index);
+                }
+                $response = array('success' => true);
+            }
             wp_send_json($response);
         }
 

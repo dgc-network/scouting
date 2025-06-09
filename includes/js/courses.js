@@ -46,6 +46,27 @@ jQuery(document).ready(function($) {
     // course
     activate_course_list_data();
     function activate_course_list_data(){
+        $('#sortable-course-list').sortable({
+            update: function(event, ui) {
+                const field_id_array = $(this).sortable('toArray', { attribute: 'data-field-id' });                
+                $.ajax({
+                    type: 'POST',
+                    url: ajax_object.ajax_url,
+                    dataType: 'json',
+                    data: {
+                        action: 'sort_course_list_data',
+                        _field_id_array: field_id_array,
+                    },
+                    success: function(response) {
+                        console.log(response);
+                    },
+                    error: function(error) {
+                        console.error(error);
+                    }
+                });
+            }
+        });
+
         $("#new-course").on("click", function() {
             $.ajax({
                 type: 'POST',

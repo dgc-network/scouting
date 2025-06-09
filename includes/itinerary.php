@@ -209,8 +209,8 @@ if (!class_exists('itinerary')) {
                     'post_author'   => $current_user_id,
                 );    
                 $post_id = wp_insert_post($new_post);
+                update_post_meta($post_id, 'sorting_key', 999);
             }
-            update_post_meta($post_id, 'sorting_key', 999);
             $response = array('html_contain' => $this->display_itinerary_list());
             wp_send_json($response);
         }

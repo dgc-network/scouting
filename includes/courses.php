@@ -165,7 +165,7 @@ if (!class_exists('courses')) {
                 <input type="text" id="course-title" value="<?php echo esc_attr($course_title);?>" class="text ui-widget-content ui-corner-all" />
                 <label for="course-content"><?php echo __( 'Content', 'textdomain' );?></label>
                 <textarea id="course-content" rows="10" style="width:100%;"><?php echo esc_html($course_content);?></textarea>
-                <label for="course-number"><?php echo __( 'URL', 'textdomain' );?></label>
+                <label for="course-number"><?php echo __( 'Number', 'textdomain' );?></label>
                 <input type="text" id="course-number" value="<?php echo esc_attr($course_number);?>" class="text ui-widget-content ui-corner-all" />
                 <label for="course-category"><?php echo __( 'Category', 'textdomain' );?></label>
                 <select id="course-category" class="select ui-widget-content ui-corner-all"><?php echo $this->select_course_category_options($parent_category);?></select>

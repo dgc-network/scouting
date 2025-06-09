@@ -166,7 +166,7 @@ if (!class_exists('itinerary')) {
                 <input type="text" id="itinerary-title" value="<?php echo esc_attr($itinerary_title);?>" class="text ui-widget-content ui-corner-all" />
                 <label for="itinerary-content"><?php echo __( 'Content', 'textdomain' );?></label>
                 <textarea id="itinerary-content" rows="10" style="width:100%;"><?php echo esc_html($itinerary_content);?></textarea>
-                <label for="itinerary-number"><?php echo __( 'URL', 'textdomain' );?></label>
+                <label for="itinerary-number"><?php echo __( 'Number', 'textdomain' );?></label>
                 <input type="text" id="itinerary-number" value="<?php echo esc_attr($itinerary_number);?>" class="text ui-widget-content ui-corner-all" />
                 <label for="itinerary-category"><?php echo __( 'Category', 'textdomain' );?></label>
                 <select id="itinerary-category" class="select ui-widget-content ui-corner-all"><?php echo $this->select_itinerary_category_options($parent_category);?></select>
